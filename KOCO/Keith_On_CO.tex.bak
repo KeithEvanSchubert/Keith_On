@@ -16,6 +16,9 @@
 \usepackage{wrapfig}
 \usepackage[linesnumbered]{algorithm2e}%other options: ,lined,boxed,commentsnumbered
 
+
+\graphicspath{{images/}}
+
 \newcommand{\NoSide}[1]{\multicolumn{1}{c}{#1}}
 \newcommand{\RtSide}[1]{\multicolumn{1}{c|}{#1}}
 
@@ -28,7 +31,6 @@
 \input kvmacros %for karnaugh maps
 
 
-\graphicspath{../images}
 \title{
 {\Large Keith On...} \\
 {\huge Computer Organization}
@@ -69,7 +71,14 @@
 %\input{Kohw_timing}
 \part{Data Representation and Manipulation}
 \input{Kohw_codes}
-\input{Kohw_int}
+\input{Koco_int}
+\input{Koco_ripple_add}
+\input{Koco_conditional_add}
+\input{Koco_cla_add}
+\input{Koco_unsigned_mult}
+\input{Koco_booth_mult}
+\input{Koco_systolic_mult}
+\input{Koco_residue_arithmetic}
 \input{Kohw_float}
 \part{Organization}
 \input{Kohw_arith}

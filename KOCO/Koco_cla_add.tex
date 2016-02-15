@@ -1,0 +1,68 @@
+\chapter{Carry-Lookahead}
+
+This is also referred to as lookahead carry.  Assume $x+y=z$.  Pre-generate all carries with 2-level logic. Usually form (g,p,c) generate, propagate, carry.
+\beqn
+G_i & = & x_i \cdot y_i \\
+P_i & = & x_i + y_i \\
+C_i & = & G_i + P_i \cdot C_{i-1} \\
+    & = & G_i + P_i \cdot (G_{i-1} + P_{i-1} \cdot C_{i-2}) \\
+    & = & G_i + P_i \cdot G_{i-1} + P_i \cdot P_{i-1} \cdot C_{i-2} \\
+    & = & G_i + P_i \cdot G_{i-1} + P_i \cdot P_{i-1} \cdot G_{i-2} +
+    \ldots + P_i \cdot P_{i-1} \cdot \ldots \cdot P_0 \cdot C_{in}
+\eeqn
+
+This method is very fast (regardless of size it take 5 levels of logic) but requires large gates for problems of reasonable size (even 16 or 32 bit numbers) and thus has problems with fan-in, fan-out, and size.
+
+Often blocks of a number are handled with lookahead, and the blocks are connected in some fashion (for example ripple) to get the net result (i.e. just like single bit adds from a full adder are connected to propagate the carry bit, blocks or 4, 8, or more could be handled lookahead then connected to propagate the carry bit between them to handle a larger number, say 32 bits).  Even better than cascading (ripple connection) the adders, is to us group carry-lookahead, in which each of the carry-lookahead adders output their group propagate and group generate variables to a circuit that generates the carry-in bits for each group.  It takes 5 logic levels to generate the carries to each individual carry-lookahead adder, and each adder then takes 5 levels of logic to get the result, for a total of 10 levels of logic.  For the example of adding 32 bit numbers with fast logic, it would take 10ns with group carry-lookahead adders (probably four or eight bits in a group).
+
+
+\begin{example}
+Specify the equations of a two bit binary adder with carry in (i.e.: one equation for each of the sum bits and one equation for the carry out).  Put the equations in sum of products form.
+
+{\color{ans}Sol:
+Let the two numbers to be added be $A_1 A_0$ and $B_1 B_0$.  Let the resulting sum be $S_1 S_0$.  Let the carries be $C_{in}$ and $C_{out}$.  Finally, let $C_0$ be the carry from the first bit added (saves writing).
+\beqn
+S_0 & = & A_0 \oplus B_0 \oplus C_{in} \\
+C_0 & = & A_0\cdot B_0 + A_0\cdot C_{in} + B_0\cdot C_{in} \\
+S_1 & = & A_1 \oplus B_1 \oplus C_0\\
+C_{out} & = & A_1 \cdot B_1 + A_1 \cdot C_0 + B_1 \cdot C_0
+\eeqn
+Putting this in sum of products form yields
+\beqn
+S_0 & = & A_0' \cdot B_0' \cdot C_{in} +
+          A_0' \cdot B_0 \cdot C_{in}' +
+          A_0 \cdot B_0' \cdot C_{in}' +
+          A_0 \cdot B_0 \cdot C_{in} \\
+S_1 & = & A_1' \cdot B_1' \cdot (A_0\cdot B_0 + A_0\cdot C_{in} + B_0\cdot C_{in}) +
+          A_1' \cdot B_1 \cdot (A_0\cdot B_0 + A_0\cdot C_{in} + B_0\cdot C_{in})' + \\
+    & & \qquad A_1 \cdot B_1' \cdot (A_0\cdot B_0 + A_0\cdot C_{in} + B_0\cdot C_{in})' +
+          A_1 \cdot B_1 \cdot (A_0\cdot B_0 + A_0\cdot C_{in} + B_0\cdot C_{in}) \\
+    & = & A_1' \cdot B_1' \cdot A_0\cdot B_0 + A_1' \cdot B_1' \cdot A_0 \cdot C_{in}
+          + A_1' \cdot B_1' \cdot B_0\cdot C_{in} \\
+    & & \qquad
+          + A_1' \cdot B_1 \cdot (A_0'\cdot B_0' + A_0'\cdot C_{in}' + B_0'\cdot C_{in}') \\
+    & & \qquad
+          + A_1 \cdot B_1' \cdot (A_0'\cdot B_0' + A_0'\cdot C_{in}' + B_0'\cdot C_{in}') \\
+    & & \qquad
+          + A_1 \cdot B_1 \cdot A_0\cdot B_0 + A_1 \cdot B_1 \cdot A_0\cdot C_{in}
+           + A_1 \cdot B_1 \cdot B_0\cdot C_{in} \\
+    & = & A_1' \cdot B_1' \cdot A_0\cdot B_0 + A_1' \cdot B_1' \cdot A_0 \cdot C_{in}
+          + A_1' \cdot B_1' \cdot B_0\cdot C_{in} \\
+    & & \qquad
+          + A_1' \cdot B_1 \cdot A_0'\cdot B_0' + A_1' \cdot B_1 \cdot A_0'\cdot C_{in}'
+          + A_1' \cdot B_1 \cdot B_0'\cdot C_{in}' \\
+    & & \qquad
+          + A_1 \cdot B_1' \cdot A_0'\cdot B_0' + A_1 \cdot B_1' \cdot A_0'\cdot C_{in}'
+          + A_1 \cdot B_1' \cdot B_0'\cdot C_{in}' \\
+    & & \qquad
+          + A_1 \cdot B_1 \cdot A_0\cdot B_0 + A_1 \cdot B_1 \cdot A_0\cdot C_{in}
+           + A_1 \cdot B_1 \cdot B_0\cdot C_{in} \\
+C_{out} & = & A_1 \cdot B_1 + A_1 \cdot (A_0\cdot B_0 + A_0\cdot C_{in} + B_0\cdot C_{in}) \\
+   & & \qquad + B_1 \cdot (A_0\cdot B_0 + A_0\cdot C_{in} + B_0\cdot C_{in}) \\
+    & = & A_1 \cdot B_1 + A_1 \cdot A_0\cdot B_0 + A_1 \cdot A_0\cdot C_{in} + A_1 \cdot B_0\cdot C_{in} \\
+   & & \qquad + B_1 \cdot A_0\cdot B_0 + B_1 \cdot A_0\cdot C_{in} + B_1 \cdot B_0\cdot C_{in}
+\eeqn
+}
+\end{example}
+
+
