@@ -1,0 +1,49 @@
+\chapter{Field Effect Transistors}
+
+\section{Ideal Behavior}
+
+A Field Effect Transistor (FET) is in one sense essentially a capacitor, and thus it is governed by
+\begin{eqnarray}
+CV &=& Q\\
+C_{gb}(V_{gc}-V_t) &=& Q_{channel}
+\end{eqnarray}
+where,
+\begin{itemize}
+\item $C_{gb}$ is the capacitance between the gate and the body, this is often just called the gate capacitance.
+\item $V_{gc}$ is the Voltage between the gate and the channel.  Note that $V_c=V_{ds}/2$, so $V_{gc}=V_gs-V_{ds}/2$.
+\item $V_t$ is the threshold voltage, i.e. the minimum voltage to cause an inversion layer to form.
+\item $Q_{channel}$ is the charge carries available in the channel to conduct.
+\end{itemize}
+The more charge carriers, $Q_{channel}$, the easier the current will flow, so calculating this is an essential step to quantitatively analyzing a FET.  First we need to find out what our capacitance, $C_{gb}$ is, this is done by
+\begin{eqnarray}
+C_{gb} &=& \varepsilon_{ox}\frac{WL}{t_{ox}} \\
+&=& 3.9\varepsilon_0\frac{WL}{t_{ox}}
+\end{eqnarray}
+\begin{itemize}
+\item $\varepsilon_{ox}$ is the permittivity\footnote{Permittivity is the resistance to forming an electric field.} of the insulating oxide layer.  Note: the 3.9 is the relative permittivity of silicon dioxide compared the the permittivity of free space.  Relative permittivity is denoted $\varepsilon_r$, and varies by material, frequency, temperature, and sometimes even direction.  We will treat it as a constant, which is ok for our operating situation.
+\item $\varepsilon_0$ is the permittivity of free space ($8.85 \times 10^{-14}$ [F/cm]).
+\item $W$ is the width of the gate (along source and drain).
+\item $L$ is the length under the gate (between source and drain).
+\end{itemize}
+Now we want to get the current flowing in the channel, but that means we need to know how fast they are moving.  In a semiconductor the velocity of the charge carrier, $v_c$, is given by
+\begin{eqnarray}
+v_c &=& \mu_cE\\
+&=&\mu_c\frac{V_{ds}}{L}
+\end{eqnarray}
+where $\mu_c$ is the mobility of the charge carrier.  The length of the channel divided by the velocity of the carriers, gives us the time for a charge to cross the channel, $T_{channel}$.  The total charge in the channel divided by this time is then the current.
+\begin{eqnarray}
+i_{ds} &=& \frac{Q_{channel}}{T_{channel}}\\
+ &=& \frac{C_{gb}(V_{gc}-V_t)}{\frac{L}{v_c}}\\
+ &=& \frac{3.9\varepsilon_0\frac{WL}{t_{ox}}(V_{gc}-V_t)}{\frac{L}{\mu_c\frac{V_{ds}}{L}}}\\
+ &=& 3.9\varepsilon_0\frac{W}{t_{ox}}(V_{gs}-V_t)\mu_c\frac{V_{ds}}{L}\\
+ &=& \frac{3.9\varepsilon_0}{t_{ox}}\mu_c\frac{W}{L}(V_{gc}-V_t)V_{ds}\\
+ &=& \frac{3.9\varepsilon_0}{t_{ox}}\mu_c\frac{W}{L}(V_{gs}-V_t-V_{ds}/2)V_{ds}
+\end{eqnarray}
+
+
+\section{Amplification}
+
+\begin{eqnarray}
+i_{DS} &=& \frac{k}{2}(V_{GS}-V_T)^2
+\end{eqnarray}
+if $V_{DS} \geq V_{GS}-V_T\geq 0$. 

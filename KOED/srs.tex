@@ -1,0 +1,610 @@
+\begin{verbatim}
+Software Requirements Specifications (SRS)
+Cover Page
+Revisions Page
+Table of Contents
+1 INTRODUCTION
+   1.1 Product Overview
+   1.2 Purpose
+   1.3 Scope
+   1.4 Reference
+   1.5 Definition And Abbreviation
+2 SPECIFIC REQUIREMENTS
+   2.1 External Interface Requirements
+       2.1.1 User Interfaces
+       2.1.2 Hardware Interfaces
+       2.1.3 Software Interfaces
+       2.1.4 Communications Protocols
+       2.1.5 Memory Constraints
+       2.1.6 Operation
+       2.1.7 Product function
+       2.1.8 Assumption and Dependency
+   2.2 Software Product Features
+   2.3 Software System Attributes
+       2.3.1 Reliability
+       2.3.2 Availability
+       2.3.3 Security
+       2.3.4 Maintainability
+       2.3.5 Portability
+       2.3.6 Performance
+   2.4 Database Requirements
+3 ADDITIONAL MATERIAL
+\end{verbatim}
+
+
+                                               IEEE STANDARD OF SRS
+
+
+
+1 INTRODUCTION
+This section of the SRS document provide on overview of the entire SRS.
+
+
+
+1.1      PURPOSE
+
+Describe the purpose of the document and the intended audience.
+
+
+
+1.2      SCOPE
+
+This subsection
+
+  (i)   Identity the software products to be produced by name.
+
+  (ii)   Describe the application of the software being specified. Including relevant benefits, objectives and goals.
+
+  (iii)   Explain what the software will and will not do.
+
+
+
+1.3      DEFINITIONS, ACRONYMS AND ABBREVIATIONS
+
+This subsection provides the definition of all terms. Acronyms and abbreviations required to properly interpret the SRS. This information can be given by reference to an Appendix.
+
+
+
+1.4      REFERENCES
+
+This subsection
+
+  (i)   Provide a list of the documents referenced elsewhere in the SRS.
+
+  (ii)  Identify a document by title, report number, data and publishing organization.
+
+  (iii)  Specify the sources from which the references can be obtained.
+
+
+
+1.5      OVERVIEW
+
+This subsection
+
+   (i)    Explain how the SRS is organized.
+
+   (ii)   Describe what the rest of the SRS contains.
+
+
+
+
+
+
+
+2 OVERALL DESCRIPTION
+Describe the general factor that affects the product and its requirements.
+
+
+
+2.1     PRODUCT PERSPECTIVE
+
+This subsection describes the perspective of the product with the other related products.
+
+
+
+2.1.1   System Interfaces
+
+List each system interface and identity the functionality of the so0ftware.
+
+
+
+2.1.2   Interfaces
+
+Specify:
+
+        (i)   Logical characteristics of each interface.
+
+        (ii)  All the aspects of optimizing the interface.
+
+
+
+2.1.3   Hardware Interfaces
+
+Describes interfaces to hardware devices.
+
+
+
+2.1.4   Software Interfaces
+
+Specify the use of other required software product and interfaces with other applications systems. Each requires software includes:
+
+         (i)     Name
+
+         (ii)    Mnemonic
+
+         (iii)   Version number
+
+         (iv)   Specification number
+
+         (v)   Source
+
+
+
+       Each interface provides:
+
+(a)        Discussion of the purpose of the interfacing software.
+
+(b)        Definition of the interface.
+
+
+
+       2.1.5   Communication Interfaces
+
+Specify the various interfaces to communications e.g., local network protocols etc.
+
+
+
+2.1.6   Memory Constraints
+
+Specify characteristics and limits on primary and secondary memory.
+
+
+
+2.1.7   Operations
+
+                 Specify the normal and special operations required by the user such as:
+
+(i)    The various modes of operations in the user organization.
+
+ (ii)   Periods of interactive and unattended operations.
+
+ (iii)   Data processing support functions.
+
+ (iv)   Backup and recovery operations.
+
+
+
+ 2.1.8   Site Adaptation Requirements
+
+Specify the site related feature that should be modified to adapt the software to a particular installation.
+
+
+
+
+
+2.2     PRODUCT FUNCTIONS
+
+Describe the general functionality of the product.
+
+
+
+2.3      USER CHARACTERISTICS
+
+Describes the general characteristics of the users of the product including educational level, experience and technical expertise.
+
+
+
+2.4      CONSTRAINTS
+
+Give a general description of the items that limit the developer’s options. These include:
+
+(i)                    Hardware limitations
+
+(ii)                   Regulatory policies
+
+(iii)                  Parallel operations
+
+(iv)                 Audit functions
+
+(v)                  Interface to other application
+
+(vi)                 Control functions
+
+(vii)                Language requirements
+
+(viii)               Reliability requirements
+
+(ix)                  Safety and security considerations
+
+
+
+2.5      ASSUMPTIONS AND DEPENDENCIES
+
+Lists all the factors that effect the requirements stated in the SRS.
+
+
+
+2.6      APPORTIONING OF REGUIREMENTS
+
+Requirements that can be delayed until future versions of the system.
+
+
+
+
+
+SPECIFIC REGUIREMENTS
+This section contains all the software requirement at a level of detail sufficient to enable designers to design a system to satisfy those requirements and the tester to that the system satisfies those requirements.
+
+
+
+The various items that comprise requirements are described in the following subsections.
+
+
+
+3.1      EXTERNAL INTERFACES
+
+It contains a detailed description of all inputs into and output from the software system. It contains both contains both contents and format as follows:
+
+       *   Name of items
+
+       *   Description of purpose
+
+       *   Valid range
+
+       *   Units of measure
+
+       *   Sources of input or destination of output
+
+       *   Timing
+
+       *    Relationship to other input/output
+
+       *   Screen formats
+
+       *   Window formats
+
+       *   Data formats
+
+       *   Command formats
+
+       *   End messages
+
+
+
+3.2      FUNCTIONS
+
+Functional requirements define the fundamental actions that must take place in the outputs. These include:
+
+         *   Validity checks on the inputs
+
+         *   Exact sequence of operations
+
+         *   Response to abnormal situation i.e.,
+
+
+
+              * Overflow
+
+              * Communication facilities
+
+              * Error handling and recovery
+
+              * Effect of parameters
+
+              * Relationship of output to input, including
+
+        -  Input/output sequences
+
+        -  Formulas for input to output conversion.
+
+
+
+
+
+
+
+
+
+3.3      PERFORMANCE REQUIREMENTS
+
+        It specifies both the static and dynamic numerical requirements. Static numerical requirement includes:
+
+  (i)   Number of terminals to be supported.
+
+  (ii)  Number of simultaneous users to be supported.
+
+             (iii)  Amount and type of information to be handled.
+
+
+
+
+
+3.4      LOGICAL DATABASE REQUIREMENTS
+
+   It specifies the logical requirements for any information that is to be placed into a database. This includes:
+
+          *   Data entities and their relationship
+
+          *   Integrity constrain requirements
+
+          *   Data retention requirements
+
+          *   Frequency of use
+
+              *   Accessing capabilities
+
+
+
+3.5      DESIGN CONSTRAINTS
+
+Specifies any constraints for the design team using this document.
+
+
+
+  3.5.1    Standard Compliance
+
+
+
+3.6      NON-FUNCTIONAL ATTRIBUTES
+
+Specifies non-functional attributes required by the system.
+
+(a)       Security
+
+(b)       Reliability
+
+(c)        Binary compatibility
+
+(d)       Maintainability
+
+(e)       Portability
+
+(f)        Extensibility
+
+(g)    Reusability
+
+(h)    Application compatibility
+
+(i)     Resource utilization
+
+(j)    Serviceability
+
+
+
+
+
+3.7   ORGANIZING THE SPECIFIC REQUIREMENTS
+
+                   Different classes of systems lend themselves to different organizations are described below.
+
+
+
+(a)      System Mode
+
+System behaves differently depending on the mode of operation.
+
+
+
+(b)      User Class
+
+Some systems provide different set of functions to different class of users.
+
+
+
+(c)      Objects
+
+Objects are real-world entities. Each object has a set of attributes and functions.
+
+
+
+(d)      Feature
+
+A feature is an externally desired service by the system that may require a sequence of Input to effect the desired results.
+
+
+
+(e)      Stimulus
+
+Some systems can be best organized by describing their functions in terms of stimulus.
+
+
+
+(f)       Response
+
+Some systems can be best organized by describing their function in support of the generation of a response.
+
+
+
+(g)      Functional Hierarchy
+
+The overall functionality can be organized into a hierarchy of functions organized by either common inputs, common output or common internal data access.
+
+
+
+
+
+3.7     ADDITIONAL COMMENTS
+
+This section includes notations, methods and automated support tools available to aid in the documentation of requirements.
+
+
+
+
+
+
+
+4.    CHANGE MANAGEMENT PROCESS
+
+It is used to identify, log, evaluate and update the SRS to reflect changes in project scope and requirements.
+
+
+
+
+
+5.    DOCUMENT APPROVAL
+
+It identifies the approvers of the SRS document. It includes:
+
+             *   Approver’s name
+
+             *   Signature
+
+             *   Data
+
+
+
+ 6     SUPPORTING INFORMATION
+
+The supporting information makes the SRS easier to use. It includes:
+
+            *   Table of contents
+
+            *   Index
+
+            *   Appendices
+            
+            
+            
+            
+
+
+
+
+
+From MicroTools Inc:
+
+How to write a software requirements specification
+by Robert Japenga
+
+
+What Makes a Great Software Requirements Specification?
+There are many good definitions of System and Software Requirements Specifications that will provide us a good basis upon which we can both define a great specification and help us identify deficiencies in our past efforts. There is also a lot of great stuff on the web about writing good specifications. The problem is not lack of knowledge about how to create a correctly formatted specification or even what should go into the specification. The problem is that we don't follow the definitions out there.
+
+We have to keep in mind that the goal is not to create great specifications but to create great products and great software. Can you create a great product without a great specification? Absolutely! You can also make your first million through the lottery – but why take your chances? Systems and software these days are so complex that to embark on the design before knowing what you are going to build is foolish and risky.
+
+The IEEE (www.ieee.org) is an excellent source for definitions of System and Software Specifications. As designers of real-time, embedded system software, we use IEEE STD 830-1998 as the basis for all of our Software Specifications unless specifically requested by our clients. Essential to having a great Software Specification is having a great System Specification. The equivalent IEEE standard for that is IEEE STD 1233-1998. However, for most purposes in smaller systems, the same templates can be used for both.
+
+
+
+What are the benefits of a Great SRS?
+The IEEE 830 standard defines the benefits of a good SRS:
+
+Establish the basis for agreement between the customers and the suppliers on what the software product is to do. The complete description of the functions to be performed by the software specified in the SRS will assist the potential users to determine if the software specified meets their needs or how the software must be modified to meet their needs. [NOTE: We use it as the basis of our contract with our clients all the time].
+
+Reduce the development effort. The preparation of the SRS forces the various concerned groups in the customer’s organization to consider rigorously all of the requirements before design begins and reduces later redesign, recoding, and retesting. Careful review of the requirements in the SRS can reveal omissions, misunderstandings, and inconsistencies early in the development cycle when these problems are easier to correct.
+
+Provide a basis for estimating costs and schedules. The description of the product to be developed as given in the SRS is a realistic basis for estimating project costs and can be used to obtain approval for bids or price estimates. [NOTE: Again, we use the SRS as the basis for our fixed price estimates]
+
+Provide a baseline for validation and verification. Organizations can develop their validation and Verification plans much more productively from a good SRS. As a part of the development contract, the SRS provides a baseline against which compliance can be measured. [NOTE: We use the SRS to create the Test Plan].
+
+Facilitate transfer.The SRS makes it easier to transfer the software product to new users or new machines. Customers thus find it easier to transfer the software to other parts of their organization, and suppliers find it easier to transfer it to new customers.
+
+Serve as a basis for enhancement. Because the SRS discusses the product but not the project that developed it, the SRS serves as a basis for later enhancement of the finished product. The SRS may need to be altered, but it does provide a foundation for continued production evaluation. [NOTE: This is often a major pitfall – when the SRS is not continually updated with changes]
+
+
+
+What should the SRS address?
+Again from the IEEE standard:
+
+The basic issues that the SRS writer(s) shall address are the following:
+
+a) Functionality. What is the software supposed to do?
+b) External interfaces. How does the software interact with people, the system’s hardware, other hardware, and other software?
+c) Performance. What is the speed, availability, response time, recovery time of various software functions, etc.?
+d) Attributes. What are the portability, correctness, maintainability, security, etc. considerations?
+e) Design constraints imposed on an implementation. Are there any required standards in effect, implementation language, policies for database integrity, resource limits, operating environment(s) etc.?
+
+
+What are the characteristics of a great SRS?
+Again from the IEEE standard:
+
+An SRS should be
+
+a) Correct
+b) Unambiguous
+c) Complete
+d) Consistent
+e) Ranked for importance and/or stability
+f) Verifiable
+g) Modifiable
+h) Traceable
+
+
+Correct - This is like motherhood and apple pie. Of course you want the specification to be correct. No one writes a specification that they know is incorrect. We like to say - "Correct and Ever Correcting." The discipline is keeping the specification up to date when you find things that are not correct.
+
+Unambiguous - An SRS is unambiguous if, and only if, every requirement stated therein has only one interpretation. Again, easier said than done. Spending time on this area prior to releasing the SRS can be a waste of time. But as you find ambiguities - fix them.
+
+Complete - A simple judge of this is that is should be all that is needed by the software designers to create the software.
+
+Consistent - The SRS should be consistent within itself and consistent to its reference documents. If you call an input "Start and Stop" in one place, don't call it "Start/Stop" in another.
+
+Ranked for Importance - Very often a new system has requirements that are really marketing wish lists. Some may not be achievable. It is useful provide this information in the SRS.
+
+Verifiable - Don't put in requirements like - "It should provide the user a fast response." Another of my favorites is - "The system should never crash." Instead, provide a quantitative requirement like: "Every key stroke should provide a user response within 100 milliseconds."
+
+Modifiable - Having the same requirement in more than one place may not be wrong - but tends to make the document not maintainable.
+
+Traceable - Often, this is not important in a non-politicized environment. However, in most organizations, it is sometimes useful to connect the requirements in the SRS to a higher level document. Why do we need this requirement?
+
+
+
+What is the difference between a System Specification and a Software Specification?
+Very often we find that companies do not understand the difference between a System specification and a Software Specification. Important issues are not defined up front and Mechanical, Electronic and Software designers do not really know what their requirements are.
+
+The following is a high level list of requirements that should be addressed in a System Specification:
+
+Define the functions of the system
+Define the Hardware / Software Functional Partitioning
+Define the Performance Specification
+Define the Hardware / Software Performance Partitioning
+Define Safety Requirements
+Define the User Interface (A good user’s manual is often an overlooked part of the System specification. Many of our customers haven’t even considered that this is the right time to write the user’s manual.)
+Provide Installation Drawings/Instructions.
+Provide Interface Control Drawings (ICD’s, External I/O)
+One job of the System specification is to define the full functionality of the system. In many systems we work on, some functionality is performed in hardware and some in software. It is the job of the System specification to define the full functionality and like the performance requirements, to set in motion the trade-offs and preliminary design studies to allocate these functions to the different disciplines (mechanical, electrical, software).
+
+Another function of the System specification is to specify performance. For example, if the System is required to move a mechanism to a particular position accurate to a repeatability of ± 1 millimeter, that is a System’s requirement. Some portion of that repeatability specification will belong to the mechanical hardware, some to the servo amplifier and electronics and some to the software. It is the job of the System specification to provide that requirement and to set in motion the partitioning between mechanical hardware, electronics, and software. Very often the System specification will leave this partitioning until later when you learn more about the system and certain factors are traded off (For example, if we do this in software we would need to run the processor clock at 40 mHz. However, if we did this function in hardware, we could run the processor clock at 12 mHz). [This implies that a certain level of research or even prototyping and benchmarking needs to be done to create a System spec. I think it is useful to say that explicitly.]
+
+However, for all practical purposes, most of the systems we are involved with in small to medium size companies, combine the software and the systems documents. This is done primarily because most of the complexity is in the software. When the hardware is used to meet a functional requirement, it often is something that the software wants to be well documented. Very often, the software is called upon to meet the system requirement with the hardware you have. Very often, there is not a systems department to drive the project and the software engineers become the systems engineers. For small projects, this is workable even if not ideal. In this case, the specification should make clear which requirements are software, which are hardware, and which are mechanical.
+
+
+
+What is the difference between a design requirement and software requirement?
+In short, the SRS should not include any design requirements. However, this is a difficult discipline. For example, because of the partitioning and the particular RTOS you are using, and the particular hardware you are using, you may require that no task use more than 1 ms of processing prior to releasing control back to the RTOS. Although that may be a true requirement and it involves software and should be tested – it is truly a design requirement and should be included in the Software Design Document or in the Source code.
+
+Consider the target audience for each specification to identify what goes into what documents.
+
+Marketing/Product Management
+
+Creates a product specification and gives it to Systems. It should define everything Systems needs to specify the product
+
+Systems
+
+Creates a System Specification and gives it to Systems/Software and Mechanical and Electrical Design.
+
+Systems/Software
+
+Creates a Software Specification and gives it to Software. It should define everything Software needs to develop the software.
+
+Thus, the SRS should define everything explicitly or (preferably) by reference that software needs to develop the software. References should include the version number of the target document. Also, consider using master document tools which allow you to include other documents and easily access the full requirements.
+
+
+
+Is this do-able? Won’t we miss our deadlines if we take the time to do this?
+This is a great question. There is no question that there is balance in this process. We have seen companies and individuals go overboard on documenting software that doesn’t need to be documented, such as a temporary utility. We have also seen customers kill good products by spending too much time specifying it.
+
+However, the bigger problem is at the other end of the spectrum. We have found that taking the time up front pays dividends down stream. If you don’t have time to specify it up front, you probably don’t have the time to do the project.
+
+Here are some of our guidelines:
+
+Spend time specifying and documenting well software that you plan to keep.
+Keep documentation to a minimum when the software will only be used for a short time or has a limited number of users.
+Have separate individuals write the specifications (not the individual who will write the code).
+The person to write the specification should have good communication skills.
+Pretty diagrams can help but often tables and charts are easier to maintain and can communicate the same requirements.
+Take your time with complicated requirements. Vagueness in those areas will come back to bite you later.
+Conversely, watch out for over-documenting those functions that are well understood by many people but for which you can create some great requirements.
+Keep the SRS up to date as you make changes.
+Approximately 20-25% of the project time should be allocated to requirements definition.
+Keep 5% of the project time for updating the requirements after the design has begun.
+Test the requirements document by using it as the basis for writing the test plan.  

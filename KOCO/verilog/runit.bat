@@ -1,0 +1,1 @@
+C:\SynaptiCAD\vlogcmd.exe mem.v cpu.v 

@@ -1,0 +1,162 @@
+
+
+
+In an unregulated power supply there are no voltage regulators and only one output filter capacitor. Basically the wire from the wall goes straight to the transformer, the rectifier turns it into an ugly DC(ish) signal, and the filter cap cleans it up a little.
+
+A linear power supply looks exactly the same as an unregulated power supply, except it has a pair of capacitors on the output side with a voltage regulator in between them. They basically put the voltage regulator you would need to build to use an unregulated power supply inside the supply itself, turning it into a regulated power supply. It's still pretty simple.
+
+Switched-mode power supplies are a whole other story. They have multiple rectifiers (at least one before the transformer and one after), filter caps before and after the transformer, usually a much smaller transformer, and a voltage regulator in a feedback loop to the transformer. They almost always have heat-sinks as well.
+
+Break open an old PC power supply to see what a SMP looks like.
+
+
+
+
+
+Rule of thumb for calculating power supply filter capacitors:
+
+C = 0.7(I)/\delta E(f)
+
+Where I = load current, \delta E = acceptable ripple voltage, and f = pulses per second from the rectifier.
+
+For full wave rectified 60Hz, this works out to:
+C = 0.00583 * I /  \delta E
+
+
+
+
+
+Decoupling or Bypass Capacitors, Why?
+
+--------------------------------------------------------------------------------
+
+I posted something like this a while back, but I've noticed a good number of newer members forgetting the bypass/decoupling caps in designs, or asking about their purpose in life (the caps, not the members).
+
+The reason for them is "stiffening" of the power supply. The wires on a breadboard, extraneous bus lines on a solderless breadboard, etc all create parasitic resistance and inductance. This resistance and inductance (impedance) of the board resists current flowing from the power supply to the microcontroller or logic IC.
+
+Here is where the bypass capacitor acts like a mini power supply to "hold up" the voltage until the current overcomes the impedance of the power supply lines to feed the IC. I put 3 0.1uF down each edge of the solderless breadboard, spaced evenly, 1 at each edge and one in the middle, for a total of 6. These are a permanent fixture on my solderless breadboards.
+
+As for "Why electrolytic and ceramic in parallel?": Electrolytics have high storage capacity for their size, but this comes at the cost of higher Equivalent Series Resistance (ESR) and Equivalent Series Inductance (ESL). These are the same parasitic elements of the circuit board we are adding the capacitor to correct! Hence, the mica or <insert dielectric here> cap that has nearly zero ESL and extremely low ESR. The smaller cap is able to supply the needed current instantly to "cover the gap" until the Electrolytic can "fill the gap" until the power supply finally "catches up" after a switching operation in a large logic IC, which uses a lot of current, relatively.
+
+The other way of looking at these capacitors is as mathematical models, essentially broadband filters to "bypass" any ripple directly to ground.
+
+I've explained this to a good number of people, and the one I expounded on most (mini-battery concept) is the one people tended to understand where I witnessed new understanding and enlightenment. This is mostly why I didn't cover the filter concept. The other reason is it gets ugly. Most here know capacitors pass AC, but that isn't good enough. In order to fully explain the principles, example values would need to be set up showing the PCB as a transmission line, and it would end up on a Smith Chart before the arguments were started.
+
+I found this website below to be an excellent source of info on why all designs that use pulses (logic, 555 timers, etc) need a bypass cap across the power pins.
+
+Capacitor Design Tips for PCB
+
+It also has information on which type of cap to use and why. It also explains the reasoning behind the common usage of a 22uF Electrolytic in parallel with a 0.1uF Ceramic.
+
+When working on circuits that have external signals in the Khz range, there really isn't much else to add as far as circuit design. When the clocks get higher though, there are entire seminars and rituals on moonless nights for PCB Design, divining layers, what to put on which, where vias can be, where to never put them, etc. So I'm just sticking with the caps on this post, as they solve a lot of problems, and not many people are making more than dual layer boards as a hobby anyway.
+
+Finally, when it comes to any circuit, analog or digital, always remember that performance will ONLY be as good as the Power Supply.
+
+
+
+
+We really do need a "sticky" or E-book entry on this very subject, as it applies to virtually any IC or circuit that one could think of. The more experienced folks know that every IC needs at least one 0.1uF/100nF "supply bypass" cap, and many datasheets recommend more than one, such as the 555 timer; it needs at least one 0.1uF poly metal or ceramic and one 1uF aluminum electrolytic or larger in parallel.
+
+Many "n00bs" will put together a circuit exactly as shown in a schematic, and it either doesn't work, or works very poorly! Frequently, bypass caps just are not shown at all on a schematic, or they are shown down a bottom corner all connected in parallel to help eliminate "clutter". After all, everyone knows that bypass caps are needed on EVERY IC, right?
+
+Not if you're new, and don't know that you need to read the datasheet(s) for the IC(s) being used. New Folks, these power supply bypass caps are NOT optional. If you do not include them, you will have odd problems, if the circuit works at all.
+
+If the IC in question is a single-rail supply (eg: ground and Vcc or Vdd) then you need at least one 0.1uF/100nF metal poly film or ceramic cap.
+
+If the IC has a dual-rail supply (eg: Vcc/Vdd, GND, and Vee/Vss) then you need at least two caps; one from GND to Vcc/Vdd and one from GND to Vee/Vss.
+
+All logic IC's (74xx, 4000 series) require one 0.1uF/100nF cap across the Vcc/Vdd/GND supply right at the IC itself. MCU's/uC's also require at least one bypass cap. If you have heavily loaded outputs, you may need more than one cap.
+
+When you are "breadboarding" a circuit, try to use the shortest jumper wires possible to connect your components, as long, loopy wiring will have a LOT of inductance, with plenty of potential for perplexing problems, particularly with digital circuits.
+
+
+
+
+
+
+
+Capacitor placement: to Integrated Circuits [ICs]
+
+The Decoupling capacitor is used to decouple the IC from the power source. The By-Pass capacitor reduces the trace length from the power source to a trace length from the IC to the decoupling capacitor ~ a reduction from many inches to less then an inch. A reduction of 20nH an inch in trace inductance is achieved by introducing a decoupling capacitor in between the IC and its power source. Assuming the power source is a regulator 12 inches away, and the by-pass capacitor is placed within an inch of the IC, the trace inductance is reduced from 240nH to 20nH. The 20nH vaule is just an example.
+
+
+How to Place a By-Pass Capacitor
+For a PWB with out a Ground plane, place the capacitor equal distance between the Voltage and Ground pins. Or place the capacitor near the Voltage pin. Run the remaining line directly to the ground trace. Try not to pass into another layer with a via. Limit the number of vias (to zero), each via acts like a low pass filter. Running a long trace between the by-pass capacitor and the IC defeats the purpose of the by-pass cap. As the trace length increases, so does the trace inductance.
+
+
+How to Place By-Pass Capacitor vias
+Things get better when you have a Ground plane. Place the via on the far side of the connection between the capacitor and chip. This insures the capacitor is not effected by the via [increased inductance]. Make the traces as wide as possible. If you have a near-by island be sure it's stitched with as many vias as possible so it represents a good power or ground connection.
+
+
+--------------------------------------------------------------------------------
+
+Capacitor placement: on the PWB
+
+How to Place Ground Islands
+Place the capacitors near the body of the device, leaving the shortest [and widest] possible trace. Additional larger tantalum capacitors may be placed around the board. The tantalum help to reduce the over-all impedance of the power plane. The larger value near-by tantalum also helps to re-charge the ceramic, instead of taking the charge from the power supply source. Placing Power planes adjacent to ground planes in the board stack-up also helps. It doesn't hurt to embed signal layers between a ground layer in the stack-up either, assuming you can add board layers. Refer to this page for a graph showing the frequency response developed from placing two capacitors in parallel Compound Capacitor By-Passing
+
+
+--------------------------------------------------------------------------------
+
+Capacitor placement: Cap to Cap
+Equivalent PWB Trace
+
+Equivalent Circuit
+A capacitor only has an effect with in a certain distance from the device. The more you move away from the capacitor, the less it does. The Inductance, and Resistance (of the Trace) tend to increase. This is the reason the App notes recommend placing capacitors on the reverse side off the board - over the (power) pin. It's a trade-off between the (low Pass) filter effects of passing through a via or an elongated trace. How ever these capacitors placed out across the board do have an effect in reducing the impedance of the board ~ the power and ground planes. Assuming most of the capacitors on the board are 0.1uF by-pass caps, then placing 2uF or 4uF around the board helps the impedance.
+
+
+
+--------------------------------------------------------------------------------
+
+By-Pass Capacitors
+The Classic approach. The capacitor is equal distance between both the positive and negative supply.
+
+
+
+
+-- Placement: Dont ask for it or, plan for it, or depend on it - it just costs to much {hand routing}.
+The point is, know if the design can handle another placement. This particular placement helps in noise suppression,
+but hurts with critical signal routing. If this particular device needs noise suppression more then signal routing, then pick the cap placement first, otherwise let the computer pick the placement. The by-pass capacitor stores an electrical charge that is released to the power line [to the IC], whenever a transient voltage spike occurs. So by-pass capacitor provides a low impedance supply, thereby minimizing the noise generated by the switching outputs of the device.
+Because the capacitor is used to supply current to the IC it wants to be close to the Vcc pin. The more current the device needs to supply - the larger the cap [or increase the number of same value capacitors].
+If this a clock driver - watch the length of the trace {another page}, then give the Cap priority.
+
+{Electronic Capacitor Index}
+
+
+--------------------------------------------------------------------------------
+
+Decoupling Capacitor Value
+
+How to Place Dual By-Pass Capacitors, Compound Placement
+The value of the Decoupling Capacitor that should be used depends on your load the IC has to drive. From the graphic above the load of device A [the driver] is device B [the receiver]. If device A has to drive one input at 3.3 volts then the load depends on the load of both inputs, taking into consideration the rise time of the signal. The input capacitance for a given device is parameter Ci in the device data sheet. If the receiver [B] has a load of 12pF [Ci] and the output driver [A] has a rise time of 1nS then the current required is: I = dV / dt or I = 12pF*(3.3v)/1nS. The current required = 39.6mA. If we keep the voltage droop to 3.0 volts, or a reduction of 300mV.
+The capacitor then equals: C = I * dt / dV. C = 39.6mA * 1nS/300mV = 22pF
+This is the value of the by-pass capacitor used with IC 'A', The required by-pass capacitor value for IC 'B' would be calculated in the same manner.
+Choose a capacitor whose resonant frequency is at least as high as the corresponding edge rates of the switching signals,
+where frequency response @ 1 / (3.5 × Trise, or fall).
+Design Note; In basically every data sheet a 0.1uF is indicated as a general rule of thumb.
+
+IC 'B' uses two By-pass capacitors, a small value ceramic [0.1uF] and a larger value tantalum capacitor [2.2uF] for example.
+Using two by-pass capacitors, normally a decade apart in value is called Compound By-passing.
+A number of data sheet require compound by-passing on some power pins.
+However because of pin density or lack of board space it is not always possible to comply with the data sheet.
+
+Design Hint; Adjacent Power and Ground planes form a capacitor. It is highly recommended to use the power planes as a low value, high speed, bypass capacitor. This can be accomplished by reducing the thickness of the core between power planes. So when determining the Printed Wiring Board [PWB] stack-up try to place a power plane next to a ground plane to form a 'board-wide' capacitor.
+
+Equivalent Capacitor Circuit, was moved to Equivalent Capacitor Circuit
+
+Question; which decoupling capacitors value to use? Answer; refer to the equation above.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rule of thumb for RFIC inductance calculation:
+1mm ~ 1nH

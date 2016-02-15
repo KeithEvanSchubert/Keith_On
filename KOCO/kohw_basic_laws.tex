@@ -1,0 +1,137 @@
+\chapter{Basic Laws}
+
+\section{Coulomb's Law}
+
+\begin{eqnarray}
+F
+&=& \frac{kq_1q_2}{r^2} \\
+&=& \frac{q_1q_2}{4\pi\varepsilon_0r^2}
+\end{eqnarray}
+Note: Negative forces attract and positive repel.
+
+Coulomb's constant, $k$ is given by
+\begin{eqnarray}
+k &=& \frac{1}{4\pi\varepsilon_0} \\
+&\approx& 9\times 10^9 \;[N\cdot m^2/C^2]
+\end{eqnarray}
+
+\section{Maxwell's Laws}
+
+Maxwell's four Laws have individual names:
+\begin{description}
+  \item[Gauss' Law of Electricity]
+  \item[Gauss' Law of Magnetism]
+  \item[Faraday's Law of Induction] Basis of electrical generators and inductors
+  \item[Ampere's Law]
+\end{description}
+
+The symbols used are:
+\begin{description}
+  \item[$E$] Electric field
+  \item[$B$] Magnetic field
+  \item[$D$] Electric displacement
+  \item[$H$] Magnetic field strength
+  \item[$\rho$] charge density
+  \item[$\varepsilon$] permittivity
+  \item[$\varepsilon_0$] permittivity of free space
+  \item[$\mu$] permeability
+  \item[$\mu_0$] permeability of free space
+  \item[$M$] Magnetization
+  \item[$i$] electric current
+  \item[$J$] current density
+  \item[$c$] speed of light, $c=\frac{1}{\sqrt{\mu_0\varepsilon_0}}$.
+  \item[$P$] Polarization
+  \item[$k$] Coulomb's constant, $k=\frac{1}{4\pi\varepsilon_0}$.
+\end{description}
+
+\subsection{Gauss' Law for Electricity}
+
+Integral Form
+\begin{eqnarray}
+\oint\vec{E}\cdot\vec{A}
+&=& \frac{q}{\varepsilon_0}
+\end{eqnarray}
+
+Differential Form
+\begin{eqnarray}
+\nabla\cdot D
+&=& \rho
+\end{eqnarray}
+where $D$ is
+\begin{description}
+\item[General Case] $D = \varepsilon_0E+P$
+\item[Free Space] $D = \varepsilon_0E$
+\item[Isotropic Linear Dielectric] $D = \varepsilon E$
+\end{description}
+
+
+\subsection{Gauss' Law for Magnetism}
+
+Integral Form
+\begin{eqnarray}
+\oint\vec{B}\cdot\vec{A}
+&=& 0
+\end{eqnarray}
+
+Differential Form
+\begin{eqnarray}
+\nabla\cdot B
+&=& 0
+\end{eqnarray}
+
+
+\subsection{Faraday's Law of Induction}
+
+Simplified Form
+\begin{eqnarray}
+V=-N\frac{\Delta(BA)}{\Delta t}
+\end{eqnarray}
+\begin{description}
+  \item[N] number of turns in the coil
+  \item[B] Magnetic Field
+  \item[A] The cross sectional area (perpendicular to the magnetic field)
+  \item[t] Time
+  \item[V] Voltage or EMF (electro-motive force)
+\end{description}
+
+Integral Form
+\begin{eqnarray}
+\oint\vec{E}d\vec{s}
+&=& -\frac{d\Phi_B}{dt}\\
+&=& EMF
+\end{eqnarray}
+
+Differential Form
+\begin{eqnarray}
+\nabla\times E
+&=& -\frac{\partial B}{\partial t}
+\end{eqnarray}
+
+
+\subsection{Ampere's Law}
+
+Integral Form
+\begin{eqnarray}
+\oint B\cdot ds
+&=& \mu_0i+\frac{1}{c^2}\frac{\partial}{\partial t}\int E\cdot dA
+\end{eqnarray}
+
+Differential Form
+\begin{eqnarray}
+\nabla\times H
+&=& J+\frac{\partial D}{\partial t}
+\end{eqnarray}
+
+
+where $D$ is
+\begin{description}
+\item[General Case] $D = \varepsilon_0E+P$
+\item[Free Space] $D = \varepsilon_0E$
+\item[Isotropic Linear Dielectric] $D = \varepsilon E$
+\end{description}
+and $H$ is
+\begin{description}
+\item[General Case] $B = \mu_0(H+M)$
+\item[Free Space] $B = \mu_0H$
+\item[Isotropic Linear Magnetic Medium] $B = \mu H$
+\end{description} 

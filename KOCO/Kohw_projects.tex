@@ -1,0 +1,73 @@
+\chapter{Projects for CSCI 313}
+\label{c-proj}
+
+\section{Data Compression/Uncompression}
+
+Write in SPARC assembly a program that would use Huffman coding to compress an ASCII file and then uncompress the same file using Huffman coding in reverse.
+
+The following table presents the relative frequencies of letters in the English language.
+
+\begin{tabular}{ll|ll|ll}
+  Letter & Freq.  & Letter & Freq.  & Letter  & Freq. \\ \hline
+  A      & 0.0681 & K      & 0.0037 & U       & 0.0272 \\
+  B      & 0.0123 & L      & 0.0355 & V       & 0.0095 \\
+  C      & 0.0288 & M      & 0.0257 & W       & 0.0144 \\
+  D      & 0.0406 & N      & 0.0628 & X       & 0.0025 \\
+  E      & 0.1205 & O      & 0.0671 & Y       & 0.0146 \\
+  F      & 0.0283 & P      & 0.0210 & Z       & 0.0004 \\
+  G      & 0.0134 & Q      & 0.0009 & space   & 0.0600 \\
+  H      & 0.0580 & R      & 0.0514 & .       & 0.0400 \\
+  I      & 0.0577 & S      & 0.0496 & newline & 0.0090 \\
+  J      & 0.0018 & T      & 0.0752 &         &  \\
+\end{tabular}
+
+You must first derive the decode tree using the above table and then create the translation table manually.  The translation table can then be used to compress and decompress ASCII files.
+
+\section{Postfix Expression Evaluator}
+
+The project is to write in SPARC assembly a program that would evaluate a postfix expression.  The postfix expression will contain the following arithmetic operators:
+\begin{description}
+    \item[+] binary addition
+    \item[-] binary subtration
+    \item[*] binary multiplication
+    \item[/] binary division
+    \item[?] unary increment
+    \item[!] unary decrement
+    \item[$\sim$] unary negation
+\end{description}
+
+The infix expression
+\beqn
+5 \, / \, 2 \, ? \, + \, 4 \, * \, 6 \, - \, 1 \, * \, 3
+\eeqn
+is equivalent to the postfix expression
+\beqn
+5 \, 2 \, ? \, / \, 4 \, 6 \, * \, + \, 1 \, 3 \, * \, -.
+\eeqn
+
+The following is the algorithm for the postfix expression evaluator.
+
+\begin{tabbing}
+          aaa \= aaa \= aaa \= aaa \= aaa \= aaa  \kill
+          % \> for next tab, \\ for new line...
+          procedure EVAL (E) \\
+            \> /* \> Evaluate the postfix expression E.  It is assumed  \\
+            \>    \> that the last character in E is a NUL.  A procedure  \\
+            \>    \> NEXT-TOKEN is used to extract from E the next token.   \\
+            \>    \> A token array STACK(1:n) is used as a stack.  \\
+            \> */  \\
+            \> \\
+            \> top $\leftarrow$ 0 \\
+            \> loop \\
+            \>    \> x $\leftarrow$ NEXT-TOKEN(E) \\
+            \>    \>   \> case \\
+            \>    \>   \> :x = NUL: return \\
+            \>    \>   \> :x is an operand: call PUSH(x,STACK) \\
+            \>    \>   \> :else: remove the correct number of opeands \\
+            \>    \>   \>   \> for operator x from STACK, perform \\
+            \>    \>   \>   \> the operation and store the result,  \\
+            \>    \>   \>   \> if any, onto the STACK \\
+            \>    \>   \> end \\
+            \> forever \\
+          end EVAL
+\end{tabbing}

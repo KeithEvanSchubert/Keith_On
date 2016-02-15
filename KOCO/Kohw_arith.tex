@@ -1,0 +1,87 @@
+\chapter{Arithmetic Operations}
+\label{c-arith}
+
+
+We have looked at number representation and calculation techniques, now we will look at how to specify the operations to a computer.  In order to do an arithmetic operation, we need to know where the two operands (sources) are located and where the result should be placed (destination).  Computers are classified by how many of the addresses must be explicitly stated and how many are implicit.
+
+\section{Three Address Machines}
+
+This is the most flexible form.  Each address can be specified by the user.  The commands are of the form
+
+\begin{tabular}{c}
+command source1, source2, destination \\
+\textbf{or} \\
+command destination, source1, source2 \\
+\end{tabular}
+
+\ThreeAddy
+
+\section{Two Address Machines}
+
+The destination is also a source in this case.  The commands are of the form
+
+\begin{tabular}{c}
+command destination, source \\
+\end{tabular}
+
+\section{One Address Machines}
+
+A special register, called the accumulator, is designated to be a source and destination.  The accumulator has two special instructions, load accumulator and store accumulator.  Accumulator machines rarely use additional registers, though it is not technically required.  The arithmetic commands are of the form
+
+\begin{tabular}{c}
+command source \\
+\end{tabular}
+
+\section{Zero Address Machines}
+
+The internal registers are arranged as a stack.  The source operands are taken from the stack in order (first operand on top, second operand below).  The result is pushed on the stack.  These are often called stack machines.  The arithmetic commands are of the form
+
+\begin{tabular}{c}
+command \\
+\end{tabular}
+
+\section{Comparison Code}
+
+Consider the following equation:
+
+\beqn
+y & = & x^2+2x+3 \\
+& = & (x+2)*x+3
+\eeqn
+
+Assume $x$ is at $100$, $2$ is at $104$, $3$ is at $108$, and $y$
+is at $112$.  The following uses a three address scheme with destination first.
+
+\vspace{.1in}
+\begin{tabular}{ll} \hline
+  % after \\ : \hline or \cline{col1-col2} \cline{col3-col4} ...
+  version 1 & version 2 \\
+  $y = x^2+2x+3$ & $y = (x+2)*x+3$ \\ \hline
+  mpy 112,100,100 & add 112,100,104 \\
+  mpy 116,100,104 & mpy 112,112,100 \\
+  add 112,112,116 & add 112,112,108 \\
+  add 112,112,108 &  \\ \hline
+\end{tabular}
+\vspace{.1in}
+
+\vspace{.2in}
+The following shows the second version on different machines.
+\vspace{.1in}
+
+\begin{tabular}{llll} \hline
+  % after \\ : \hline or \cline{col1-col2} \cline{col3-col4} ...
+  3 address       & 2 address    & 1 address & 0 address \\ \hline
+  add 112,100,104 & move 112,100 & load 100  & push 100 \\
+  mpy 112,112,100 & add 112,104  & add 104   & push 104 \\
+  add 112,112,108 & mpy 112,100  & mpy 100   & add \\
+                  & add 112,108  & add 108   & push 100 \\
+                  &              & store 112 & mpy \\
+                  &              &           & push 108 \\
+                  &              &           & add \\
+                  &              &           & pop 112 \\ \hline
+\end{tabular}
+\vspace{.1in}
+
+
+Assume $x$ is in $R_1$, $2$ is in $R_2$, $3$ is in $R_3$, and $y$
+is in $R_4$. 

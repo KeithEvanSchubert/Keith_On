@@ -1,0 +1,62 @@
+\chapter{Mini: Timing}
+\label{c-lab-time}
+
+\section{Timing}
+
+One of the main advantages of using a Hardware Description Language (HDL) like Verilog is the ability to simulate timing and performance of a circuit and work out any problems quickly before fabricating.  In this lab we will be looking at the basic techniques of how this is done.
+
+\begin{enumerate}
+
+\item Use the VeriLogger Pro software that came with your book to do the following.
+      \begin{enumerate}
+      \item If you have not done so already, install Verilogger Pro.
+      \item Launch Verilogger Pro.
+      \item Under the ``Project" tab, select ``Add File(s)..." and add the files you created for Lab~\ref{c-lab03} and Lab~\ref{c-lab04}.  They should appear in the ``Project" window and show you all the modules that are defined in them.
+      \item Press the green play arrow.  VeriLogger will automatically check your syntax, compile, and run if no errors are found.  If it runs you will see your signals automatically plotted in the ``Diagram" window.
+      \end{enumerate}
+
+\item Add gate delays by adding ``parameter delay=0" to the top of each module with gates, which sets the default value to be zero (no delay).  You can edit a module by double clicking its name in the ``Project" window.  We set a clock parameter because it allows us to easily change it later when we need.  Parameters can even be changed when we instantiate them by placing a ``\#(value)" between the between the module name and the instance name when instantiating.  At each gate declaration modify them so that you pass the time delay to them by adding a ``\#(delay)" before the gate name (see HDL Example 3.2 in the book).  For example an xor gate would now look like ``xor \#(delay) x0(T[0], M, B[0]);".  The delays are used by the simulator to see how long it takes for the signal to propagate through the circuit.  We can graph the signals over time and thus see what is happening in any system we design.  Make sure you modify all the following modules.
+      \begin{itemize}
+      \item halfadder
+      \item fulladder
+      \item four\_bit\_adder\_subtractor
+      \item four\_bit\_alu
+      \end{itemize}
+
+\item Run the Verilog code.  It should produce the same results since the delay is zero.
+
+\item Modify the test module for the four bit alu so that the instantiation is now ``four\_bit\_alu \#(5) alu(s,c4,a,b,m,cen)" and run it.  What happens and why?
+
+\item Modify the delay a few times and see if you can predict what will happen each time.  How long does it take to get the solution?  How long is that in terms of gate delays?  Can you express it as a formula?
+
+\end{enumerate}
+
+\section{Assembling}
+
+In this lab we will be timing a simple version of our cpu.
+
+\begin{enumerate}
+\item Create a module to contain our simple computer.
+\item Add two four bit registers named ``ACC" and ``Op2".
+\item Now make two registers to hold the signals ``sub" and ``mode".
+\item Next create four wires called ``result" and a single wire called carry.
+\item Make an instance of the adder-subtractor and pass the registers and wires you created to it.
+\item Just like you did for the test units create an initial unit and set the values of the registers to
+      \begin{itemize}
+      \item ACC=0
+      \item Op2=5
+      \item sub=0
+      \item mode=1
+      \end{itemize}
+      and setup a ``\$monitor" command to track the registers and wires.
+\item Make a parameter called ``wait" and set its value to the time you calculated in the preparation to get the solution.
+\item Then make an always unit to control the flow of data in the computer.  This essentially tells the accumulator to load the result of the alu.
+\begin{verbatim}
+       always begin
+           #(wait) ACC=result;
+       end
+\end{verbatim}
+\item Run the computer.  What does it do?  Show the output to the instructor.
+\item Set ``wait" to twice its value.  Does it still give the correct results?  Why or why not?
+\item Now set ``wait" to half its initial value.  Does it still work?  Why or why not?
+\end{enumerate} 

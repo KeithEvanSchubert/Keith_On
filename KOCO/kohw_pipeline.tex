@@ -1,0 +1,395 @@
+\chapter{Pipelining}
+\label{c-pipe}
+
+\section{Basic Architecture}
+
+Consider the following architecture.
+
+\vspace{6pt}
+\begin{tabular}{|p{2.5in}|p{2.5in}|}
+  \hline
+  \Arch & \IFetch \\
+  \multicolumn{1}{|c|}{Architecture} & \multicolumn{1}{|c|}{Fetch/Execute} \\
+  \hline
+\end{tabular}
+\vspace{6pt}
+
+The architecture and Fetch/Execute loop, lend themselves to a four stage pipeline.  We will make each of the stages in the Fetch/Execute loop to be a stage in our pipeline.
+
+Use registers at boundaries of hardware portions that do the stages of the IFetch (more fully to separate the clock cycles).
+
+
+\subsection{Calculating efficiency}
+
+Our basic equations of pipeline performance are
+\beqn
+\hbox{speedup} &=& \frac{T_{\hbox{original}}}{T_{\hbox{modified}}} \\
+\hbox{efficiency} &=& \frac{\hbox{actual speedup}}{\hbox{ideal speedup}}
+\eeqn
+
+Consider m instructions running on a computer with n stages.  If this is not pipelined then the time of execution will take $T_{nopipe}=m\times n\times T_{clock}$.  To get this we just used that $T=\#\, cycles\times T_{clock}$.  If it is pipelined then the execution will take $T_{pipe}=(m+n-1)\times T_{clock}$.  To see why consider this for m>>n (the usual case)
+
+\begin{tabular}{llllllllll}
+                    & \multicolumn{9}{c}{Cycle} \\
+Instruction         & 0 & 1 & \ldots & n-1    & n      & \ldots & m-1    & \ldots & m+n-1 \\ \hline
+Inst 1              & x & x & \ldots & x      &        &        &        &        &       \\
+Inst 2              &   & x & \ldots & x      & x      &        &        &        &       \\
+\hspace{.1in}\vdots &   &   & \Ddots & \Ddots & \Ddots & \Ddots &        &        &       \\
+                    &   &   &        &        &        &        &        &        &       \\
+\hspace{.1in}\vdots &   &   &        &        &        & \Ddots & \Ddots & \Ddots &       \\
+Inst m              &   &   &        &        &        &        & x      & \ldots & x     \\
+\end{tabular}
+
+Using this we can find that as the speedup of pipelining for m instructions in an n stage machine as m gets very large (long program run) is
+\beqn
+\hbox{speedup}
+&=& \frac{T_{nopipe}}{T_{pipe}} \\
+&=& \lim_{m\rightarrow\infty}\frac{mnT_{clock}}{(m+n-1)T_{clock}} \\
+&=& \lim_{m\rightarrow\infty}\frac{mn}{m+n-1} \\
+&=& n
+\eeqn
+
+Yielding the famous result that the ideal speedup is the number of stages in a pipeline.  If a stall were to happen a finite number of times it would not effect the asymptotic speedup, however if a stall happened a fraction of the time that is a different matter.  For instance, assume the pipeline stalls $P_{err}$ cycles in $f_{T,err}$ of all instructions of type T ($m\times f{T}$ total instructions) then the time of the pipelined machine would be $T_{pipe}=(m+n-1 +mf_{T}f_{err}P_{err})\times T_{clock}$.  The non-ideal speedup would be
+\beqn
+\hbox{speedup}
+&=& \frac{T_{nopipe}}{T_{pipe}} \\
+&=& \lim_{m\rightarrow\infty}\frac{mnT_{clock}}{(m+n-1+mf_{T}f_{err}P_{err})T_{clock}} \\
+&=& \lim_{m\rightarrow\infty}\frac{mn}{m+n-1+mf_{T}f_{T,err}P_{err}} \\
+&=& \frac{n}{1+f_{T}f_{T,err}P_{err}} \\
+&=& \frac{n}{1+f_{err}P_{err}}
+\eeqn
+where $f_{err}=f_{T}f_{T,err}$.  Note that the numerator is the CPI of the non-pipelined machine and the denominator is the CPI of the non-ideal pipelined machine.  Thus we see that CPI for a pipelined machine is
+\beqn
+CPI = 1 + \sum_{i=1}^{n}f_iP_i.
+\eeqn
+If there are no errors the ideal CPI is thus 1.  Consider an example of this with branches incurring a penalty when they taken (i.e. the machine assumes branch not taken).
+
+\begin{eqnarray*}
+  CPI_{avg} &=& (1-P_b)CPI_{no\,branch} + P_b((1-P_{take})CPI_{no\,branch}+P_{take}(1+b))
+\end{eqnarray*}
+\begin{description}
+    \item[$CPI$] Cycles per instruction.  The smaller the better.  Nominally for a RISC machine this will be 1, but bubbles will increase it and pipelining will decrease it.
+    \item[$P$] Probability that something will happen (the event is indicated by the subscript).
+    \item[$b$] Branch penalty, which indicates how large the bubble in the pipeline is, that is caused by taking a branch.
+\end{description}
+
+\subsection{Branch Prediction}
+
+Normally branches are assumed to be not taken but this is a simplistic assumption.  A more sophisticated choice is to do what was done most recently.  So for instance if the second instruction is a branch, and last time I was there I took it, I would have:
+
+\begin{tabular}{l|l}
+  Address & Taken \\
+  \hline
+  0 & 0 \\
+  1 & 0 \\
+  2 & 1 \\
+  3 & 0 \\
+\end{tabular}
+
+This would require an extra bit for every memory location, most of which would be unused.
+
+\subsubsection{Performance}
+
+A pipelined RISC computer has 8 stages, and runs at 1.25 GHz.  The cache has a miss rate of 1\% for data and instructions, and a miss penalty of 24 ns.  The system has a dynamic branch predictor that is wrong only 10\% of the time.  Branch errors cost 5 cycles.
+\begin{enumerate}
+\item What is the ideal (no stalls) speedup over a non-pipelined machine?
+\item What is the impact to the CPI due to cache misses on a non-memory operation?
+\item What is the impact to the CPI due to cache misses on a memory operation?
+\item What is the impact to the CPI due to branch errors on branching instructions?
+\item If memory operation make up 20\% of the commands in a typical program and branching make up 15\% of the commands, what is the average CPI?
+\end{enumerate}
+
+{\color{ans}
+
+\begin{enumerate}
+\item $n=\frac{\hbox{Time Without Pipeline}}{\hbox{Time With Pipeline}}=\frac{I\times 8}{I+8}\approx 8$ for large I (number of instructions).
+\item $\Delta CPI=\hbox{Miss Rate}\times\hbox{Miss Penalty}\times\hbox{Clock Frequency}=(.01)(24 ns)(1.25 GHz)=.3$
+\item Twice above or (0.6).
+\item $\Delta CPI = \hbox{Branch Error Rate}\times(Branch Penalty)=.1 \times 5 = .5$
+\item $CPI_{avg}=.2(1+.6)+.15(1+.3+.5)+.65(1+.3)=.32+.27+.845=1.435$
+\end{enumerate}
+}
+
+
+
+\subsubsection{Superscalar}
+
+Superscalar pipelines have multiple pipelines to execute commands on (for example the latest pentium has 2).  The advantage is that a machine with $n$ pipelines could have a $CPI$ of $\frac{1}{n}$.  They have their own challenges in programming though.
+
+Consider the following section of a program:
+
+\begin{verbatim}
+loop:  lw $t3,0($t1)       # first data
+       add $t5, $t5, $t3   # running sum
+       addi $t1, $t1, 4    # increment counter
+       brne $t0, $t1, loop # check if done
+exit:
+\end{verbatim}
+
+And place the commands to be scheduled on two pipelines in the most obvious way.
+
+\vspace{3pt}
+\begin{tabular}{l|l}
+  Pipeline 1 & Pipeline 2 \\
+  \hline
+  lw \$t3,0(\$t1) & Nop \\
+  add \$t5, \$t5, \$t3 & addi \$t1, \$t1, 4 \\
+  brne \$t0, \$t1, loop & Nop \\
+\end{tabular}
+\vspace{3pt}
+
+Granting myself a perfect branch predictor, so I have no stalls due to branching (in class we considered stalls), I still only get:
+
+\beqn
+CPI = \frac{3}{4}= .75
+\eeqn
+
+Now consider a clever rearrangement:
+
+\vspace{3pt}
+\begin{tabular}{l|l}
+  Pipeline 1 & Pipeline 2 \\
+  \hline
+  lw \$t3,0(\$t1) & addi \$t1, \$t1, 4 \\
+  add \$t5, \$t5, \$t3 & brne \$t0, \$t1, loop \\
+\end{tabular}
+\vspace{3pt}
+
+Granting myself a perfect branch predictor, I get:
+
+\beqn
+CPI = \frac{2}{4}= .5
+\eeqn
+
+Can I always do such a rearrangement?  Sorry but no.  Consider the following:
+
+
+\begin{verbatim}
+loop:  lw $t3,0($t1)        # first data
+       mult $t3, $t1        # multiplication
+       mflo $t3             # get the product
+       add $t5, $t5, $t3    # running sum
+       addi $t1, $t1, 4     # increment counter
+       brne $t0, $t1, loop  # check if done
+exit:
+\end{verbatim}
+
+And place the commands to be scheduled on two pipelines in the most obvious way.
+
+\vspace{3pt}
+\begin{tabular}{l|l}
+  Pipeline 1 & Pipeline 2 \\
+  \hline
+  lw \$t3,0(\$t1) & Nop \\
+  mult \$t3, \$t1   & addi \$t1, \$t1, 4 \\
+  mflo \$t3        & Nop \\
+  add \$t5, \$t5, \$t3 & brne \$t0, \$t1, loop \\
+\end{tabular}
+\vspace{3pt}
+
+Granting myself a perfect branch predictor, so I have no stalls due to branching, I still only get:
+
+\beqn
+CPI = \frac{4}{6}= .66
+\eeqn
+
+And note that the second pipeline is only half used.
+
+\section{Unrolling}
+
+Now let us unroll the loop, by considering two runs through at once.  Note that on the second run through the data accessed is at four bytes higher than the first run.
+
+\begin{verbatim}
+loop:  lw $t3,0($t1)        # first data
+       lw $t4,4($t1)        # second data
+       mult $t3, $t1        # multiplication
+       mflo $t3             # get the product
+       add $t5, $t5, $t3    # running sum
+       addi $t1, $t1, 4     # increment counter
+       breq $t0, $t1, exit  # check if done
+       mult $t4, $t1        # multiplication
+       mflo $t4             # get the product
+       add $t5, $t5, $t4    # running sum
+       addi $t1, $t1, 4     # increment counter
+       brne $t0, $t1, loop  # check if done
+exit:
+\end{verbatim}
+
+\vspace{3pt}
+\begin{tabular}{l|l}
+  Pipeline 1 & Pipeline 2 \\
+  \hline
+  lw \$t3,0(\$t1)       & lw \$t4,4(\$t1) \\
+  mult \$t3, \$t1       & addi \$t1, \$t1, 4 \\
+  mflo \$t3             & mult \$t4, \$t1 \\
+  add \$t5, \$t5, \$t3  & breq \$t0, \$t1, exit \\
+  mflo \$t4             & addi \$t1, \$t1, 4 \\
+  add \$t5, \$t5, \$t4  & brne \$t0, \$t1, loop \\
+\end{tabular}
+\vspace{3pt}
+
+Granting myself a perfect branch predictor, so I have no stalls due to branching, I now get:
+
+\beqn
+CPI = \frac{6}{12}= .5
+\eeqn
+
+As a general rule you unroll $n$ copies of the loop for a machine with $n$ pipelines.  In this case I unrolled 2 copies because I had two pipes to fill.
+
+\section{Unrolling, Part II}
+
+Consider the following code to calculate the Fibonacci numbers.
+
+\begin{verbatim}
+    top: add r4, r3, r2
+         mov r2, r3
+         mov r3, r4
+         addi r1, r1, -1
+         brgtz r1, top
+\end{verbatim}
+
+The first three instructions are the data manipulations, and the last two are loop overhead (indexing and branching).  There is a large amount of wasted effort spent in moving data around.  Consider two loops worth of just the data manipulation portions.
+
+\begin{verbatim}
+         add r4, r3, r2
+         mov r2, r3
+         mov r3, r4
+         add r4, r3, r2
+         mov r2, r3
+         mov r3, r4
+\end{verbatim}
+
+Note that the ``mov'' commands are only to set up the problem for the next loop.  In particular the contents of r2 are removed and the contents of r3 and r4 are shuffled.  Consider the following change.
+
+\begin{verbatim}
+         add r2, r3, r2
+         add r4, r3, r2
+         mov r3, r4
+\end{verbatim}
+
+The contents of the registers are the same at the end of the loop, as the original, but considerable savings have been achieved.  by noting the last mov command only shifts the results of the second add, we note that it is equivalent to the following
+
+\begin{verbatim}
+         add r2, r3, r2
+         add r3, r3, r2
+\end{verbatim}
+
+Thus by unrolling we can see the loop is equivalent to
+
+
+\begin{verbatim}
+    top: add r2, r3, r2
+         add r3, r3, r2
+         addi r1, r1, -2
+         brgtz r1, top
+         mov r4, r3
+         breqz r1, exit
+         mov r4, r2
+   exit:
+\end{verbatim}
+
+Note the last three commands are cleanup only, so two iterations of the original loop can be done in less instructions than the unoptimized code. The loop can be scheduled efficiently on a two pipeline machine as
+
+\begin{tabular}{lll}
+top:  & add r2, r3, r2 & addi r1, r1, -2 \\
+      & add r3, r3, r2 & bgtqz r1, top   \\
+      & mov r4, r3     & breqz r1, exit  \\
+      & mov r4, r2     &                 \\
+exit: &                &                 \\
+\end{tabular}
+
+
+
+%\begin{eqnarray}
+%f(n)   &=& f(n-1)+f(n-2) \\
+%f(n+1) &=& f(n)+f(n-1) \\
+%       &=& 2f(n-1)+f(n-2) \\
+%       &=& 3f(n-2)+2f(n-3) \\
+%       &=& 5f(n-3)+3f(n-4) \\
+%       &=& 8f(n-4)+5f(n-5) \\
+%       &=& 8f(n-4)+5f(n-6)+ 5f(n-7) \\
+%       &=& 8f(n-4)+10f(n-7)+ 5f(n-8)
+%\end{eqnarray}
+
+%r1 = r2 + r3    r4 = r5 + r6     r5 = sla r4,8        r6 = r7 + r8     r7 = sla r1,2
+
+
+\section{Software Pipelining}
+
+Returning to the original code
+
+\begin{verbatim}
+    top: add r4, r3, r2
+         mov r2, r3
+         mov r3, r4
+         addi r1, r1, -1
+         brgtz r1, top
+\end{verbatim}
+
+And let us again consider two iterations of the Fibonacci number loop.
+
+\begin{verbatim}
+         add r4, r3, r2
+         mov r2, r3
+         mov r3, r4
+         add r4, r3, r2
+         mov r2, r3
+         mov r3, r4
+\end{verbatim}
+
+First note that each pair of moves can be done simultaneously.
+
+\begin{verbatim}
+         add r4, r3, r2
+         mov r2, r3         mov r3, r4
+         add r4, r3, r2
+         mov r2, r3         mov r3, r4
+\end{verbatim}
+
+Now we will move the second add ahead in the scheduling so it is simultaneous with the first moves.
+
+\begin{verbatim}
+         add r4, r3, r2
+         mov r2, r3         mov r3, r4         add r4, r4, r3
+         mov r2, r3         mov r3, r4
+\end{verbatim}
+
+Now note that the \texttt{mov r2, r3} commands are useless and can be dropped.
+
+\begin{verbatim}
+         add r4, r3, r2
+         mov r3, r4         add r4, r4, r3
+         mov r3, r4
+\end{verbatim}
+
+This suggests the following parallel execuation
+
+\begin{tabular}{llll}
+mov r2, r3  & add r3, r3, r2 & addi r1, r1, -1 & brgtz r1, top \\
+\end{tabular}
+
+
+
+\begin{tabular}{rrrr}
+time  &r3      & r2   & r1  \\
+0     & 1      & 1    & 3   \\
+1     & 2      & 1    & 2  \\
+2     & 3      & 2    & 1 \\
+3     & 5      & 3    & 0 \\
+\end{tabular}
+
+
+\subsection{Example}
+Consider the following code
+
+\begin{verbatim}
+    top: ld r2, 0(r1)
+         addi r3, r2, 1
+         st r3, 0(r1)
+         addi r1, r1, 4
+         brlt r1, r4, top
+\end{verbatim}
+
+\begin{tabular}{lll}
+st r3, 0(r1) & addi r3, r2, 1 & ld r2, 8(r1) \\
+\end{tabular} 

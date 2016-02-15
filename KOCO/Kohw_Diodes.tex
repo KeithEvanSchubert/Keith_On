@@ -1,0 +1,20 @@
+\chapter{Diodes}
+
+Up till now we have considered individual semiconductors, now we want to consider what happens when we put two next to each other.  By placing a p region next to an n region, holes start diffusing from the p region to the n region, and electrons start diffusing from the n region to the p region.  This does several things.  
+\begin{itemize}
+\item First, it locks up the charge carriers, so that there are not any available to carry current.  For this reason it is called the depletion region.  
+\item Second, it causes a charge differential across the boundary, which is called the potential barrier, $V_{bi}$.  The potential barrier resists the further diffusion of charge carriers, because the depletion region in the n material is slightly positive, and the depletion region in the p region is slightly negative, resulting in an induced E-field from n to p.  The potential barrier is given by
+    \begin{eqnarray}
+    V_{bi} &=& \frac{kT}{e^-}\ln{\left(\frac{N_nN_p}{n_i^2}\right)},
+    \end{eqnarray}
+    where, $e^-$ is the electron charge\footnote{I am putting a minus sign in the exponent to distinguish the electron charge from the natural logarithm base.  Thus I will put a plus in the exponent if I want to speak of the charge of a proton.  The value of $e^-=1.602176487×10^{-19}$ [coulombs], which can also be calculated by $e^-=\frac{F}{N_A}$, where $F$ is Faraday's constant ($9.64853399x10^4$ [C/mol]) and $N_A$ is Avogadro's Number ($6.02213667x10^{23}$ [1/mol]).}.  We often lump $\frac{kT}{e^-}$ into a term called the thermal voltage, $V_T$, which is approximately $V_T\approx 0.026$ [V] at $T=300$ [K].
+\item Third, the charge differential acts like a capacitor (it is storing charge).  The nominal (or zero applied voltage) junction capacitance (or depletion layer capacitance), is given by, $C_{j0}$ and is usually around a pico Farad (pF).
+\end{itemize} 
+
+\section{Reverse Bias}
+
+If we apply a voltage, such that the positive terminal is connected to the n material, and the negative terminal to the p material, the applied electric field, $E_A$, is in the same direction as the electric field of the potential barrier.  This causes the depletion region to grow, because the free electrons in the n material are drawn to the positive terminal and the free holes in the p material are drawn to the negative terminal.  The larger depletion region prevents charge from flowing so the diode is off.  The reverse bias also effects the junction capacitance.
+\begin{eqnarray}
+C_j &=& C_{j0}\left(1+\frac{V_R}{V_bi}\right)^{-0.5}
+\end{eqnarray}
+with $V_R$ the reverse bias voltage.  Note the larger the larger the applied voltage the smaller the capacitance, which is due to the increased width of the depletion region (wider the region the lower the capacitance). 

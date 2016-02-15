@@ -1,0 +1,105 @@
+\documentclass[]{book}
+\usepackage[]{epsf}
+\usepackage{graphicx}
+\usepackage{color}
+%\usepackage{ams}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{floatflt}
+\usepackage[letterpaper]{geometry}
+\usepackage{bezier}
+\usepackage{kescust}
+\usepackage{keslogic}
+\usepackage{kescircuits}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{wrapfig}
+\usepackage[linesnumbered]{algorithm2e}%other options: ,lined,boxed,commentsnumbered
+
+\newcommand{\NoSide}[1]{\multicolumn{1}{c}{#1}}
+\newcommand{\RtSide}[1]{\multicolumn{1}{c|}{#1}}
+
+\topmargin 0in \textheight 8.5in \textwidth 6.5in \evensidemargin
+0in \oddsidemargin 0in
+
+
+\newcommand{\sign}{\hbox{sgn}}
+
+\input kvmacros %for karnaugh maps
+
+
+\graphicspath{../images}
+\title{
+{\Large Keith On...} \\
+{\huge Computer Organization}
+}
+\author{
+  Keith Schubert%\input{../keith.tex}
+}
+\date{}
+
+\makeindex
+
+\begin{document}
+
+\baselineskip=1.05\normalbaselineskip
+
+\maketitle
+
+\tableofcontents
+
+%\listoffigures
+
+%\listoftables
+
+\pagenumbering{arabic}
+%\part{Electronics}
+%\input{Kohw_passive}
+%\input{Kohw_basic_laws}
+%\input{Kohw_semiconductors}
+%\input{Kohw_Diodes}
+%\input{Kohw_bjt}
+%\input{Kohw_fet}
+%\input{Kohw_logic_families}
+%\part{Digital Logic}
+%\input{Kohw_boolean}
+%\input{Kohw_logic}
+%\input{Kohw_combinational}
+%\input{Kohw_sync}
+%\input{Kohw_timing}
+\part{Data Representation and Manipulation}
+\input{Kohw_codes}
+\input{Kohw_int}
+\input{Kohw_float}
+\part{Organization}
+\input{Kohw_arith}
+\input{Kohw_stack}
+\input{Kohw_isa}
+\input{Kohw_address}
+\input{Kohw_subs}
+\input{Kohw_mips}
+\input{Kohw_components}
+\input{Kohw_cache}
+\input{Kohw_control}
+\part{Performance}
+\input{Kohw_perf}
+\input{Kohw_ilp}
+\input{Kohw_pipeline}
+\input{Kohw_tomasulo}
+\input{Kohw_tlp}
+
+%\part{Appendices}
+\appendix
+\input{Kohw_machine_examples}
+\input{kohw_encryption}
+%\input{Kohw_projects}
+%\input{kohw_Labs_ALU}
+%\input{kohw_Labs_Reg}
+%\input{kohw_Labs_Timing}
+%\input{kohw_16bit}
+%\input{kohw_7400}
+
+
+\bibliographystyle{plain}
+\bibliography{kohw}
+\end{document}

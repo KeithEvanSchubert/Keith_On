@@ -1,0 +1,19 @@
+\documentclass{article}
+\usepackage{graphicx}
+\title{Branching}
+\author{Keith Evan Schubert}
+\begin{document}
+\maketitle
+%\chapter{Branching}
+
+Consider the following code to sum up an array.  Let s1 be the first address in the array, and t0 initially be the last address in the array.  Further assume t2 is initially 0.
+
+\begin{verbatim}
+loop: ld t1,0(t0)     # loads the value stored in the memory location t0+0 into t1
+      add t2, t2, t1  
+      addi t0, t0, -4
+      slt t3, t0, s1
+      beqz t3, loop
+\end{verbatim}
+
+\end{document}

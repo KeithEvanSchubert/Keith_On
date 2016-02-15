@@ -1,0 +1,242 @@
+\chapter{Systems Engineering and Project Management}
+
+Systems engineering is the field of engineering that is concerned with the design and management of engineering products over their lifecycle.  Systems engineers thus handle the high level design and oversee the process of design, manufacture, and maintainence. Systems engineering has numerous standards and models to describe the processes used, such as \cite{ANSI632, CMMI, EIA731, IEEE1220, ISO15288}.
+
+\section{Classical Techniques}
+Probably the most famous techniques are the Waterfall method and the `V' method.  Both are very similar.  The Waterfall technique is based on the idea that one phase flows to the next.  It develops a systems life cycle that we will discuss below.  The `V' method is similar, but folds the testing in the second half of the life cycle up to pair it with the spec development of the first half.  Thus the detailed designs at the end pair with unit tests of the parts that were designed, and the customer requirements and the very beginning pair with acceptance tests.  Classical techniques are only done on major military projectes that require such a high level of oversight and no easy breakdown is possible.
+
+
+\subsection{System Life Cycle}
+Any product starts as a need or idea in someone's mind.  This is where the initial formulation is done.  This is communicated orally and discussed informally until the originator(s) feel it is sufficiently important to formally propose it.  The formal proposal is usually called a ``white paper''.  There is no formal specification of a white paper, but it should have an executive summary (1 page overview) at the start, followed by background information, need justification, and a basic concept.  If approved the design will go into a formal life cycle.  Having worked for a military contractor (Northrop-Grumman), I will follow the military systems engineering life cycle, see the Defense Acquisition Guidebook~\cite{DAG} or Defense System Software Development~\cite{DOD2167}.
+
+\subsection{Concept Refinement Phase}
+This is the conceptual design.  A Preliminary System Specification is generated (required capabilities, and a systems engineering plan put in place.  System safety analysis is begun and test and evaluation strategies are made.  Support and maintenance issues are outlined.  Alternatives to be analyzed are thought up, a technology development strategy is drafted, and a draft of the capability development document is created.  Initial costs and manpower estimates are made.
+
+At the conclusion of the phase there is the Initial Technology Review (ITR), and the Alternative System Review (ASR).  The ITR is a review of the technical baseline to ensure there is sufficient development to make a valid initial cost estimate.  The ASR reviews the alternatives considered, and assesses if the set of requirements agrees with the customer's needs.  For our purposes, most of the local companies have done this before assigning the tasks to our teams.  Completion of this phase is milestone A.
+
+\subsection{Technology Development Phase}
+This is the configuration design.  Technology selection and risk reduction are primary goals of this phase.  Further work on costing and systems engineering, resulting in the Systems Engineering Plan, and the Test and Evaluation Master Plan.  A Preliminary System Performance Specification is drafted.
+
+The reviews at this stage are the System Requirements Review (SRR), Integrated Baseline Review (IBR), and Technology Readiness Assessment (TRA).  The SRR checks progress in defining the technical requirements, and the balance and completeness of the configuration.  IBR is a business focused meeting and is concerned with the management effort.  They can be repeated, and if lucky you can avoid them.  The TRA checks the maturity of the critical technologies in a metrics based approach.  As with the last phase, most of the local companies have done this before assigning the tasks to our teams.  Completion of this phase is milestone B.
+
+\subsection{System Development and Demonstration Phase}
+
+This is the main engineering design and analysis stage.  Some relevant IEEE Software Document Definitions for this phase are:
+\begin{description}
+\item[SQAP] Software Quality Assurance Plan, IEEE 730
+\item[SCMP] Software Configuration Management Plan, IEEE 828
+\item[STD] Software Test Documentation, IEEE 829
+\item[SRS] Software Requirements Specification, IEEE 830
+\item[SVVP] Software Validation \& Verification Plan, IEEE 1012
+\item[SDD] Software Design Description, IEEE 1016
+\item[SPMP] Software Project Management Plan, IEEE 1058
+\item[GDSRS] Guide for Developing System Requirements Specifications, IEEE 1233
+\end{description}
+
+
+\subsubsection{Functional Design}
+The specifications from the earlier phases are integrated with user input to make a set of functional requirements. Functional requirements specify what the system does rather than how it does it.  Functional specifications also include user interactions (use cases).  Together with background information, constraints (such as integration requirements, maintenance requirements, and safety requirements), and verification procedures and tests, these constitute the Functional Requirements Specification (FRS).  The FRS goes by many names, but the key idea is it describes the required behavior of the engineering system without description of how it accomplishes the behavior.  The FRS is designed to separate the needs from how the needs are met, and thus is the ideal tool to clarify the understanding of the problem before beginning the design.  Use Case diagrams are designed to carry functional requirements, and as such are typically part of an FRS.  The document should contain the acceptance procedures to show whether the design satisfies the requirements. When the FRS is ready, System Functional Review (SFR) is convened to examine the design and functional requirements to ensure they will meet the customer requirements and needs specified in earlier stages.
+
+\subsubsection{Preliminary Design}
+
+With a FRS in place, a preliminary design of the sub-systems may take place.  Typically this is done at a high level to ensure that the performance specs can be met, and to make costing more precise.  When the preliminary design and analysis is done a Preliminary Design Review (PDR) is conducted.  The PDR is supposed to allow many eyes to look over the design before proceeding.  Small flaws, misunderstandings, or mistakes become much more expensive later.  This is a gate to stop flawed design ideas from proceeding.  Many of our local companies fuse the functional design and preliminary design and just hold a PDR (skipping the SFR).
+
+\subsubsection{Detailed Design}
+The FRS and preliminary design is now expanded into a full Product Specification (PS) or Software Requirement Specification (SRS).  The PS or SRS adds non-functional requirements to constrain the implementation, such as data structures, techniques, and algorithms to be used.  The IEEE Prototype SRS outline from IEEE-STD-830-1998 is
+\begin{verbatim}
+    Table of Contents
+    1. Introduction
+       1.1 Purpose
+       1.2 Scope
+       1.3 Definitions, acronyms, and abbreviations
+       1.4 References
+       1.5 Overview
+    2. Overall description
+       2.1 Product perspective
+       2.2 Product functions
+       2.3 User characteristics
+       2.4 Constraints
+       2.5 Assumptions and dependencies
+    3. Specific requirements (See 5.3.1 through 5.3.8 for explanations
+       of possible specific requirements. See also Annex A for several
+       different ways of organizing this section of the SRS.)
+    Appendixes
+    Index
+\end{verbatim}
+The IEEE has a good overview with a nice example of how to format, and CSUSB has a template online for master's projects.
+
+When the PS or SRS is ready, a Critical Design Review (CDR) is held.  This is the final review before The testing portion begins.  The design is analyzed to see if it will meet the requirements (functional, safety, performance, etc.).  The finances, production schedules, and risk assessments are updated.  Approval means testing is to begin.
+
+\subsection{System Demonstration}
+The system demonstration sub-phase consists of setting the tests in accordance with the test master plan and PS/SRS, and low-level initial productions to verify manufacturability and quality of the resulting product.  I will lightly cover this area because many small companies do this as part of the CDR.  The main reviews of this part are the Test Readiness Review (TRR), System Verification Review (SVR), and Production Readiness Review (PRR).  TRR assesses the test objectives, methods, procedures, scope, and safety.  The TRR also verifies the test resources have been allocated.  The SVR looks at the results of the tests and sees if low-rate initial production can begin. SVR is typically an audit trail of the CDR.  The PRR looks at the low-rate initial production and the risk and cost factors to determine if full production can begin.  At which point milestone C has been reached.
+
+
+
+\subsection{Production and Deployment Phase}
+Mostly engineering is support in this phase, except in software, where this is where coding happens.  Testing and subtle improvements and fixes to attain the goals and meet customer needs is often required.  Engineering change orders are the major tool, as are redline prints (marked up drawings or documents that must be entered into the document database).  Sometimes an Operational Test Readiness Review (OTRR) is conducted to see if a mission critical or life critical product is ready for field testing.  An OTRR can also take the form of Alpha testing.  A Physical Configuration Audit (PCA) could also be done to decide if full rate production should begin.  This determines if all goals have been met, and roughly corresponds to beta testing in software.  When this is done the product is clear for full use.
+
+\subsection{Operations and Support Phase}
+Support for the product so it achieves its full use and duty.  When the duty period is over safe disposal is necessary, which can involve ensuring no hazardous materials are dumped for physical products and/or that sensitive data is properly handled for computer systems and software.
+
+
+\section{Agile Methods}
+Agile methods are designed to switch from large, formal processes that are run top-down to small, flexible ones that are run bottom-up.  While hierarchical (top-down) methods have historic dominance, Agile techniques dominate now, and their flexibility and creativity are likely to keep them on top for a while.  They are far from free of criticism, and though I personally like them, I am more of a hybrid techniques person.
+
+\subsection{SCRUM}
+
+daily scrum
+
+sprints
+
+scrum master
+
+\subsection{Extreme Programming}
+
+small, frequent deliverables
+
+have company rep close in the design process
+
+reduce documentation, write code clearly don't document
+
+\subsection{Ideas Worth Stealing}
+
+Gantt Charts
+
+Burndown Charts
+
+responsibility/task wall chart
+
+
+\section{Quality Programs}
+
+In the 80's and 90's there was Total Quality Management, in the 2000's came Six Sigma design, what their goal is to do the right thing the right way.  This involves a lot of work and is not as easy as I make it sound.  In this chapter we will go over many of the pillars of this process.
+
+Six goals of quality programs:
+\begin{enumerate}
+\item Customer focus (internal and external, this is the most popular emphasis)
+\item Leadership and individual responsibility (let them do their job)
+\item Integrity (quality as a way of life)
+\item Enhance communication (avoid silly mistakes)
+\item Recognize and reward employees (read find the best and keep them)
+\item Streamline processes (save money, the real goal)
+\end{enumerate}
+The goals are achieved by:
+\begin{enumerate}
+\item Customer focus (Kind of circular don't you think, you could also think of this a statement of the obvious, which sadly most people don't do.)
+\item Involvement (The entire organization must support the goals, as a spoiler is deadly.)
+\item Metrics (You have to have measurements to improve something)
+\item Support (Budget, planning, etc.)
+\item Continuous improvement (None of us is perfect, so try to get better at everything in a deliberate fashion.)
+\end{enumerate}
+
+Quality programs are all about doing the right things, the right ways. You will incur certain necessary costs to do things right, but you will avoid many other costs and keep happy customers.  Most big companies have some sort of quality program, but varying degrees of implementation.  Most small companies have no formal system but are more naturally connected to customer needs.  In the end, you need to get the customer what is required for the best price and profit.
+
+The moral to me is
+\begin{quote}
+\emph{Doing it right costs, doing it wrong costs more.}
+\end{quote}
+
+Before we examine the five ways we achieve our goals, we need to scope our discussion to the processes we will be working on.  We can break down all we do, including our engineering designs (and the subsequent manufacturing) into a series of processes.  Roughly, a process is a series of related tasks that produce a product.  The product need not be physical or the final item.  It is often useful to note that processes act on an input to produce a desired output according to a specification.  Processes have:
+\begin{description}
+\item[boundaries] Identify who are the actors and what they must do (responsibilities).
+\item[suppliers] Produce inputs to according to the process's requirements.
+\item[customers] Receive outputs and specify requirements.
+\end{description}
+The best processes are:
+\begin{description}
+  \item[Effective] Does it work?  That is does it produce an output that meets the requirements.
+  \item[Efficient] Does it produce the output at the lowest cost?
+  \item[Controlled] The process is documented, and has metrics that are used to update and improve the process.
+  \item[Adaptable] Does it have built-in mechanisms that allow it to meet new requirements?
+\end{description}
+Processes must be analyzed and made to be effective, efficient, controlled, and adaptable.  Common symptoms that indicate a problem are: customer complaints/dissatisfaction, returns, redos, unresolved issues, excessive workload/overtime, missed deadlines, budget difficulties, bad morale, turnover, productivity drops, constantly changing requirements.  Note that most processes aren't going to meet the ideal.  You need to find the most problematic and fix it, then repeat.
+
+
+\section{Customer Focus}
+Know your customer, and how your customer uses your product.  An ideal customer-supplier relationship is aligned, that is, the supplier's abilities match the customer's requirements.  To ensure alignment you need to ask what the customer needs, and what will they use it for.  Particularly ask if there are any gaps between what is received and what is needed, often this opens up new opportunities.  Make sure you keep written notes of conversations, and have people ok your summaries and requirement specifications.  Be inclusive in the meetings, by which I mean you should actively invite those who have an interest in the product/service to be supplied.  Make sure you have though things through before you meet so you don't look uninformed or ill-prepared.  Think about what they will say and plan questions to elicit their inputs and concerns.
+
+One way of thinking about customer focus and establishing requirements is the acronym PRIDE:
+\begin{description}
+\item[Product/service] Does it meet the customer's requirements, needs, and wants?  Note they are different.  Did you meet them in a pleasing way?
+\item[Relationship] Is their trust? How about a casual friendship?
+\item[Integrity] Can you meet the requirements?  What will you do if there is a problem?
+\item[Delivery] Does it arrive on time and budget? Is it usable?
+\item[Expense] Is the customer happy with the value?  Is the price competitive?
+\end{description}
+
+
+\section{Continuous Improvement}
+Have you ever heard this saying?
+\begin{quote}
+\emph{If it ain't broke, don't fix it.}
+\end{quote}
+There are certainly times when this is the right course of action\footnote{Most quality people would shoot me for that, but it is true sometimes.  Knowing when to leave it alone and when to improve it is an art you will develop over your life.  You can't always trust little sayings, or always reject them.  You must learn to think and assess on your own the best ways to handle things.  Sometimes that means making and following rules.  Sometimes you will have to break the rules.  Great engineers and engineering managers know how and when to do that.}, but often it is not true.  If man followed that saying in all areas, we would be hunting for dinner with a pointed stick\footnote{Come to think of it, this sounds too much like a fun vacation or a cable survival show.  Hopefully you get the point anyway.}.  Improvement is risky but the rewards are immeasurable.  Improvement is what engineering is all about.
+
+A popular rule is the 1-10-100 rule.  Basically it says if you catch a thing in design it costs 1 buck, if in manufacturing it costs 10, and if your customer finds it it will cost you a 100.  The point of this rule is to underscore the need for improvement.  Four techniques that help improve are active listening, visualization, the why technique, and contingency diagrams.
+\begin{enumerate}
+\item Active listening means paying close attention to what everyone is saying.  This involves having your mind and ears working together.  Often great ideas or major dangers are brought up in discussions, but don't get noticed or are ignored.  If we work hard at listening to others and thinking of their point and perspective then we will all benefit.
+\item Visualization is the process where we imagine what we are making, how it will be used and misused, and how it benefits others.  Think over the product.  Put yourself in the place of needing it and using it.  Many people do not consider what they are working on and thus make junk, don't join their ranks.
+\item The why technique helps find causes by repeatedly asking why something happens.  It is simple, but surprisingly effective, which is a good combination.  It is particularly useful in tracking down a failure, but can be used proactively, particularly in trying to figure out how to make something work or to come up with new features.
+\item Contingency diagrams\footnote{Personally I dislike the name, and have never thought it was very descriptive, but I am stuck with it.} are a simple drawing in which a problem is listed in a bubble and the contributing factors listed on arrows pointing to the bubble.  For each arrow, one or more solutions are developed. Like the why technique, it is particularly useful in tracking down a failure, but can also be used proactively, in trying to figure out how to make something work or to come up with new features.
+\end{enumerate}
+
+Continuous improvement also applies to you.  Your skills will degenerate and your mind grow weaker if you don't work at improving them.  Do mind challenges like crosswords, sodoku, or brain teasers.  Read popularizations of math, physics, computer science, engineering, philosophy, or history.  I have a list of suggested books on my r2labs.org website if you need suggestions.  Join and be active in professional societies like IEEE, SIAM, and ACM.  Read the latest advancements in science and technology.  Take certification courses.  In short, keep getting better.
+
+\section{Manager's Side}
+Managers are responsible for the guiding and empowering of their employees to achieve success for the company.  Many managers sadly see their job as keeping costs down, and thus they avoid improving things.  One improvement frequently dumped for cost reasons is training.  I don't know who first said it, but it is very true,
+\begin{quote}
+\emph{Training is a non-recurring overhead expense;\\
+Ignorance is a recurring direct charge.}
+\end{quote}
+As a manager there are several things you can do to help your team improve.
+\begin{itemize}
+\item Give your group the big picture.  To do a truly great job, and constantly improve, they need to know what is really going on.  Many improvements happen when people realize how others use their work.
+\item Actively solicit new ideas.  Most people are afraid to say things and contribute.  You must make them feel comfortable with you and then seek their input and ideas.  Avoid defensiveness and finger pointing (two common actions) and replace them with a desire to learn from mistakes and an open sharing of knowledge.
+\item Encourage your team to communicate directly with their customer.  Make each person responsible for finding out how their work is used and empower them to do so.  Bad managers try to control information flow.  If you have an employee who is not able to communicate with customers then you have three choices: train them, pair them with a more skillful person, or if all else fails fire them.
+\item Have the team flowchart their work process and look for ways to improve it.  Note that this is really helpful, but if you do it when a major task is due, you are crazy.  Quality takes time and effort, no matter what people may tell you.
+\item Model high standards in your work and reward your team for their work.  Encourage and reward when they succeed, you never lose by doing this as it reflects well on you.
+\item Seek and grow the best people on your team.  Make the environment supportive, open, and friendly.  People want to work in these type of places, and will often work harder for less if they are working for and with friends.  This is not a license to take advantage of people, rather it means that if you all help each other, then you will all succeed together and be happy.
+\end{itemize}
+One thing you should keep to a minimum is meetings.  Meetings are necessary to keep people informed, but they block real work and create frustration in employees (particularly the good ones).  Make sure meetings are planed and stay on track.
+
+Often you will need to guide your team to solve a problem.  Here is a four step method I learned at Grumman Aerospace (now Northrop-Grumman).
+\begin{enumerate}
+\item Focus
+  \begin{enumerate}
+  \item List of problems (brainstorm)
+  \item Select one problem (selection grid)
+  \item Verify/Define problem (impact analysis)
+  \end{enumerate}
+  Output: problem statement
+\item Analyze
+  \begin{enumerate}
+  \item Identify needed information (checklist)
+  \item Collect data (sampling, surveys, literature)
+  \item Find major factors (statistics, flowchart, fishbone, why)
+  \end{enumerate}
+  Output: baseline data, and list of contributors
+\item Develop
+  \begin{enumerate}
+  \item List possible solutions (brainstorming, literature)
+  \item Select best solution (cost-benefit analysis)
+  \item Develop plan (task list, gantt chart, procedure)
+  \end{enumerate}
+  Output: plan
+\item Execute
+  \begin{enumerate}
+  \item Buy-in (presentations, reports/papers, individual discussions)
+  \item Implementation
+  \item Monitoring and tuning
+  \end{enumerate}
+  Output: metrics
+\end{enumerate}
+
+
+
+\section{Configuration Management}
+In truth, configuration management is an oversight process that uses systems engineering.  Configuration management is the use of business, engineering, manufacturing, and logistics practices to maintain consistency of the product.  This entails the tracking and version control of all documents, drawings, code, reviews, and data associated with a project.  This is particularly important in ensuring the latest modifications and fixes get used promptly, and any shipped items get the needed retrofits.  It also includes the oversight of all processes involved in the design, production, testing, and maintenance of the project, such as material procurement, tooling, and training of personnel.  This is a large topic, and is usually covered in Software Engineering.  We will cover only selected portions, which are of particular interest to us at the start of your education.  For more information on configuration management see \cite{ANSI649A, MIL-HDBK-61A, EIA836, ISO10007}.
+
+\subsection{Document Control}
+
+Git and the web site github are my preferred way to track documents and software.  Git is very compatible with Agile techniques, and seeks to empower the individual while making an integrated work-flow to keep a group moving together.
+

@@ -1,0 +1,88 @@
+%\documentclass{article}
+%\title{Engineering Research}
+%\author{Dr. Keith Evan Schubert\\ Baylor University}
+%\begin{document}
+%\maketitle
+
+\chapter{Engineering Research}
+
+Why are we doing research to design?  It is always a good idea to start knowing why you want to do something.  The justification is also a major reason.  We are about to begin an engineering design, which is an expensive process.  We need to make sure we do the right design, and that there was not a better solution out there.
+
+\section{Know Who is Involved}
+
+The first thing we want to do is identify our stakeholders.  Stakeholders are anyone who is involved in or is affected by the design. The basic list is:
+\begin{itemize}
+\item client
+\item user
+\item anyone affected
+\item management
+\item manufacturing
+\item purchasing
+\end{itemize}
+
+\section{Know the Project}
+
+Many people design great solutions to the wrong problem.  Often what the client asks for is the wrong solution, because of an assumed solution.  A good engineer needs to be entrepreneurial in finding the real problem, and thus designing a solution that really works. You need to find out:
+\begin{itemize}
+\item problem or situation that motivated the project
+\item need that was not met
+\item who will use it and how it will be used
+\item regulations
+\item any past attempts or current work that has been done 
+\item existing (similar) solutions from other sources
+\item time constraints
+\item resources available
+\end{itemize}
+
+\section{Be SMART}
+
+Ultimately you want to take your research and make SMART goals.
+
+\begin{itemize}
+\item specific
+\item measurable
+\item achievable
+\item relevant
+\item time-bound
+\end{itemize}
+
+%doesn't really belong here, need better place
+\section{Technology Readiness Level}
+
+Technology Rediness Level (TRL) is a measure of the maturity of a technology in the sense that it can be readily used in a design.  The scale runs for 1-9, with 1 meaning it is an idea people are thinking about to 9 meaning heavily used and tested.
+
+
+\section{How to Brainstorm}
+This sounds easy right.  Get a bunch of people together and think up solutions.  Sadly, these often fail because of poor implementation.  I strongly suggest you follow all of the following:
+\begin{enumerate}
+\item Have one person write the ideas on the board, and another document for later use in a notebook.
+\item No criticism or analysis can be done.  Not even a comment of ``that is the same thing'' as this will disturb the process and scare people from contributing.  Things that come up repeatedly might be more important, and variants sometimes have important improvements.
+\item Each person gets one contribution per turn, and turns go in sequence.  Give people paper to jot down ideas so they don't forget.  If you don't do this you run the risk of cutting some people out.  People can say pass, but should be encouraged to say what they think, even if it is a repeat.
+\end{enumerate}
+
+\section{Risk}
+
+\subsection{Identification}
+We want to identify what can go wrong as early as possible.  This step is constantly going.
+
+\subsection{Analysis}
+\noindent
+\begin{tabular}{p{1in}p{1in}p{1in}|l@{}l@{}l@{}l@{}l}
+\multicolumn{3}{c}{Performance Consequence} &\multicolumn{5}{c}{Probability of Consequence}\\
+Technical & Schedule & Cost & $p\leq 0.1<$ & $p\leq 0.4<$ & $p\leq 0.6<$ & $p\leq 0.9<$ & $p$ \\\hline
+none or minimal & none or minimal & none or minimal &\Green&\Green&\Green&\Green&\Green\\&&&&&&&\\
+minor perf. loss, no program impact & able to meet key dates &  \lowhigh{+0\%}{+1\%}&\Green&\Green&\Green&\Yellow&\Yellow\\&&&&&&&\\
+moderate perf. loss, limited program impact & use up float, no critical path slips & \lowhigh{+1\%}{+5\%}&\Green&\Green&\Yellow&\Yellow&\Red\\&&&&&&&\\
+significant perf. loss, major program impact & critical path slips & \lowhigh{+5\%}{+10\%}&\Green&\Yellow&\Yellow&\Red&\Red\\&&&&&&&\\
+severe perf. loss, jeopardize program & milestones missed by multiple months & $+10\%$ or more & \Yellow&\Yellow&\Red&\Red&\Red\\
+\end{tabular}
+
+\subsection{Mitigation Planning}
+Identify the root cause if it exists, and the necessary/enabling and sufficient/primary causes.  Eliminate causes or consequences if possible, control/reduce them if they can't be eliminated.  Transfer risks to more tolerant systems.
+
+\subsection{Implementation}
+Execution of plan, including budget, management, and technical efforts.
+
+\subsection{Tracking}
+Monitor success to see if errors happened at any stage and modify accordingly. 
+%\end{document}

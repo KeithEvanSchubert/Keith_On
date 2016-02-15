@@ -1,0 +1,46 @@
+\chapter{Probability and Statistics}\label{ch-stats}
+
+\section{Quick Overview}
+Let $X$ be a set of $n$ numbers, $\{x_0, x_1, \ldots, x_{n-1}\}$.
+
+The (algebraic) mean of $X$ is denoted by $\mu_X$ and is given by
+\begin{eqnarray}
+\mu_X &=& E[X] \\
+&=& \frac{\sum_{i=0}^{n-1}x_i}{n}
+\end{eqnarray}
+and is the average value.  We sometimes also speak of the mode (the most frequently occurring value), the median (middle term of the ordered sequence if the sequence length is odd, or the average of the two middle terms of the ordered sequence if the sequence length is even), the geometric mean
+\begin{eqnarray}
+\sqrt[n]{\prod_{i=0}^{n-1}x_i},
+\end{eqnarray}
+or even the harmonic mean 
+\begin{eqnarray}
+\frac{1}{\sum_{i=0}^{n-1}\frac{1}{x_i}}.
+\end{eqnarray}
+The variance is given by
+\begin{eqnarray}
+var(X) &=& E[(X-E[X])^2] \\
+&=& \sigma_X^2 \\
+&=& \frac{\sum_{i=0}^{n-1}(x_i-\mu)^2}{n}\\
+&=& \frac{\sum_{i=0}^{n-1}x_i^2}{n}-\mu^2.
+\end{eqnarray}
+Note the standard deviation is the square root of the variance.  It the variance is being calculated you need to divide by $n-1$ (the degrees of freedom) rather than $n$ (the size of the set).  
+
+The coefficient of variation is
+\begin{eqnarray}
+c_v &=& \frac{\sigma_X}{\mu_X}
+\end{eqnarray}
+and is useful for doing comparisons of distributions because it is a dimensionless comparison of the variability of a set (or random variable).
+
+
+The covariance of $X$ and $Y$ (two different sets) is
+\begin{eqnarray}
+cov(X,Y) &=& E[(X-E[X])(Y-E[Y])] \\
+&=& \sigma_{XY}^2 \\
+&=& \frac{\sum_{i=0}^{n-1}(x_i-\mu_X)(y_i-\mu_Y)}{n}\\
+&=& \frac{\sum_{i=0}^{n-1}x_iy_i}{n}-\mu_X\mu_Y.
+\end{eqnarray}
+
+The correlation (measure of linear dependence) is
+\begin{eqnarray}
+\rho_{X,Y} &=& \frac{cov(X,Y)}{\sigma_X\sigma_Y}
+\end{eqnarray}

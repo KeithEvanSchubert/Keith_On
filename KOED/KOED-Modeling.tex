@@ -1,0 +1,44 @@
+\chapter{Modeling}
+
+\section{ASM Charts}
+
+Large state diagrams get ugly, due to the need to label each input and output, even if they are irrelevant to that state.  Algorithmic State Machine (ASM) Charts take care of this problem, and thus are much easier to read.  Only relevant inputs and asserted signals are listed.
+
+ASM Charts are much like flow charts, and consist of states and decisions connected by directed lines. There are three types of symbols used:
+\begin{description}
+  \item[rectangle] State block.  The name goes on the upper left (either above or in the box).  The state code goes on the upper right, and the asserted output goes on the lower inside of the box.  Each box is a state, and the system remains in it through a whole clock cycle.
+  \item[diamond] Decision block.  The condition goes inside, and the potential answers (usually T/F) goes on the lines exiting the diamond.
+  \item[Rounded rectangle] Conditional outputs.  If a Mealy style output is used, then these conditional outputs may be asserted in the conditional output block without changing state.
+\end{description}
+
+Basic Rules:
+\begin{itemize}
+  \item ASMs are deterministic state machines, but they can include parallel conditions, so long as no state is non-deterministic.  Both serial and parallel conditions are performed simultaneously.
+  \item Lines must point to a symbol not another line.
+  \item At each moment, the system may only be in a state block.  The downstream decision blocks and conditional blocks are calculated during the cycle, so the transition can take place at the clock pulse.
+  \item Only state blocks can have multiple inputs.
+\end{itemize}
+
+\Example{Bus Arbitrator}
+
+\begin{wrapfigure}{r}{0.35\textwidth}
+\vspace*{-.45in}
+\begin{center}
+\caption{ASM Chart of Bus Arbitrator.}\label{fig-ASM-example}
+\includegraphics[width=1.9in]{ASM}
+\end{center}
+\end{wrapfigure}
+
+Imagine we are to design a bus arbitrator.  The basic scheme is that there is to be a request line, \emph{req}, that any device can assert as long as it is not currently asserted.  When the request line is asserted, the requestor also puts their identifier on the requestor's address line , \emph{Ra}.  If the system is idle (no one transferring) then the system changes first to a setup state, which sets the originator to the address of the requestor.  When the requestor sees they have the bus, the requestor de-asserts the request line and request address.  The requestor is now the transmitter and we go to the active state.  Since the request lines are free, another device can que a request.  Note only one can que a request as no one else can request once the line is asserted.  When the transmitter is done, the done line is asserted and the request line is checked.  If there is a waiting request this system becomes the transmitter, else the system goes idle.
+
+
+This is shown in the ASM chart, figure~\ref{fig-ASM-example}.  Let's consider this chart.  We start in the idle state, where the originator is set to zero.  This makes the assumption there is no device with address 0, which is a common assumption.  The alternative is to add a busy line and assert it\footnote{This is inefficient because one extra line is another bit, which could double the number of addresses, then minus one to account for the unused code}.  If no request comes then we stay in idle.  If a request comes we go to setup and copy Ra to originator.  The remote machine must drop the request so we do not list this.  In the remote devices logic when their address gets copied to address, they would switch states and do this.  In any case, the next cycle the system goes to the active state and continues to assert the originator.  When the remote system signals done, the request line is checked.
+
+\clearpage
+
+\section{Block Diagrams}
+
+
+
+%\section{Control Flow Graphs}
+

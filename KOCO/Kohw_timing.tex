@@ -1,0 +1,94 @@
+\chapter{Timing}
+
+\section{Combinational Circuits}
+
+\karnaughmap{3}{f(a,b,c):}{acb}{10110010}{}
+
+
+
+
+\section{Sequential Circuits}
+
+The timing on sequential circuits revolves around ensuring that the setup and hold times of a flip flop are met in the circuit.  We will be using a bunch of different measurements of a circuit so we will begin by defining them.
+\begin{description}
+  \item[Trigger] The event which is used to start a sequential circuit, usually the rising or falling edge of a clock.
+  \item[Setup time ($T_s$)] The minimum time the inputs must be stable before a trigger so the correct value is latched.  Failing to do so is a setup violation.
+  \item[Hold time ($T_h$)] The minimum time the inputs must be stable after a trigger so the correct value is latched.  Failing to do so is a hold violation.
+  \item[Clock period ($T_{clk}$)] The time between successive rising (or falling) edges in the clock signal.
+  \item[Clock skew ($T_{skew}$)] The propagation time difference between furthest components, which thus is the time difference of them reading the same clock.  You can think of it as the time error range.
+  \item[Flip Flop Clock propagation ($T_{clk-xmit}$)]  The time from when a flip flop receives the trigger till when the data is transmitted from it.  This is sometimes referred to as the time from clock to q.
+  \item[Combinational Logic Delay ($T_{comb}$)] Time for a signal to pass through the combinational circuit.  Sometimes called \textbf{propagation delay}.
+\end{description}
+
+Now to ensure there is no problem in a sequential circuit, we must verify two conditions are met: the loop time in Eq.~\ref{eq:loop_timing}, and the arrival time in Eq.~\ref{eq:arrival_timing}.
+\begin{eqnarray}
+T_{clk} &\geq& T_s+T_{comb}+T_{clk-xmit}+T_{skew} \label{eq:loop_timing}\\
+T_h     &\leq& T_{comb}+T_{clk-xmit}+T_{skew} \label{eq:arrival_timing}
+\end{eqnarray}
+Note that the loop time constrains the setup time, while the arrival time is a constraint on the hold time.  
+\begin{itemize}
+\item In a new design, you use the arrival time equation to determine the flip flop to use, and the loop time equation to determine the clock.
+\item In an FPGA, you are stuck with the logic, flip flops, and the clock, so those parameters are fixed. The skew depends on position of the circuit elements (layout) is design dependent, so the equations are checked to verify a design.  If the design does not meet the clock timing an excessive skew warning is issued.
+\end{itemize}
+
+\section{Flip Flops and Hazards}
+
+In Table~\ref{tab:metastabilitytimes7474}, I list the setup, hold, and the sum, which is the metastable interval or window.
+
+\begin{table}
+\caption{Interval when Metastability is most likely to occur}\label{tab:metastabilitytimes7474}
+\begin{tabular}{lrrr}
+Device   & $T_s$[ns] & $T_h$[ns] & $T_{ms}$ \\\hline
+SN74LS74A        &	20   &	5    &	25\\
+SN74ALS74A       &	15   &	0    &	15\\
+SN74AS74A        &	4.5  &	0    &	4.5\\
+SN74F74          &	3    &	1    &	4\\
+CD74ACT74-Q1     &	4    &	0    &	4\\
+SN54AHC74        &	5    &	0.5  &	5.5\\
+SN54AHCT74       &	5    &	0    &	5\\
+SN54LVC74A-SP    &	3    &	1    &	4\\
+SN74AC74         &	3    &	0.5  &	3.5\\
+SN74AC74-EP      &	3    &	0.5  &	3.5\\
+SN74ACT74        &	3.5  &	1    &	4.5\\
+SN74ACT74-EP     &	4    &	1    &	5\\
+SN74AHC74        &	5    &	0.5  &	5.5\\
+SN74AHC74-EP     &	5    &	0.5  &	5.5\\
+SN74AHC74Q-Q1    &	5    &	0.5  &	5.5\\
+SN74AHCT74       &	5    &	0    &	5\\
+SN74AHCT74-EP    &	5    &	0    &	5\\
+SN74AHCT74Q-Q1   &	5    &	0    &	5\\
+SN74AUC74        &	0.7  &	0.3  &	1\\
+SN74HC74         &	21   &	0    &	21\\
+SN74HC74-EP      &	150  &	0    &	150\\
+SN74HC74-Q1      &	17   &	0    &	17\\
+SN74HCT74        &	14   &	0    &	14\\
+SN74LV74A-EP     &	3    &	2.15 &	5.15\\
+SN74LV74A-Q1     &	5    &	0.5  &	5.5\\
+SN74LVC74A       &	3    &	0    &	3\\
+SN74LVC74A-EP    &	3    &	1    &	4\\
+SN74LVC74A-Q1    &	3    &	1    &	4\\
+SN74S74          &	3    &	2    &	5\\
+\end{tabular}
+\end{table}
+
+
+
+
+\section{How Often?}
+
+Since the primary failure mode for entering metastability is a data change during setup and hold, the smaller these times the better, which means faster logic families.  The equations for calculating mean time between failures (MTBF) are
+
+\begin{eqnarray}
+MTBF
+&=& \frac{e^{\frac{T_r}{T_{\gamma}}}}{F_dF_cT_p}\\
+&=& \frac{e^{\frac{T_r+\frac{1}{F_c}-T_s}{T_{\gamma}}}}{F_dF_c^2T_p^2}
+\end{eqnarray}
+
+\begin{description}
+\item[$F_d$] Data Frequency
+\item[$F_c$] Clock Frequency
+\item[$T_p$] Propagation delay of the flip flop
+\item[$T_s$] Setup Time
+\item[$T_r$] Resolve time (clock time minus the path time)
+\item[$T_{\gamma}$] Resolution time of flip flop
+\end{description}

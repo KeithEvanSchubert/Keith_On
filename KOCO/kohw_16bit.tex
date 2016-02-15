@@ -1,0 +1,35 @@
+
+\begin{tabular}{|c|c|c|c|p{3in}|} \hline \hline
+Nibble 1 & Nibble 2 & Nibble 3 & Nibble 4 & Instruction \\ \hline\hline
+0000     &          &          &          & Add         \\
+0001     &          &          &          & Sub         \\ \hline
+0010     &          &          &          & Two Op Codes \\
+         & 0000     & S1       & S2       & Unsigned Multiplication, (U,V)$<$-S1 x S2 \\
+         & 0001     & S1       & S2       & Signed Multiplication, (U,V)$<$-S1 x S2 \\
+         & 0010     & S1       & S2       & Unsigned Division, U$<$- S1/S2, V$<$-S1 mod S2 \\
+         & 0011     & D1       & D2       & Move D1 $<$- U, D2 $<$- V \\
+         & 0100     & D/S      & ShiftAmt & Shift left logical by ShiftAmt \\
+         & 0101     & D/S      & ShiftAmt & Shift left circulant by ShiftAmt \\
+         & 0110     & D/S      & ShiftAmt & Shift right arithmetic by ShiftAmt \\
+         & 0111     & D        & S        & Not            \\ \cline{3-4}
+0011     & D        & \multicolumn{2}{|c|}{Imm} & Set, D $<$- SE(Imm) \\ \hline\hline
+0100     &          &          &          & And         \\
+0101     &          &          &          & Or          \\ \hline
+0110     &          &          &          & Xor         \\
+0111     & D        & S        & Imm      & Addi, D $<$- S + SE(Imm) \\ \hline\hline
+1000     &          &          &          & \\
+1001     &          &          &          & \\ \hline
+1010     &          &          &          & Branching \\ \cline{3-4}
+         & 0leg     & \multicolumn{2}{|c|}{Address} & branch conditionally, leg are flags for less, equal, or greater; PC $<$- PC + SE(Address) \\ \cline{3-4}
+         & 1000     & S1       & S2       & Compare R0 $<$- S1-S2, set condition codes \\ \cline{3-4}
+         & 1100     & R        &          & Jump, PC $<$- PC+R, r15 $<$- PC+1 \\
+         & 1101     & R        &          & Jump, PC $<$- R \\ \cline{3-4}
+         & 1110     & \multicolumn{2}{|c|}{Code} & Trap, call Trap(Code) \\ \cline{3-4}
+         & 1111     &          &          & Return from Interrupt \\ \cline{3-4}
+1011     & D        & \multicolumn{2}{|c|}{Imm} & LEA, D $<$- PC+SE(Imm) \\ \hline\hline
+1100     & D        & S1       & S2       & Load Indexed, D $<$- m[S1+S2]  \\
+1101     & D        & S        & Imm      & Load Displaced D $<$- m[S + ZE(Imm)]  \\ \hline
+1110     & S3       & S1       & S2       & Store Indexed, m[S1+S2] $<$- S3 \\
+1111     & S2       & S1       & Imm      & Store Displaced m[S1 + ZE(Imm)] $<$- S2 \\ \hline
+\end{tabular}
+

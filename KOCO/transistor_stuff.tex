@@ -1,0 +1,359 @@
+power
+
+
+\begin{eqnarray}
+P_d &=& 0.5 C v^2 f\\
+P_s &=& v i\\
+P &=& P_d + P_s
+\end{eqnarray}
+
+
+static current
+
+leakage current, the source of static power consumption, is a combination of subthreshold and gate-oxide leakage:
+
+\begin{eqnarray}
+Ileak &=& I_{sub} + I_{ox} \\
+I_{sub} &=& K_1 W e^{\frac{-V_{th}}{nV_\theta}}\left(1-e^{\frac{-V}{V_\theta}}\right) \\ 
+I_{ox} &=& K_2 W \left(\frac{V}{T_{ox}}\right)^2e^{\frac{-\alpha T_{ox}}{V}}
+\end{eqnarray}
+$K_i$, $\alpha$, $n$ are experimentally determined, 
+$W$ is gate width, $V_{th}$ is the threshold voltage, $V_\theta$ is the thermal voltage, 
+
+
+
+
+RTL
+
+
+
+Resistor-Transistor Logic, or RTL, refers to the obsolete technology for designing and fabricating digital circuits that employ logic gates consisting of nothing but transistors and resistors.  RTL gates are now seldom used, if at all, in modern digital electronics design because it has several drawbacks, such as bulkiness, low speed, limited fan-out, and poor noise margin. A basic understanding of what RTL is, however, would be helpful to any engineer who wishes to get familiarized with TTL, which for the past many years has become widely used in digital devices such as logic gates, latches, buffers, counters, and the like.
+
+
+
+
+
+Figure 1 shows an example of an N-input RTL NOR gate.  It consists of N transistors, whose collectors are all tied up to Vcc through a common resistor, and whose emitters are all grounded.  Their bases individually act as inputs for input voltages Vi (i = 1,2,...,N), which represent input logic levels.  The output Vo is taken across the collector- resistor node and ground.  Vo is only 'high' if the inputs to the bases of all the transistors are 'low'.
+
+
+
+
+
+Figure 1.  A simple N-input RTL NOR Gate
+
+
+
+One of the earliest gates used in integrated circuits is a special type of RTL gate known as the direct-coupled transistor logic (DCTL) gate.  A DCTL gate is one wherein the bases of the transistors are connected directly to inputs without any base resistors. Thus, the RTL NOR gate shown in Figure 1 becomes a DCTL NOR gate if all the base resistors (Rb's) are eliminated.  Without the base resistors, DCTL gates are more economical and simpler to fabricate onto integrated circuits than RTL gates with base resistors.
+
+
+
+The main drawback of DCTL gates is that they suffer from a phenomenon known as current hogging.  Ideally, several transistors that are connected in parallel will share the load current equally among themselves when they are all brought into saturation.  In the real world, however, the saturation points of different transistors are attained with different levels of input voltages to the base (Vbe). As such, transistors that are in parallel and share the same input voltage (which are commonly encountered in DCTL circuits) do not share the load current evenly among themselves.
+
+
+
+In fact, once the transistor with the lowest Vbesat saturates, the other transistors are prevented from saturating themselves.  This causes the saturated transistor to 'hog' the load current, i.e., it carries the bulk of the load current whereas those transistors that were prevented from saturating carries a minimal portion of it.  Current hogging, which prevented DCTL from becoming widely used, is largely avoided in RTL circuits simply by retaining the base resistors.
+
+
+
+RTL gates also exhibit limited 'fan-outs'.  The fan-out of a gate is the ability of its output to drive several other gates. The more gates it can drive, the higher is its fan-out. The fan-out of a gate is limited by the current that its output can supply to the gate inputs connected to it when the output is at logic '1', since at this state it must be able to drive the connected input transistors into saturation.
+
+
+
+Another weakness of an RTL gate is its poor noise margin. The noise margin of a logic gate for logic level '0', ?0, is defined as the difference between the maximum input voltage that it will recognize as a '0' (Vil) and the maximum voltage that may be applied to it as a '0' (Vol of the driving gate connected to it).  For logic level '1', the noise margin ?1 is the difference between the minimum input voltage that may be applied to it as a '1' (Voh of the driving gate connected to it) and the minimum input voltage that it will recognize as a '1' (Vih).  Mathematically, ?0 = Vil-Vol and ?1 = Voh-Vih. Any noise that causes a noise margin to be overcome will result in a '0' being erroneously read as a '1' or vice versa.  In other words, noise margin is a measure of the immunity of a gate from reading an input logic level incorrectly.
+
+
+
+In an RTL circuit, the collector output of the driving transistor is directly connected to the base resistor of the driven transistor.  Circuit analysis would easily show that in such an arrangement, the differences between Vil and Vol, and between Voh and Vih, are not that large.  This is why RTL gates are known to have poor noise margins in comparison to DTL and TTL gates.
+
+
+
+
+
+
+
+
+DTL
+
+
+Diode-Transistor Logic, or DTL, refers to the technology for designing and fabricating digital circuits wherein logic gates employ both diodes and transistors. DTL offers better noise margins and greater fan-outs than RTL, but suffers from low speed, especially in comparison to TTL.
+
+
+
+RTL allows the construction of NOR gates easily, but NAND gates are relatively more difficult to get from RTL. DTL, however, allows the construction of simple NAND gates from a single transistor, with the help of several diodes and resistors.
+
+
+
+
+
+Figure 1 shows an example of an 3-input DTL NAND gate.  It consists of a single transistor Q configured as an inverter, which is driven by a current that depends on the inputs to the three input diodes D1-D3.
+
+
+
+
+
+Figure 1.  A simple 3-input DTL NAND Gate
+
+
+
+In the NAND gate in Figure 1, the current through diodes DA and DB will only be large enough to drive the transistor into saturation and bring the output voltage Vo to logic '0' if all the input diodes D1-D3 are 'off', which is true when the inputs to all of them are logic '1'.  This is because when D1-D3 are not conducting, all the current from Vcc through R will go through DA and DB and into the base of the transistor, turning it on and pulling Vo to near ground.
+
+
+
+However, if any of the diodes D1-D3 gets an input voltage of logic '0', it gets forward-biased and starts conducting. This conducting diode 'shunts' almost all the current away from the reverse-biased DA and DB, limiting the transistor base current.  This forces the transistor to turn off, bringing up the output voltage Vo to logic '1'.
+
+
+
+One advantage of DTL over RTL is its better noise margin. The noise margin of a logic gate for logic level '0', ?0, is defined as the difference between the maximum input voltage that it will recognize as a '0' (Vil) and the maximum voltage that may be applied to it as a '0' (Vol of the driving gate connected to it).  For logic level '1', the noise margin ?1 is the difference between the minimum input voltage that may be applied to it as a '1' (Voh of the driving gate connected to it) and the minimum input voltage that it will recognize as a '1' (Vih).  Mathematically, ?0 = Vil-Vol and ?1 = Voh-Vih. Any noise that causes a noise margin to be overcome will result in a '0' being erroneously read as a '1' or vice versa.  In other words, noise margin is a measure of the immunity of a gate from reading an input logic level incorrectly.
+
+
+
+In a DTL circuit, the collector output of the driving transistor is separated from the base resistor of the driven transistor by several diodes.  Circuit analysis would easily show that in such an arrangement, the differences between Vil and Vol, and between Voh and Vih, are much larger than those exhibited by RTL gates, wherein the collector of the driving transistor is directly connected to the base resistor of the driven transistor.  This is why DTL gates are known to have better noise margins than RTL gates.
+
+
+
+One problem that DTL doesn't solve is its low speed, especially when the transistor is being turned off.  Turning off a saturated transistor in a DTL gate requires it to first pass through the active region before going into cut-off.  Cut-off, however, will not be reached until the stored charge in its base has been removed. The dissipation of the base charge takes time if there is no available path from the base to ground.  This is why some DTL circuits have a base resistor that's tied to ground, but even this requires some trade-offs.  Another problem with turning off the DTL output transistor is the fact that the effective capacitance of the output needs to charge up through Rc before the output voltage rises to the final logic '1' level, which also consumes a relatively large amount of time.  TTL, however, solves the speed problem of DTL elegantly.
+
+
+
+
+
+
+TTL
+
+
+Transistor-Transistor Logic, or TTL, refers to the technology for designing and fabricating digital integrated circuits that employ logic gates consisting primarily of bipolar transistors.  It overcomes the main problem associated with DTL, i.e., lack of speed.
+
+
+
+
+
+The input to a TTL circuit is always through the emitter(s) of the input transistor, which exhibits a low input resistance.  The base of the input transistor, on the other hand, is connected to the Vcc line, which causes the input transistor to pass a current of about 1.6 mA when the input voltage to the emitter(s) is logic '0', i.e., near ground. Letting a TTL input 'float' (left unconnected) will usually make it go to logic '1', but such a state is vulnerable to stray signals, which is why it is good practice to connect TTL inputs to Vcc using 1 kohm pull-up resistors.
+
+
+
+The most basic TTL circuit has a single output transistor configured as an inverter with its emitter grounded and its collector tied to Vcc with a pull-up resistor, and with the output taken from its collector. Most TTL circuits, however, use a totem pole output circuit, which replaces the pull-up resistor with a Vcc-side transistor sitting on top of the GND-side output transistor. The emitter of the Vcc-side transistor (whose collector is tied to Vcc) is connected to the collector of the GND-side transistor (whose emitter is grounded) by a diode.  The output is taken from the collector of the GND-side transistor. Figure 1 shows a basic 2-input TTL NAND gate with a totem-pole output.
+
+
+
+
+
+
+
+Figure 1.  A 2-input TTL NAND Gate with a Totem Pole Output Stage
+
+
+
+
+
+In the TTL NAND gate of Figure 1, applying a logic '1' input voltage to both emitter inputs of T1 reverse-biases both base-emitter junctions, causing current to flow through R1 into the base of T2, which is driven into saturation. When T2 starts conducting, the stored base charge of T3 dissipates through the T2 collector, driving T3 into cut-off.  On the other hand, current flows into the base of T4, causing it to saturate and pull down the output voltage Vo to logic '0', or near ground.  Also, since T3 is in cut-off, no current will flow from Vcc to the output, keeping it at logic '0'.  Note that T2 always provides complementary inputs to the bases of T3 and T4, such that T3 and T4 always operate in opposite regions, except during momentary transition between regions.
+
+
+On the other hand, applying a logic '0' input voltage to at least one emitter input of T1 will forward-bias the corresponding base-emitter junction, causing current to flow out of that emitter.  This causes the stored base charge of T2 to discharge through T1, driving T2 into-cut-off.  Now that T2 is in cut-off, current from Vcc will be diverted to the base of T3 through R3, causing T3 to saturate.  On the other hand, the base of T4 will be deprived of current, causing T to go into cut-off.  With T4 in cut-off and T3 in saturation, the output Vo is pulled up to logic '1', or closer to Vcc.
+
+
+
+Outputs of different TTL gates that employ the totem-pole configuration must not be connected together since differences in their output logic will cause large currents to flow from the logic '1' output to the logic '0' output, destroying both output stages. The output of a typical TTL gate under normal operation can sink currents of up to 16 mA.
+
+
+
+The noise margin of a logic gate for logic level '0', ?0, is defined as the difference between the maximum input voltage that it will recognize as a '0' (Vil) and the maximum voltage that may be applied to it as a '0' (Vol of the gate driving it).  For logic level '1', the noise margin ?1 is the difference between the minimum input voltage that may be applied to it as a '1' (Voh of the gate driving it) and the minimum input voltage that it will recognize as a '1' (Vih).  Mathematically, ?0 = Vil-Vol and ?1 = Voh-Vih.  Any noise that causes a noise margin to be overcome will result in a '0' being erroneously read as a '1' or vice versa.  In other words, noise margin is a measure of the immunity of a gate from reading an input logic level incorrectly.  For TTL, Vil = 0.8V and Vol = 0.4V, so ?0 = 0.4V, and Voh = 2.4V and Vih = 2.0 V, so ?1 = 0.4V.  These noise margins are not as good as the noise margins exhibited by DTL.
+
+
+
+As mentioned earlier, TTL has a much higher speed than DTL. This is due to the fact that when the output transistor (T4 in Figure 1) is turned off, there is a path for the stored charge in its base to dissipate through, allowing it to reach cut-off faster than a DTL output transistor.  At the same time, the equivalent capacitance of the output is charged from Vcc through T3 and the output diode, allowing the output voltage to rise more quickly to logic '1' than in a DTL output wherein the output capacitance is charged through a resistor.
+
+
+
+The commercial names of digital IC's that employ TTL start with '74', e.g., 7400, 74244, etc. Most TTL devices nowadays, however, are named '74LSXXX', with the 'LS' standing for 'low power Schottky'.  Low power schottky TTL devices employ a Schottly diode, which is used to limit the voltage between the collector and the base of a transistor, making it possible to design TTL gates that use significantly less power to operate while allowing higher switching speeds.  See also:  CMOS circuits.
+
+
+
+
+
+
+CMOS
+
+
+
+The term 'Complementary Metal-Oxide-Semiconductor', or simply 'CMOS', refers to the device technology for designing and fabricating integrated circuits that employ logic using both n- and p-channel MOSFET's.  CMOS is the other major technology utilized in manufacturing digital IC's aside from TTL, and is now widely used in microprocessors, memories, and digital ASIC's.
+
+
+
+The input to a CMOS circuit is always to the gate of the input MOS transistor, which exhibits a very high resistance.  This high gate resistance is due to the fact that the gate of a MOS transistor is isolated from its channel by an oxide layer, which is a dielectric.  As such,  the current flowing through a CMOS input is virtually zero, and the device is operated mainly by the voltage applied to the gate, which controls the conductivity of the device channel.
+
+
+
+
+
+The low input currents required by a CMOS circuit results in lower power consumption, which is the major advantage of CMOS over TTL.  In fact, power consumption in a CMOS circuit occurs only when it is switching between logic levels.  This power dissipation during a switching action is known as 'dynamic power'.  In a typical CMOS IC, output switching may take about a hundred picoseconds, and may occur every 10 nanoseconds (or 100 millions times per second.  Switching an output from one logic level to another requires the charging and discharging of various load capacitances, which dissipates power that is proportional to these capacitances and the frequency of switching.
+
+
+
+Figure 1 shows an example of a CMOS circuit - an inverter that employs a p-channel and an n-channel MOS transistor. A logic '1' Vin voltage at the input would make T1 (p-channel) turn off and T2 (n-channel) turn on, pulling Vout to near Vss, or logic '0'.  A logic '0' Vin voltage, on the other hand, will make T1 turn on and T2 turn off, pulling Vout to near Vdd, or logic '1'.  Note that the p- and n-channel MOS transistors in the circuit are complementary, so they are always in opposite states, i.e., for any given Vin level, one of them is 'on' while the other is 'off'.
+
+
+
+
+
+
+
+Figure 1.  A CMOS Inverter
+
+
+
+
+
+CMOS circuits were invented by Frank Wanlass of Fairchild Semiconductor in 1963, although the first CMOS I.C.'s were not produced until 1968, this time at RCA. The original CMOS devices consumed less power than TTL but ran slower too, so early applications centered on circuits where battery consumption was more important than speed of operation. Steadily CMOS technology has improved, subsequently becoming the technology of choice for digital circuits. Aside from low power consumption, CMOS circuits are also easy and cheap to fabricate, allowing denser circuit integration than their bipolar counterparts.
+
+
+
+CMOS circuits are quite vulnerable to ESD damage, mainly by gate oxide punchthrough from high ESD voltages. Because of this issue, modern CMOS IC's are now equipped with on-chip ESD protection circuits, which reduce (but not totally eliminate) risks of ESD damage.  Proper handling and processing of CMOS IC's to prevent ESD damage are also a 'must'.
+
+
+
+In the 70's and 80's, CMOS IC's are run using digital voltages that are compatible with TTL so both can be inter-operated with each other.  By the 1990's, however, the need for much lower power consumption for mobile devices has resulted in the deployment of more and more CMOS devices that run on much lower power supply voltages. The lower operating voltages also allowed the use of thinner, higher-performance gate dielectrics in CMOS IC's.
+
+
+
+
+
+
+mosfet
+
+
+
+The Metal-Oxide Semiconductor Field Effect Transistor (MOSFET) or MOS transistor is a type of transistor that consists of a metal layer, an oxide layer, and a semiconductor layer.  The semiconductor layer is usually in the form of single-crystal silicon substrate doped precisely to perform transistor action.  The oxide is usually in the form of a silicon dioxide layer that insulates the semiconductor layer from the metal layer.  The metal layer is used as contact for providing voltage inputs to the MOS transistor.
+
+
+
+
+
+The MOS transistor consists of three terminals:  a gate, a source, and a drain.  These are equivalent to the base, emitter, and collector of a bipolar transistor.  The metal layer of the MOS transistor serves as the gate, while the source and drain are fabricated on the silicon substrate.
+
+
+
+Like a bipolar transistor, the current flowing through a MOS transistor is controlled by the input at its gate.  However, unlike a bipolar transistor which is controlled by the amount of current into its base, a MOS transistor is controlled by the voltage level at its gate.
+
+
+
+The source and drain of a MOS transistor are created on the silicon substrate in such a way that they are 'sandwiching' the gate.  The source and drain are doped to be of the same material type, which should be different from the doping received by the substrate.  A MOS transistor is referred to as a P-channel MOSFET, or PMOS, if the source and drain are p-type, and the substrate is n-type.   It is an N-channel MOSFET, or NMOS, if the source and drain are n-type, and the substrate is p-type.
+
+
+
+The area under the gate is known as the channel.  The conductivity of the channel may be controlled through the voltage level applied to the gate.   For instance, in an NMOS, the major carrier is the electron, so the channel becomes more conductive by applying a positive voltage at the gate, which tends to attract more electrons from the substrate into the channel.  The layer formed by these attracted electrons is known as the 'inversion layer', since electrons are the minority carriers of the p-substrate.
+
+
+
+
+
+Figure 1. Structure of an Enhancement MOSFET
+
+
+
+
+If the source of the NMOS is more negative than the drain while a sufficiently positive voltage is applied to the gate, current would pass through the transistor.  Removing the positive voltage at the gate would significantly decrease the conductivity of the channel, constricting the flow of electrons.  A MOS transistor operating in this manner is known as an enhancement-mode MOS transistor, because it is normally open and conducts only when the channel is 'enhanced.'  On the other hand, a normally conducting transistor is known as a depletion-mode transistor, since its conduction is controlled by 'depleting' the normally-present channel.
+
+
+
+The MOS transistor is extensively used in digital circuits because it is a very good and efficient switch.  It practically consumes no current at the gate because the gate is isolated from the channel by the oxide layer, and the channel conductivity is dependent only on the potential at the gate.
+
+
+
+
+
+
+
+
+
+
+
+Test Parameter
+ Unit Typical Description
+
+
+
+Logic High Input Voltage, Vih (Logic "1")
+ V This is the minimum voltage that an input of a CMOS digital IC is guaranteed to recognize as a Logic "1".
+
+Typical Spec: 3.5 V min. for Vss = 5V
+
+
+
+
+
+Logic Low Input Voltage, Vil (Logic "0")
+ V This is the maximum voltage that an input of a CMOS digital IC is guaranteed to recognize as a Logic "0".
+
+Typical Spec: 1.5 V max. for Vss = 5V
+
+
+
+
+
+Logic High Output Voltage, Voh (Logic "1")
+ V This is the minimum voltage that an output of a CMOS digital IC is guaranteed to deliver as a Logic "1".
+
+Typical Spec: 4.99 V min. for Vss = 5V
+
+
+
+
+
+Logic Low Output Voltage, Vol (Logic "0")
+ V This is the maximum voltage that an output of a CMOS digital IC is guaranteed to deliver as a Logic "0".
+
+Typical Spec: 0.01 V max. for Vss = 5V
+
+
+
+
+Logic High Input Current, Iih
+
+
+ pA This is the minimum amount of current needed by an input of a CMOS digital IC to stay at Logic "1".
+
+Example of an Actual Spec:
+
++10 pA min. when Vss = 5V; Vin = 3.5V
+
+
+
+
+
+Logic Low Input Current, Iil
+
+
+ pA This is the maximum amount of current that the input of a CMOS digital IC can sink to stay at Logic "0".
+
+Example of an Actual Spec:
+
+-10 pA max. when Vss = 5V; Vin = 1.5V
+
+
+
+
+Logic High Output Current, Ioh
+
+
+ mA This is the maximum amount of current that an output of a CMOS digital IC can source while at Logic "1".
+
+Example of an Actual Spec:
+
+-0.5 mA max. when Vss = 5V; Vin = 3.5V
+
+
+
+
+
+Logic Low Output Current, Iol
+
+
+ mA This is the maximum amount of current that an output of a CMOS digital IC can sink while at Logic "0".
+
+Example of an Actual Spec:
+
++0.4 mA max. when Vss = 5V; Vin = 1.5V
+
+
+
+
