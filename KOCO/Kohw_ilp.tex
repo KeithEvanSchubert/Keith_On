@@ -1,7 +1,7 @@
 \chapter{Instruction Level Parallelism}
 \label{c-ilp}
 
-
+Instruction Level Parallelism (ILP) is low level in that it looks at how to make instructions that occur next to each other or near each other to run at the same time, or at least partially overlapping.  One of the most basic techniques is pipelining.  Consider the MIPS datapath, which has five stages to instruction execution: fetch, decode, execute, memory access, write back (update registers).  Once an instruction has been fetched, the fetch stage will be unused until the next instruction comes on.  In a non-pipelined machine, this is what happens - an instruction must go all the way through a datapath till the next instruction can start.  If there was no way to break things up or it was too dangerous, then you have no choice, but we do have a way to separate - buffer registers.
 
 \section{Trouble In Paradise}
 
@@ -21,7 +21,7 @@ There are three types of hazards we can encounter.
   True            & RAW    & add {\color{red} r2},r3,r4  & When: read happens before the write can finish   \\
   (data)          &        & add r5,{\color{red} r2},r6  & Requires: pipelining (without forwarding), multi-cycle \\
                   &        &                             &   units, out of order execution, etc. \\ \hline
-                  
+
   Output          & WAW    & add {\color{red} r2},r3,r4  & When: instructions finish out of order. \\
   (name)          &        & brgtz r7, label             & Requires: out of order execution or multiple can \\
                   &        & add {\color{red} r2},r5,r6  & multi-cycle execution units. \\ \hline
@@ -54,15 +54,15 @@ What can we do with data hazards.  Remove all performance measures and execute s
         \end{description}
 
     \item register forwarding
-    
+
         Often the value exists, it is just not in the final destination yet.  This technique sends the value that is missing, to the execution unit.  There is no delay if you can do it.  It cannot handle multi-cycle execution or memory accesses, and it adds cost and complexity to the design (though not bad for what you get).  This is straightforward to implement, but does add several multiplexors, wires, and control circuits to track where the result is (comparators or counters are common).
 
     \item register renaming
 
         Used to solve WAR and WAW hazards.  Register renaming adds a status field to each register, which contains the address of the instruction that is calculating its current value or 0, which means it has the correct value.  Instructions are fetched and issued in order, so the registers have the correct values in the status field, but are then buffered and executed when the system is ready (kind of like giving them a number and sticking them in a waiting room).  It can do almost anything (it can't handle control hazards).  The most basic (and famous) of these algorithms is Tomasulo's algorithm, see chapter~\ref{c-tomasulo}.
-    
+
     \item reorder buffer
-    
+
         Instructions are held in a buffer for writing to the register files, then they are written in the order of the original code.  These are different buffers than the pipeline buffers.  This preserves the order of the writes and thus solves WAR and WAW hazards, but increases the latency of the instruction execution.  On the bright side it can handle control hazards (the only one listed that can).
 \end{itemize}
 

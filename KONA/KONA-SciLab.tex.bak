@@ -1,0 +1,76 @@
+\chapter{Using SciLab}
+
+\section{Basics}
+When you first start SciLab you will see something like
+\begin{verbatim}
+                   ==========
+                    scilab-2.7.2
+        Copyright (C) 1989-2003 INRIA/ENPC
+                    ==========
+
+
+
+Startup execution:
+  loading initial environment
+
+-->
+\end{verbatim}
+The arrow "$-$$-$$>$" is the command prompt.  SciLab, like MatLab is a command line interface to a mathematics programming environment.  To get started lets do a calculation.
+\begin{verbatim}
+3+(2+5*4)/11
+\end{verbatim}
+SciLab performs the calculation and displays the answer.
+\begin{verbatim}
+ ans  =
+
+    5.
+\end{verbatim}
+Now lets define a simple variable.
+\begin{verbatim}
+a=2
+\end{verbatim}
+SciLab responds with
+\begin{verbatim}
+ a  =
+
+    2.
+\end{verbatim}
+Notice anything similar?  The response is almost the same but "ans" has been replaced by the variable name "a".  In fact it is even more similar than that.  When no assignment ("name=") is given, SciLab automatically assigns the result to the variable "ans".  Try using it.
+\begin{verbatim}
+a*ans
+\end{verbatim}
+SciLab will tell you that "ans" is now 10.  Lets move on and define a matrix.  Type the following
+\begin{verbatim}
+  A=[1,2;3,4;5,6]
+\end{verbatim}
+and press enter. Commas are used to separate elements and semicolons are used to separate rows.  Note that you could also have entered "A" using the alternate notation
+\begin{verbatim}
+  A=[[1 2];[3 4];[5 6]]
+\end{verbatim}
+or even (command prompt shown so you won't think something is wrong when it automatically appears, also you do not need to space over like I do to enter the numbers, I just find it easier to read)
+\begin{verbatim}
+-->  A=[[1 2]
+-->     [3 4]
+-->     [5 6]]
+\end{verbatim}
+Thus spaces work like commas and returns work like semicolons.  In any case, SciLab should respond by showing you that it has created the matrix variable as follows
+\begin{verbatim}
+ A  =
+
+!   1.    2. !
+!   3.    4. !
+!   5.    6. !
+\end{verbatim}
+The variable "A" is now defined and can be used.  For instance we might want to define "B" to be "A+A".  Do this by typing
+\begin{verbatim}
+  B=A+A
+\end{verbatim}
+SciLab will add the matrices and define "B" to be the result, showing you the answer.
+\begin{verbatim}
+ B  =
+
+!   2.     4.  !
+!   6.     8.  !
+!   10.    12. !
+\end{verbatim}
+This mode is useful for doing simple calculations and testing output.  We will refer to it as the interactive mode.  Since SciLab has an interactive mode that is command driven, it is reasonable to assume it would have a programming interface (we will refer to it as the programming mode).  I will show the use of programming mode later.

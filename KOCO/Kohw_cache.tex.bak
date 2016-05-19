@@ -170,7 +170,7 @@ Consider a machine with 32 bit addressing (up to 4GB of RAM) and 512k ($2^{19}$)
 
 \begin{figure}
   % Requires \usepackage{graphicx}
-  \includegraphics[width=4in]{cache.eps}\\
+  \includegraphics[width=4in]{cache.png}\\
   \caption{8-Way Set Associative Cache}\label{f-8wsac}
 \end{figure}
 

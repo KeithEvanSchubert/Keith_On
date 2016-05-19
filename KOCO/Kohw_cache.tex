@@ -308,6 +308,23 @@ NLLRU is a nice algorithm to learn off, but it is not a good one to build.  Firs
 \item The lower triangular elements (lower left triangle of the LRU square) are the negated transpose (each bit is the logical not of the bit on the opposite side of the main diagonal) of the upper triangular elements (upper right triangle of the LRU square.
 \end{enumerate}
 
+
+\section{Memory Performance}
+\subsection{Cacheless Performance}
+
+Every memory access must go to RAM and pay the access time for RAM, which is typically around 50ns - 70ns.  Burst transfers would be hard to use, except say for a queue system on instruction loads.
+
+\begin{example}
+Consider a system, which has no cache or instruction queue, and has RAM with 50ns access time, thus,
+\begin{eqnarray}
+T_{data} &=& 50ns
+T_{inst} &=& 50ns
+\end{eqnarray}
+What is the effect on the CPI of the system assuming everything else is ideal and load/stores are a quarter of all operations?
+
+
+\end{example}
+
 \subsection{Cache Performance}
 
 We will be concerned with some basic numbers

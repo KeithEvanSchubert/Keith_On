@@ -1,0 +1,26 @@
+\documentclass{article}
+
+\begin{document}
+Let $A,B,T$ be square matrices, with $A,T$ invertible, then $S=AT$ is also square and invertible and $S^{-1}=(AT)^{-1}=T^{-1}A{-1}$.  A matrix is always similar to itself so
+\begin{eqnarray}
+B &=& S^{-1}BS \\
+  &=& T^{-1}A^{-1}BAT
+\end{eqnarray}
+and
+\begin{eqnarray}
+A^{-1} &=& TA^{-1}T^{-1}
+\end{eqnarray}
+thus
+\begin{eqnarray}
+B  &=& T^{-1}A^{-1}BAT \\
+   &=& T^{-1}TA^{-1}T^{-1}BAT  \\
+   &=& A^{-1}T^{-1}BAT \\
+AB &=& AA^{-1}T^{-1}BAT \\
+   &=& T^{-1}BAT
+\end{eqnarray}
+Therefore, $AB$ is similar to $BA$.
+
+SDG
+
+Note similarity is important because similar matrices share a lot of properties, like characteristic polynomials, eigenvalues, rank, determinant, and trace. The eigenvectors are not generally the same but they are related through the transform matrix.
+\end{document}

@@ -1,0 +1,106 @@
+\chapter{Vector Spaces}
+
+In this chapter I will give the background material needed to understand numerical linear algebra.
+
+\section{Basis}\label{s-basis}
+To understand what a basis is, you first need to understand orthogonality and independence.  I will give you both some formal definitions, but more importantly I will try to make them understandable.  Let's start with independence.
+
+\subsection{Independence}
+Say we have a group of vectors $v_1, \ldots, v_n$.  We might want to know if there are any of them that are unnecessary, that is could we make it from a combination of the others.  If no vectors are unnecessary, we say the vectors are independent.  Formally, we write $v_1, \ldots, v_n$ are independent iff,
+\begin{equation}
+\sum_{i=1}^n\alpha_iv_i=0 \implies \alpha_i=0 \forall i\in\left\{1, \ldots, n\right\}
+\end{equation}
+In English, this reads the vectors $v_1, \ldots, v_n$ are independent if and only if the sum of each vectors $v_i$ times a scalar $\alpha_i$ for $i=1$ to $n$ is zero implies that all the $\alpha_i$ are zero.  In simple terms there is no non-zero weighted combinations of the vectors that sums to zero, as this would mean we could write one vector in terms of the others by some algebra.  The concept is not that tough but it can get a little messy when calculating, particularly when you are first introduced to the idea.
+
+Let's do an example,
+\begin{example}
+Are the following two dimensional vectors independent?
+\begin{eqnarray}
+v_1=\left[\begin{matrix}1\\0\end{matrix}\right], v_2=\left[\begin{matrix}1\\1\end{matrix}\right]
+\end{eqnarray}
+\Solution
+Let's write out the linear combination used in the definition.
+\begin{eqnarray}
+\sum_{i=1}^n\alpha_iv_i&=&0\\
+\alpha_1v_1+\alpha_2v_2=0
+\end{eqnarray}
+Now this implies two equations (one for each row of the vectors).
+\begin{eqnarray}
+\alpha_1+\alpha_2 &=& 0\label{ex-linear_independence_simple2d_a}\\
+\alpha_2&=&0\label{ex-linear_independence_simple2d_b}
+\end{eqnarray}
+Equation~\ref{ex-linear_independence_simple2d_b} tells us that the second scalar weight, $\alpha_2$ must be zero, which combined with Equation~\ref{ex-linear_independence_simple2d_a} requires the first scalar weight, $\alpha_1$, to be zero.  Thus by the definition, we have that the vectors are independent.
+\end{example}
+
+Now let's consider how many linearly independent vectors there could be, for a vector space of size $n$, where the size of the space is the number of elements in the vector.  It turns out that we can have $n$ of them.  The easiest way to see this is to consider the vectors $e_i$, which are vectors with all zero entries except one, which is a 1 in the i$^{th}$ position.  Trivially these vectors are independent (the summation in the definition results in $n$ equations of $\alpha_i=0$), so there are at least n independent vectors that span the space.  Could we add one more and still have linear independence?  Well consider the following.
+\begin{enumerate}
+\item The new vector cannot be all zeros or the $\alpha$ associated with it, say $\alpha_{n+1}$, could be any number to satisfy the sum since the vector would be zero and $\alpha_{n+1}\cdot 0=0$.
+\item The new vector, say $d$, must have more than one non-zero term, since if it only had one it would trivially be one of the $e_i$ times a scalar equal to it's i$^{th}$ component ($d_i$) and thus as a duplicate, you would just have to pick $\alpha_i=-\alpha_{n+1}d_i$ to satisfy the summation without have all $\alpha_i$ zero.
+\item An induction argument can be easily constructed now, by noting that adding one more non-zero component to $d$, say in position $j$, just requires setting $\alpha_j=-\alpha_{n+1}d_j$, to satisfy the sum without having all $\alpha_i$ zero.
+\end{enumerate}
+Thus we can see that we cannot add another vector, and thus the maximum number of independent vectors is $n$.  This is not yet a formal proof, many books include one, my purpose is to have you understand the what and the why parts.  You are encouraged to study the formal proofs on your own.
+
+One other term often used is a basis.  A basis is a group of independent vectors that span a space (span means to cover all of it, and thus there will be a vector for each dimension in the space).
+
+\subsection{Orthogonality}
+To discuss orthogonality, I need to have an inner product.  Mathematicians use the notation $<a,b>$ to denote the inner product of $a$ and $b$.  Physicists use $a\cdot b$ for the same thing, unless they are doing quantum, in which case they use $<a|b>$.  In linear algebra you will often see this as $a^Tb$ if the vectors are real, or $a^Hb$ if they are complex\footnote{Some old texts use $a^*b$ for complex vectors, but it means the same thing as $a^Hb$.  In any case it denotes transposing and taking the complex conjugate (this is the star notation), which is called the hermitian transpose (this is the H notation).}.  I mention all these different ways of writing it as you might run into them in different contexts and you should realize they are the same.  For linear algebra we just mean to multiply the corresponding elements of the matrix and sum them up.
+\begin{eqnarray}
+a^Tb &=& \sum_{i=1}^na_ib_i
+\end{eqnarray}
+Just for your information this can be extended to infinite dimensional spaces like  the space of continuous functions on the interval from 0 to 1 by converting the sum into an integral, thus yielding
+\begin{eqnarray}
+<a(x),b(x)> &=& \int_{0}^1a(x)b(x)dx
+\end{eqnarray}
+Getting back to our main point, which is given an inner product, we can find the angle between the vectors.  How you ask?  Well, it turns out that
+\begin{eqnarray}
+a^Tb &=& \|a\|_2\|b\|_2\cos\theta
+\end{eqnarray}
+Where $\|\cdot\|_2$ is the 2 norm (described in Section~\ref{s-vect-norm}) and $\theta$ is the angle between the vectors $a$ and $b$.  The net result is that we can measure the angle between to vectors using the inner product.  If the inner product is zero and the vectors aren't zero, that means that the cosine must be.  For the cosine to be zero, the angle must be $\frac{\pi}{2}$ radians (or $90^\circ$ if you prefer).  Things that are $\frac{\pi}{2}$ radians apart are called orthogonal, so if the inner product of two vectors is zero, then the are orthogonal.  A lot of our algorithms force use the inner product to measure the angle between two vectors, and then using this measure construct an vector from one of them, that is orthogonal to the other.  If you understand this is what they are doing it makes the code much easier to read.
+
+A neat side result is that if a group of vectors are mutually orthogonal, then they are also independent.
+
+
+\section{Vector Norms}\label{s-vect-norm}
+
+\subsection{Schatten P-Norms}
+
+The basic definition for some whole number, $p$, and vector, $x\in\mathbb{R}^n$, is
+\begin{eqnarray}
+\| x \|_p &=& \sqrt[p]{\sum_{i=1}^{n}|x_i|^p},
+\end{eqnarray}
+
+Three special cases are most important, $p=1$, $p=2$, and $p=\lim_{k\rightarrow\infty}k$.
+
+\subsubsection{Manhattan Norm}
+Also called the one norm and the taxicab norm, this norm is the case when $p=1$.
+\begin{eqnarray}
+\| x \|_1 &=& \sqrt[1]{\sum_{i=1}^{n}|x_i|^1}\\
+&=& \sum_{i=1}^{n}|x_i|
+\end{eqnarray}
+It is readily observed that this is simply the sum of the absolute values of the elements of the vector.
+
+\subsubsection{Euclidian Norm}
+Also known as the two norm, this norm is what most people think of as distance.
+\begin{eqnarray}
+\| x \|_2 &=& \sqrt[2]{\sum_{i=1}^{n}|x_i|^2} \\
+&=& \sqrt{x^Tx}
+\end{eqnarray}
+
+\subsubsection{Infinity Norm}
+This norm has a simple form that is not obvious at first
+\begin{eqnarray}
+\| x \|_{\infty} &=& \lim_{p\rightarrow\infty}\sqrt[p]{\sum_{i=1}^{n}|x_i|^p}
+\end{eqnarray}
+
+\subsection{Equivalence}
+All the norms on a vector space are equivalent, by which we mean they for any two norms $\|\cdot\|_a$ and $\|\cdot\|_b$, and two scalars $\alpha$ and $\beta$, which depend only on the types of norms and dimension of the space, we have $\alpha\|x\|_a\leq\|x\|_b\leq\beta\|x\|_a \forall x$ in the vector space.  For instance, we have for the three most common Schatten P-Norms
+
+\noindent
+\begin{tabular}{lccc}
+                 & $\|x\|_1$                                         & $\|x\|_2$                                              & $\|x\|_\infty$                                    \\
+$\|x\|_1$        & $\|x\|_1\leq\|x\|_1\leq\|x\|_1$                   & $\|x\|_2\leq\|x\|_1\leq\sqrt{n}\|x\|_2$                & $\|x\|_\infty\leq\|x\|_1\leq n\|x\|_\infty$       \\
+$\|x\|_2$        & $\frac{1}{\sqrt{n}}\|x\|_1\leq\|x\|_2\leq\|x\|_1$ & $\|x\|_2\leq\|x\|_2\leq\|x\|_2$                        & $\|x\|_\infty\leq\|x\|_2\leq\sqrt{n}\|x\|_\infty$ \\
+$\|x\|_\infty$   & $\frac{1}{n}\|x\|_1\leq\|x\|_\infty\leq\|x\|_1$    & $\frac{1}{\sqrt{n}}\|x\|_2\leq\|x\|_\infty\leq\|x\|_2$ & $\|x\|_\infty\leq\|x\|_\infty\leq\|x\|_\infty$    \\
+\end{tabular}
+
+Note that the bounds are tight, which means that there are vectors x for which the equalities hold, though obviously not at the same time.  For instance if $x$ was an n-vector of ones, then $\|x\|_1=n\|x\|_\infty$.  Another example would be if $x=e_i$ were $e_i$ is a vector of zeros, with a single 1 in the i$^{th}$ position, in which case all the p-norms yield the same value (1).  One final note, the diagonal entries just say that the $i$ norm is equal to itself, while remaining the structure of the rest of the entries.

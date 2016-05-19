@@ -1,0 +1,1 @@
+function a=pi2e(n);a=pi;for i=1:n  a=sqrt(a);endfor i=1:n  a=a^2;end

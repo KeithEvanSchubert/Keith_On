@@ -1,0 +1,71 @@
+5 Patch Control
+
+0
+0
+1
+Keith_On_CO.tex
+10
+3
+1
+
+Keith_On_CO.tex
+TeX
+135278587 0 -1 0 -1 1828 0 0 820 473 0 1 170 105 -1 -1 0 0 22 -1 -1 22 1 0 1828 -1  0 -1 0
+Kohw_cache.tex
+TeX
+269496315 0 -1 15154 -1 15326 60 64 842 465 0 1 470 420 -1 -1 0 0 -1 -1 -1 -1 1 0 15326 -1  0 -1 0
+Koco_conditional_add.tex
+TeX
+1060859 0 -1 0 -1 0 90 96 872 497 0 1 40 -504 -1 -1 0 0 -1 -1 -1 -1 1 0 0 -1  0 -1 0
+Keith_On_CO.toc
+TeX:AUX
+269496306 0 0 1 0 1 0 0 782 401 0 0 24 0 -1 -1 0 0 -1 -1 -1 -1 1 0 1 0  0 0 0
+Kohw_ilp.tex
+TeX
+269496315 0 -1 454 -1 849 30 32 850 505 0 1 288 136 -1 -1 0 0 39 -1 -1 39 1 0 849 -1  0 -1 0
+Koco_unsigned_mult.tex
+TeX
+269496315 0 -1 0 -1 0 60 64 880 537 0 1 40 0 -1 -1 0 0 33 -1 -1 33 1 0 0 -1  0 -1 0
+:\Users\schubertk\Dropbox\2016ParticleSwarmSuperiorization\Keith\Particle_Swarm.tex
+TeX
+269496315 0 -1 0 -1 0 60 64 1391 537 0 1 40 -1183 -1 -1 0 0 -1 -1 -1 -1 1 0 0 -1  0 -1 0
+:\Users\schubertk\Dropbox\2016_entropy\paper\entropy.tex
+TeX:UNIX
+269594619 2 -1 42229 -1 42237 30 32 1361 505 0 1 450 315 -1 -1 0 0 -1 -1 -1 -1 1 0 42237 -1  0 -1 0
+:\Users\schubertk\Dropbox\2016_entropy\hiroshima conf\entropy.tex
+TeX
+269496315 0 -1 0 -1 0 60 64 1391 537 0 1 40 -8291 -1 -1 0 0 -1 -1 -1 -1 1 0 0 -1  0 -1 0
+:\Users\schubertk\Dropbox\2016_entropy\hiroshima conf\entropy_cam_cai.tex
+TeX
+269496315 0 -1 0 -1 0 90 96 1421 569 0 1 40 0 -1 -1 0 0 -1 -1 -1 -1 1 0 0 -1  0 -1 0
+
+*Keith_On_CO.tex
+>
+*? kvmacros
+*Kohw_codes
+*Koco_int
+*Koco_conditional_add
+*Koco_cla_add
+*Koco_unsigned_mult
+*Koco_booth_mult
+*Koco_systolic_mult
+*Koco_residue_arith
+*Kohw_float
+*Kohw_arith
+*Kohw_stack
+*Kohw_isa
+*Kohw_address
+*Kohw_subs
+*Kohw_mips
+*Kohw_components
+*Kohw_cache
+*Kohw_control
+*Kohw_perf
+*Kohw_ilp
+*Kohw_pipeline
+*Kohw_tomasulo
+*Kohw_tlp
+*Kohw_machine_examples
+*kohw_encryption
+*kohw
+<

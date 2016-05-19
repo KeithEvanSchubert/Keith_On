@@ -1,0 +1,69 @@
+\chapter{Partial Differential Equations}
+
+\section{Basics}
+
+Consider the equation
+\begin{eqnarray}
+f(x,t) &=& e^{kt}\sin({k\pi x}).
+\end{eqnarray}
+Assume for the moment that $x$ is constant and take the derivative with respect to $t$.  We will use the notation of $\partial$ to denote a derivative with respect to only one variable, also known as a partial derivative.
+\begin{eqnarray}
+\frac{\partial}{\partial t}f(x,t)
+ &=& ke^{kt}\sin({k\pi x}) \\
+ &=& f_t(x,t)
+\end{eqnarray}
+
+
+\section{Wave in a String}
+
+Assume we have stretched a string to length $L$ and fixed it at both ends.  We want to find the function, $u(x,t)$, which describes the displacement of the string at any point.  Now we will consider the basic one-dimensional wave equation,
+\begin{eqnarray}
+\frac{1}{c^2}u_{tt} &=& u_{xx}. \label{eq-wave-string}
+\end{eqnarray}
+We will try one of the basic techniques, called separation of variables.  Basically we posit a solution of the form
+\begin{eqnarray}
+u(x,t) &=& f(x)g(t).
+\end{eqnarray}
+Substitute this back into Eq.~\ref{eq-wave-string}, we obtain
+\begin{eqnarray}
+\frac{1}{c^2}f(x)g''(t) &=& f''(x)g(t) \\
+\frac{-k^2}{c^2}f(x)g''(t) &=& -k^2f''(x)g(t),
+\end{eqnarray}
+with $k$ a constant, which does not effect the equality but does provide a useful term when we solve later.  To maintain the independence between the $x$ and $t$ terms called for in the separation of variables technique it must be that the $x$ terms on the left and right must be equal (similar for the $t$ terms).  Thus we have that
+\begin{eqnarray}
+-k^2f(x) &=& f''(x) \\
+\frac{1}{c^2}g''(t) &=& -k^2g(t),
+\end{eqnarray}
+and thus
+\begin{eqnarray}
+f''(x)+k^2f(x) &=& 0 \label{eq-wave-fx}\\
+g''(t) +c^2k^2g(t) &=& 0 \label{eq-wave-gt},
+\end{eqnarray}
+where we have kept the constant $k$ with the terms that have no derivative\footnote{This is a result of experience.  Essentially doing this provides a constant to be solved for in each, and also couples the equations.}.  These are now ODE's, and we can now use the boundary conditions to solve them.  We will use the fact that differential equations can be expanded in terms of exponentials, since the derivative of an exponential is an exponential.  Second order differentials without a first order term are trigonometric functions\footnote{This can be understood from the fact that the second derivative of sine or cosine is the negative of itself.  It can also be seen from the fact that $e^{-j\phi}=\cos\phi+j\sin\phi$, where $j=\sqrt{-1}$.}.
+
+First note that the boundary condition on the ends is that they are fixed.  This means that
+\begin{eqnarray}
+f(0)&=&0\\
+f(L)&=&0.
+\end{eqnarray}
+This implies that 
+\begin{eqnarray}
+f(x)&=&\sum_{m=1}^{\infty}a_m\sin\left(\frac{2m\pi x}{L}\right).\label{eq-wave-xtrig}
+\end{eqnarray}
+We can now substitute Eq~\ref{eq-wave-xtrig} into Eq~\ref{eq-wave-fx}.
+\begin{eqnarray}
+-\sum_{m=1}^{\infty}a_m\left(\frac{2m\pi}{L}\right)^2\sin\left(\frac{2m\pi x}{L}\right)+k^2\sum_{m=1}^{\infty}a_m\sin\left(\frac{2m\pi x}{L}\right)&=&0\\
+\sum_{m=1}^{\infty}a_m\left(k^2-\left(\frac{2m\pi}{L}\right)^2\right)\sin\left(\frac{2m\pi x}{L}\right)&=&0
+\end{eqnarray}
+
+
+
+\subsection{Partial Discretization}
+
+Another way to solve this is to approximate the spatial derivative (discretizing in space), while leaving the time derivative alone.  The result is an ODE that approximates the PDE.  Say we use the basic higher order derivative formula we developed in the chapter on derivatives, with a step size of $\Delta$, then
+\beqn
+\frac{1}{c^2}u_{tt} &=& u_{xx} \\
+\frac{1}{c^2}u_{tt}(t,x_i) &=& \frac{u(t,x_{i+1})-2u(t,x_i)+u(t,x_{i-1})}{\Delta^2} \\
+u''(t,x_i) &=& \frac{-2c^2}{\Delta^2}u(t,x_i) + \frac{c^2}{\Delta^2}\left(u(t,x_{i+1})+u(t,x_{i-1})\right).
+\eeqn
+The last line just underscores that $u$ is now only a continuous function of $t$ described by a simple ODE.  In essence we have made a whole bunch of interconnected wave functions, one at each $x_i$.  This can be solved by any of the methods in the chapter on differential equations. 

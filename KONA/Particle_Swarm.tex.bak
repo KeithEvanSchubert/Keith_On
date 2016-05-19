@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\title{Particle Swarm Optimization to Superiorization}
+\author{Keith Evan Schubert}
+\begin{document}
+
+\section{Particle Swarm Optimization}
+PSO can be done for constrained, non-constrained, multi-objective, etc.  Essentially the idea is to get a group (swarm) of semi-independent searchers (particles) looking for the solution.
+\subsection{Particles}
+Each particle is an agent that is cooperatively searching the solution space.  The particles, numbered $i\in\{1:n\}$ at step $k$ store:
+\begin{enumerate}
+\item Current fitness, $f_{i,k}=f(x_i(k))$, and location, $x_i(k)$
+\item Individual best fitness, $F_{i,k}=\max_{j\in\{1:k\}}f_{i,j}$, and the associated location, $X_{i,k}=x_i(j)$ such that
+        $j=\argmax_{j\in\{1:k\}}f_{i,j}$, encountered so far
+\item Global best fitness, $F_{g,k}=\max_{j\in\{1:k\},i\in\{1:n\}}f_{i,j}$, and location,
+        $X_{g,k}=\argmax_{j\in\{1:k\},i\in\{1:n\}}f_{i,j}$
+\item Current velocity, $v_{i,k}$
+\end{enumerate}
+evaluation of the $\max$ and $\argmax$ is trivial in this case since it is done iteratively and we can just compare to the current fitness and position.
+
+\subsection{Constraints}
+Constraints are handled a variety of ways:
+\begin{description}
+\item[feasibility preserving] make a function that transform feasible points into new feasible points - typically assume linear/convex and a feasible start. These essentially replace the velocity and position generation.
+\item[penalty functions]
+\item[distinguish feasible and infeasible]
+\item[hybrid methods]
+\end{description}
+
+
+\subsection{Parameters}
+There are three basic parameters used to control the behavior of the algorithm and essentially control the weighting of the velocity weighting, which is how it gets a new guess.  The parameters are $\omega$ (weight to give current velocity), 
+$\phi_p$ (the weight to give the particles best), and $\phi_g$ (the weight to give the global best).  These parameters can be thought of as learning parameters.
+
+\subsection{Algorithm}
+Each member of the swarm does the following at each iteration:
+\begin{enumerate}
+\item Calculate the fitness of its current guess/location in the solution space.  The fitness function is the cost function we are trying to minimize. \emph{This is the expensive part that I want to replace with superiorization.}
+\item If a particle's current location has the best fitness it has personally encountered then it updates its personal best field with the location and fitness. \emph{ Trivial binary comparison.}
+\item If a particle's current location has the best fitness any particle has encountered then it broadcasts the location and fitness and fitness, and updates its global best field.\ emph{ Asynchronous network broadcast.}
+\item Calculate the next guess by:
+    \begin{enumerate}
+    \item Calculate new velocity, by $v_{i,k+1}=\omega\cdot v_{i,k} + \phi_p\cdot rand()\cdot(X_{i,k}-x_i(k)) + \phi_g\cdot rand()\cdot(X_{g,k}-x_i(k))$
+    \item Calculate new position, by $x_i(k+1)=x_i(k)+v_i(k+1)$
+    \end{enumerate}
+\end{enumerate}
+
+
+\section{Particle Swarm Superiorization}
+\end{document} 

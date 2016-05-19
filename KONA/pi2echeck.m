@@ -1,0 +1,1 @@
+n=100;f=zeros(1,n);for i=1:n  f(i)=pi2e(i);ende=ones(size(f)).*exp(1);figureplot(1:n,f,'r*')figureplot(40:60,f(40:60),'r*')
