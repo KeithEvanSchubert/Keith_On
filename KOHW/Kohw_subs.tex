@@ -1,0 +1,511 @@
+\chapter{Subroutines}
+\label{c-subs}
+
+
+\section{Basic Overview}
+
+Before we get into this, let's establish some basic definitions.
+
+\begin{description}
+  \item[Caller] the section of code that initiates the call
+  \item[Callee] the section of code that is called
+  \item[Return Address] The address of the instruction to be
+  executed after the call is done (usually the one following the
+  branch or jump)
+  \item[Subroutine Linkage]   data structure used to share information between
+  caller and callee
+\end{description}
+
+\subsection{What needs to be passed?}
+
+A subroutine can be called from different sections of code and with different parameters.  The subroutine needs to know what data it must operate on and where to resume execution when it finishes.  Additionally the subroutine usually must return some data, and thus it must place the data in an easy to locate area.  The basic data that must be exchanged is thus,
+
+\begin{itemize}
+    \item return address
+    \item return value
+    \item parameters
+\end{itemize}
+
+\subsection{General Call Sequence}
+
+\begin{tabular}{|c|c|c|}
+  \multicolumn{1}{c}{Caller} & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{Callee} \\
+  & & \\
+  \cline{1-1} \cline{3-3}
+  Startup  & $\rightarrow$ & Prologue \\ \cline{3-3}
+  Sequence &   & Body \\ \cline{1-1}
+  Cleanup  &   & Body \\ \cline{3-3}
+  Sequence & $\leftarrow$ & Epilogue \\ \cline{1-1} \cline{3-3}
+  & & \\
+\end{tabular}
+
+\section{Return Addresses in Leaf and Non-Leaf Subroutines}
+
+For the moment we will look only at the issues surrounding return addresses.  The following distinctions must be made:
+\begin{quote}
+Leaf subroutines do not make subroutine calls, where as non-leaf subroutines call at least one subroutine (itself or another subroutine).
+\end{quote}
+
+
+The most basic leaf subroutine call looks like:
+
+\begin{tabular}{|c|c|c|}
+  \multicolumn{1}{c}{Caller} & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{Callee} \\
+  & & \\
+  \cline{1-1} \cline{3-3}
+  address+(4 or 8) to r31  & $\rightarrow$ & none \\ \cline{3-3}
+  branch sub     &   & Body \\ \cline{1-1}
+  none           &   & Body \\ \cline{3-3}
+  none           & $\leftarrow$ & branch @r31 \\ \cline{1-1} \cline{3-3}
+  & & \\
+\end{tabular}
+
+The basic leaf routine is quick and easy, but it cannot be used on non-leaf procedures as the return address would be lost.  Consider the following subroutine to calculate $x^n$:
+
+\noindent
+\begin{tabular}{p{3.4in}|p{2.7in}}
+Code & Sample run \\ \hline
+\begin{verbatim}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! name: pow
+!! desc: calculates x^n
+!! meth: recursive function call
+!!            x*(x^{n-1})
+!! parm: x in r8
+!!       n in r9
+!! pre : nothing in r16, it is used as
+!!       a temporary variable
+!! post:
+!! ret : x^n in r8
+!! date: 20 May 2003
+!! rev : 1.0
+!! revh:
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+pow:        cmp r9,r0        ! see if x^0
+            breq,a pow_done  !  if n=0
+            add r0,1,r8      !  then ans=1
+
+            cmp r9,1         ! see if x^1
+            breq pow_done    ! if n=1
+            nop              ! then ans=x
+
+            mv r8,r16        ! else n>1
+            call pow         ! calc r8=x^{n-1}
+            sub r9,1,r9      !
+pow_r:      smul r16,r8,r8   ! ans = x*x^{n-1}
+pow_done:   retl
+            nop
+\end{verbatim}
+
+&
+
+Assume the call was to calculate $5^2$ and return to the label "retn".  For our machine the return address is stored in r31.  We will assume that annulled commands become nop's (they really do, the results are just sent to r0 and the condition codes are not set).
+
+\begin{tabular}{lcccc}
+  Instruction & r8 & r9 & r16 & r31 \\ \hline
+  cmp r9,r0 & 5 & 2 & - & retn \\
+  breq,a pow\_done & 5 & 2 & - & retn \\
+  nop & 5 & 2 & - & retn \\
+  cmp r9,1 & 5 & 2 & - & retn \\
+  breq pow\_done & 5 & 2 & - & retn \\
+  nop & 5 & 2 & - & retn \\
+  mv r8,r16 & 5 & 2 & 5 & retn \\
+  call pow & 5 & 2 & 5 & pow\_r \\
+\end{tabular}
+
+Notice at this point we lost the return address!
+
+\begin{tabular}{lcccc}
+  Instruction & r8 & r9 & r16 & r31 \\ \hline
+  sub r9,1,r9 & 5 & 1 & 5 & pow\_r \\
+  cmp r9,r0 & 5 & 1 & 5 & pow\_r \\
+  breq,a pow\_done & 5 & 1 & 5 & pow\_r \\
+  nop & 5 & 1 & 5 & pow\_r \\
+  cmp r9,1 & 5 & 1 & 5 & pow\_r \\
+  breq pow\_done & 5 & 1 & 5 & pow\_r \\
+  nop & 5 & 1 & 5 & pow\_r \\
+  retl & 5 & 1 & 5 & pow\_r \\
+  nop & 5 & 1 & 5 & pow\_r \\
+  smul r16,r8,r8 & 25 & 1 & 5 & pow\_r \\
+  retl & 25 & 1 & 5 & pow\_r \\
+  nop & 25 & 1 & 5 & pow\_r \\
+\end{tabular}
+
+At this point it should have gone back to "retn" but since that address was lost it will loop endlessly.
+
+\\
+\end{tabular}
+
+If the subroutine is non-leaf and not part of a cycle (recursive or otherwise) then the following modification will work nicely.
+\vspace{6pt}
+
+\begin{tabular}{|c|c|c|}
+  \multicolumn{1}{c}{Caller} & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{Callee} \\
+  & & \\
+  \cline{1-1} \cline{3-3}
+  address+(4 or 8) to r31  & $\rightarrow$ & r31 to mem \\ \cline{3-3}
+  branch sub     &   & Body \\ \cline{1-1} \cline{3-3}
+  none           &   & mem to r31 \\
+  none           & $\leftarrow$ & branch @r31 \\ \cline{1-1} \cline{3-3}
+  & & \\
+\end{tabular}
+
+\vspace{6pt}
+the two versions can be combined as:
+\vspace{6pt}
+
+\begin{tabular}{|c|c|c|}
+  \multicolumn{1}{c}{Caller} & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{Callee} \\
+  & & \\
+  \cline{1-1} \cline{3-3}
+  address+(4 or 8) to r31  & $\rightarrow$ & if nonleaf r31 to mem \\ \cline{3-3}
+  branch sub     &   & Body \\ \cline{1-1} \cline{3-3}
+  none           &   & if nonleaf mem to r31 \\
+  none           & $\leftarrow$ & branch @r31 \\ \cline{1-1} \cline{3-3}
+  & & \\
+\end{tabular}
+
+\section{Parameter Passing}
+
+We now turn our attention on the parameters.  First we need to consider how to represent the data.  For instance if you just need to send an integer to do a calculation but you don't want it modified then you would pass by value.  If on the other hand you need to pass an instance of a class you must pass by reference.  The three ways data may be handled are
+
+\begin{enumerate}
+    \item pass by value (not returned)
+    \item pass by value/result (modify and return)
+    \item pass by ref (pointer to actual object)
+\end{enumerate}
+
+Beyond these basic considerations, there is a question as to where to locate the data for the subroutine call.  The information could be located in the registers for speed, or in static variables in RAM (parameter block).  Neither of the options discussed so far will handle cyclic subroutines or dynamic local variables.  If either cyclic subroutines or dynamic local variables are needed the information must be passed on the stack (dynamic variables in RAM).  The methods are:
+
+\begin{enumerate}
+    \item register
+    \begin{itemize}
+        \item fast
+        \item leaf subroutine
+    \end{itemize}
+    \item parameter block
+    \begin{itemize}
+        \item larger data
+        \item non-leaf and non-cyclic subroutines
+    \end{itemize}
+
+    \item stack
+    \begin{itemize}
+        \item larger data
+        \item (dynamic) local variables
+        \item cyclic and recursive calls
+    \end{itemize}
+\end{enumerate}
+
+\section{Register}
+
+\begin{tabular}{|c|c|c|}
+  \multicolumn{1}{c}{Caller} & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{Callee} \\
+  & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{} \\ \cline{1-1}
+  mv params into r8 to r13 & & \\ \cline{3-3}
+  address+(4 or 8) to r31  &  & none \\ \cline{3-3}
+  branch sub     & $\nearrow$  & Body \\ \cline{1-1} \cline{3-3}
+  none           &   & mv result to r8 \\
+  none           & $\nwarrow$ & branch @r31 \\ \cline{1-1} \cline{3-3}
+  & & \\
+\end{tabular}
+
+
+
+\vspace{6pt}
+\textbf{Example}
+\vspace{6pt}
+
+We have discussed affine ciphers already.  You might have noticed that the equation for encoding and decoding is very similar.  We can combine them with only a small alteration to the decoding formula and one of the requirements.  Decoding is still done using three integers: $c$, $d$, and $n$.  If $code$ is the character to be decoded (with `A'=0 and `Z'=25) then $plain=(c*code+d) \mod n$.  The requirements on $(a,b,c,d,n)$ are:
+\begin{itemize}
+    \item $\gcd(a,n)=1$
+    \item $(ac) \mod n = 1$
+    \item $(cb+d) \mod n = 0$
+\end{itemize}
+Below is C code to implement a particular case of affine cyphers.
+\begin{verbatim}
+
+char affine(char letter, int scale, int offset){
+    // affine codes capital letter in 'letter' thus this is modulo 26
+    int iCode, iLetter;
+
+    // convert char to integer and shift so A=0
+    iLetter=int(plain)-65;
+
+    // do the encoding
+    iCode = (scale*iLetter+offset)%26;
+
+    // return the result as a char
+    return char(iCode+65);
+}
+
+\end{verbatim}
+
+The SPARC syntax is then
+
+
+    \textbf{affine}
+
+    \begin{verbatim}
+            ! calculates affine encryption:
+            !    crypt = (a*(orig-off)+b) mod p + off
+            ! a     is passed   in r8
+            ! b     is passed   in r9
+            ! n     is passed   in r10
+            ! off   is passed   in r11
+            ! orig  is passed   in r12
+            ! crypt is returned in r
+            .text
+    affine: sub  r12, r12, r11  ! orig-off
+            mult r8,  r12, r8   ! a*(orig-off)
+            add  r8,  r8,  r9   ! a*(orig-off)+b
+            div  r9,  r8,  r10  ! x= y mod z = y - y/z*z
+            mult r9,  r9,  r10
+            sub  r8,  r8,  r9   ! (a*(orig-off)+b) mod n
+            add  r8,  r8,  r11  ! done
+            retl
+    \end{verbatim}
+
+
+    \textbf{encrypt call}
+
+    \begin{verbatim}
+            ! affine encrypt
+            ! a is passed in r8
+            ! b is passed in r9
+            ! n     is passed   in r10
+            ! off   is passed   in r11
+            ! orig  is passed   in r12
+            ! crypt is returned in r8
+            .text
+            set r8, 3            ! given
+            set r9, 0            ! given
+            set r10, 26          ! letters in alphabet
+            set r11, 65          ! A in ascii
+            call affine          ! call and link
+            ld.b r12, add_plain  ! assume have label add_plain
+                                 !   where plain text is stored
+            st.b r8,  add_code   ! assume have label add_code where
+                                 !   cypher text is to be stored
+    \end{verbatim}
+
+
+    \textbf{decrypt call}
+
+    \begin{verbatim}
+            ! affine decrypt
+            ! a is passed in r8
+            ! b is passed in r9
+            ! n     is passed   in r10
+            ! off   is passed   in r11
+            ! orig  is passed   in r12
+            ! crypt is returned in r8
+            .text
+            set r8, 9            ! given
+            set r9, 0            ! given
+            set r10, 26          ! letters in alphabet
+            set r11, 65          ! A in ascii
+            call affine          ! call and link
+            ld.b r12, add_code   ! assume have label add_code
+                                 !   where cypher text is stored
+            st.b r8,  add_plain  ! assume have label add_code where
+                                 !   plain text is to be stored
+    \end{verbatim}
+
+
+
+
+
+
+\vspace{6pt}
+\textbf{Example}
+\vspace{6pt}
+
+
+Write the MIPS assembly code for the following function.  Assume the array a has been defined as size \textbf{n}.  The following registers are to be used to pass the values:
+
+    \begin{tabular}{ll}
+    pointer to a  &  \verb $a0 \\
+    n             &  \verb $a1 \\
+    sum           &  \verb $v0 \\
+    \end{tabular}
+
+You do not need to write the code to call the function.
+
+\begin{verbatim}
+  int sum(int* a, int n){
+    int sum;
+    sum=0;
+    for(int i=0;i<n;i++){
+      sum+=a[i]}
+    return sum;}
+\end{verbatim}
+
+
+
+\vspace{6pt}
+\textbf{Solution}
+\vspace{6pt}
+
+\begin{verbatim}
+  sum:
+    add $v0, $zero, $zero   # sum=0
+    sll $a1, $a1, 2         # 4*n
+    add $a1, $a1, $a0       # one element after last in array
+    ble $a1, $a0, sum_done  # array empty
+  sum_loop:
+    lw $t0, 0($a0)          # get element
+    addi $a0, $a0, 4        # increment pointer
+    add $v0, $v0, $t0       # add element to sum
+    bne $a0, $a1, sum_loop  # check if more elements
+  sum_done:
+    jr $ra                  # return
+\end{verbatim}
+
+
+
+\section{Parameter Block}
+
+\begin{tabular}{|c|c|c|}
+  \multicolumn{1}{c}{Caller} & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{Callee} \\
+  &  &  \\ \cline{1-1} \cline{3-3}
+  store params into block using labels & & allocate block and labels in .data \\
+  store address+(4 or 8) to block  &  & none \\ \cline{3-3}
+  branch sub     & $\nearrow$  & Body \\ \cline{1-1} \cline{3-3}
+  load result to desired register &   & store result to block \\
+  none           & $\nwarrow$ & ld return address to r31 \\
+  none           &  & branch @r31 \\ \cline{1-1} \cline{3-3}
+  & & \\
+\end{tabular}
+
+\section{Stack}
+
+The stack is a large block of RAM which data is pushed onto.  Any piece of information can be pushed onto the stack.  All the data passed to and from the subroutine with all the local variables composes a block of information on the stack called the frame.  The frame is created in the startup and prologue and removed in the epilogue and cleanup.  The startup allocates space for all the information that must be passed (return address, parameters, and return values), and the cleanup removes it.  The prologue allocates any local variables or storage to protect registers and the epilogue removes this local information.
+
+\begin{tabular}{|c|c|c|}
+  \multicolumn{1}{c}{Caller} & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{Callee} \\
+   & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{} \\ \cline{1-1}
+  push params &  &  \\ \cline{3-3}
+  allocate return value & & push registers to protect \\
+  push return address  & $\nearrow$ & push local variables \\ \cline{3-3}
+  branch sub     &   & Body \\ \cline{1-1} \cline{3-3}
+  pop result to desired register &   & store result to stack at offset \\
+  pop params   & $\nwarrow$ & pop locals (remove) \\
+       &  & pop register back \\ \cline{1-1}
+       &  & pop return address to r31 \\
+       &  & branch @r31 \\ \cline{3-3}
+  & & \\
+\end{tabular}
+
+\begin{verbatim}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! name: pow
+!! desc: calculates x^n
+!! meth: recursive function call
+!!            x*(x^{n-1})
+!! parm: stack passing:
+!!       x              at fp+20
+!!       n              at fp+16
+!!       return value   at fp+12
+!!       return address at fp+8
+!! pre :
+!! post:
+!! ret : x^n at fp+12
+!! date: 22 May 2003
+!! rev : 1.1
+!! revh:
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            .set s16,0       ! offset to save r16
+            .set s17,4       ! offset to save r17
+            .set ra,8        ! offset to ret add
+            .set rv,12       ! offset to ret val
+            .set n,16        ! offset to n
+            .set x,20        ! offset to x
+pow:        sub sp,8,sp      ! allocate save space
+            mv sp,fp         ! set frame
+            st r16,[fp+s16]  ! save r16
+            st r17,[fp+s17]  ! save r17
+
+            ld [fp+n],r17    ! load n
+            cmp r17,r0       ! see if x^0
+            breq,a pow_done  !  if n=0
+            add r0,1,r16     !  then ans=1
+
+            cmp r17,1        ! see if x^1
+            breq pow_done    !  if n=1
+            ld [fp+x],r16    !  then ans=x
+
+                             ! else n>1
+            sub sp,4,sp      !  decrement pointer
+            st r16,[sp]      !  push x
+            sub r17,1,r17    !  calc n-1
+            sub sp,4,sp      !  decrement pointer
+            st r17,[sp]      !  push n-1
+            sub sp,8,sp      !  decrement pointer
+                             !  for return value
+                             !  and address
+            call pow         !  calc r8=x^{n-1}
+            st r31,[sp]      !  push return address
+
+            ld [sp],r16      !  get x^{n-1}
+            add sp,12,sp     !  deallocate
+            mv sp,fp         !  restore frame
+
+            ld [fp+x],r17    !  get x
+            smul r16,r17,r16 !  ans = x*x^{n-1}
+
+pow_done:   st r16,[fp+rv]   ! store return value
+            ld [fp+s16],r16  ! restore r16
+            ld [fp+s17],r17  ! restore r17
+            ld [fp+ra],r31   ! get return address
+            retl
+            add sp,12,sp     !  deallocate ra, s16, s17
+\end{verbatim}
+
+
+\section{Temperature Conversion}
+
+Write a function that converts Fahrenheit to Celsius by following the steps below.  A C/C++ command to do the conversion is:
+    \begin{verbatim}
+
+    celsius = ((fahrenheit - 32)* 5) / 9;
+    \end{verbatim}
+    Note: I added an extra set of parenthesis to let you know you must do the multiplication first!  Why does the multiplication have to be done first?  Include an example.
+
+    {\color{ans}
+        If you do not multiply first, you can loose precision.  ex: 2/9*5=0, while 2*5/9=1 (in integer math).
+    }
+
+    \begin{enumerate}
+        \item State the passing convention you will use (include what needs to be passed and where you will pass it) and any other reasonable assumptions on the machine.
+
+        {\color{ans}
+        I will use register passing and will use register r8 to pass both the parameter and the result.  Since this is a leaf procedure and I do not need other registers, I will use the book's leaf procedure (return address in r31).  I will further assume that my machine has call and retl that automatically store and access the return address.  Finally, I will assume there is a branch delay slot, the destination is always the first location, and I have all addressing modes.  (your choices may be different).
+        }
+
+        \item Write the function.
+
+        {\color{ans}
+        \begin{verbatim}
+        fahr_2_cels:   sub r8, r8, 32
+                       mpy r8, r8, 5
+                       retl
+                       div r8, r8, 9
+        \end{verbatim}
+
+        }
+
+        \item Show how it would be called.  Assume that the Fahrenheit temperature is stored in a memory location specified by the label "fahr\_temp".  The result should be stored at the memory location specified by the label "cels\_temp".
+
+        {\color{ans}
+        \begin{verbatim}
+                       set r1, fahr_temp
+                       call fahr_2_cels
+                       ld.w r8, @r1
+                       set r1, cels_temp
+                       st.w @r1, r8
+        \end{verbatim}
+
+        }
+
+    \end{enumerate}

@@ -1,0 +1,60 @@
+\chapter{Passive Components}
+
+
+\section{Resistor}
+
+\begin{eqnarray}
+V &=& IR \\
+P &=& VI \\
+  &=& I^2R \\
+  &=& \frac{V^2}{R}
+\end{eqnarray}
+
+DC: $R=\frac{l\cdot\rho}{A}$, where $l$ is the length in meters, $A$ is the cross sectional area in square meters and $\rho$ is the electric resistivity or specific electrical resistance in ohm-meters.  This assumes the current density is uniform.
+
+\begin{picture}(200,200)(0,0)
+\put(0,0){\Rvert{$222k\Omega$}}
+\put(0,60){\Rhoriz{$222k\Omega$}}
+%\put(70,79){\bezier{100}(0,0)(30,10)(40,40)}
+\end{picture} 
+
+\section{Capacitor}
+
+
+\begin{eqnarray}
+cV=q \label{cviq}
+\end{eqnarray}
+When I took my physics E\&M class my professor had an interesting way to remember equation~\ref{cviq}. One of his friends in college used a beer slogan, ``Canadian Velvet is the Queen of beers'', as a mnemonic.
+
+\begin{picture}(200,200)(0,0)
+\\put(70,0){\Cvert{$0.01\mu f$}}
+\put(70,60){\Choriz{$0.01\mu f$}}
+%\put(70,79){\bezier{100}(0,0)(30,10)(40,40)}
+\end{picture} 
+
+\section{Inductor}
+
+Symbol: L
+
+Unit: Henry (volt sec/Amp)
+
+\begin{eqnarray}
+\phi &=& LI
+\end{eqnarray}
+Note: $\phi$ is magnetic flux
+
+\section{Memristence}
+
+Memristors were first predicted in the 1970's due to symmetry, but were first made in 2007.  They have great potential to revolutionize memory.
+
+\begin{eqnarray}
+\phi &=& M(q)q
+\end{eqnarray}
+Thus, at some instant in time
+\begin{eqnarray}
+V(t) &=& M(q(t))I(t)
+\end{eqnarray}
+Note that $M$ is not a constant, and in fact it is non-linear with hysteresis.
+
+
+

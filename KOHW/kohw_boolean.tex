@@ -1,0 +1,303 @@
+\chapter{Boolean Algebra}
+\label{c-bool}
+
+Our goal is to design circuits, to do this we need to understand how the different circuit elements interact together to produce an output.  A function can be described in three basic ways: algebraically, graphically, and by a table of values.  Algebraically is usually thought of as the preeminent method as it covers every value precisely.  While graphs are theoretically precise it is difficult to do it in practice.  While tables are precise they are not exhaustive.  When we deal with boolean values as opposed to numbers, graphs make no sense but tables are now exhaustive as there are only finitely many values.  Proof by table is thus a legitimate technique in Boolean algebra.  As a side note Boolean algebra derives its name from its systematizer, George Boole.
+
+\section{Postulates and Theorems}
+
+Boolean algebra has many similarities with the regular algebra you are used to.  In fact all the usual properties like commutativity, distributivity, and associativity are present, and a few new ones to boot.  Some important notes are in order before we get in too far.
+\begin{itemize}
+    \item Primal refers to the properties of ``or'', which is the analog of addition hence the ``+''.
+    \item Dual refers to the properties of ``and'', which is the analog of multiplication hence``$\cdot$''.
+    \item You will notice there are ``primal" and ``dual'' versions of all the properties, which is different than with regular algebra.  For instance if the primal (+) distributive property was true for regular algebra and say $a=5$, $b=2$, and $c=3$ then $5+2\cdot 3 = 11 = (5+2)\cdot(5+3) = 56$. The dual distributive property is the one you are used to.
+    \item Some properties exist as only special cases in regular algebra.  For instance, the primal idempotent property works in regular algebra only if a=0, and the dual idempotent property works in regular algebra for 0 and 1.
+    \item Some properties are gone, for instance both the inverses (additive, $-a$, and multiplicative, $\frac{1}{a}$) don't exist.  They are replaced by the concept of a complement, which does not exist in regular algebra.
+\end{itemize}
+
+\begin{tabular}{lcc}
+  Name           & Primal                         & Dual \\ \hline
+  Commutativity  & $a+b=b+a$                      & $a\cdot b=b\cdot a$ \\
+  Distributivity & $a+(b\cdot c)=(a+b)\cdot(a+c)$ & $a\cdot (b+c)=(a\cdot b)+(a\cdot c)$ \\
+  Identity       & $0+a = a+0 = a$                & $1\cdot a = a\cdot 1 = a$ \\
+  Complement     & $a+a'=1$                       & $a\cdot a'=0$ \\ \hline
+  Associativity  & $(a+b)+c=a+(b+c)$              & $(a\cdot b)\cdot c=a\cdot (b\cdot c)$ \\
+  Idempotent     & $a+a=a$                        & $a\cdot a=a$ \\
+  Involution     & $(a')'=a$                      & \\
+  Absorbtion     & $a+a\cdot b = a$               & $a\cdot(a+b)=a$ \\
+  (special case) & $1+b=1$                        & $0\cdot b=0$ \\
+  Simplification & $a+a'\cdot b = a+b$            & $a\cdot(a'+b)=a\cdot b$ \\
+  DeMorgan's Law & $(a+b)'=a'\cdot b'$            & $(a\cdot b)'=a'+b'$ \\
+\end{tabular}
+
+
+\section{DeMorgan's Law}
+
+DeMorgan's Law is probably the most useful theorem in the table.  DeMorgan's Law is the basis of our use of only one gate (either ``nand'' or ``nor'' can be that one gate) to design actual circuits.  I don't want to make my notes purely a mathematical proof record, but it is important to be able to prove things.  If you can't prove something, you don't understand it.  Note that knowing a proof is also insufficient in and of itself, you need to know how to prove it and how to use it.  I will prove DeMorgan's algebraically as I want to do the general statement, which has arbitrary numbers of variables which can't be represented simply in a table.
+
+The most general statement of DeMorgan's Law is
+\beq
+(a_1+a_2+a_3+\ldots+a_n)' & = & a_1'\cdot a_2'\cdot a_3'\cdot \ldots \cdot a_n' \label{DeMorgan_1}
+\eeq
+and
+\beq
+(a_1\cdot a_2\cdot a_3\cdot \ldots\cdot a_n)' & = & a_1'+a_2'+a_3'+\ldots+a_n' \label{DeMorgan_2}
+\eeq
+
+\Pf
+
+The proof will be by induction on \ref{DeMorgan_1}.
+
+\begin{enumerate}
+    \item (Basis) Show that $(a_1+a_2)' = a_1'\cdot a_2'$.
+
+    By definition of complement, $a+a'=1$ and $a\cdot a'=0$.  DeMorgan's Theorem states that the complement of $(a_1+a_2)$ is $(a_1'\cdot a_2')$ so
+    \begin{enumerate}
+        \item First requirement: $a+a'=1$
+        \beqn
+        (a_1+a_2)+(a_1'\cdot a_2') & = & (a_1'+(a_1+a_2))\cdot( a_2'+(a_1+a_2))
+                            \qquad \hbox{distributivity}\\
+        & = & (a_1'+a_1+a_2)\cdot(a_2'+a_1+a_2)
+                            \qquad \hbox{associativity}\\
+        & = & (a_1'+a_1+a_2)\cdot(a_2'+a_2+a_1)
+                            \qquad \hbox{commutativity}\\
+        & = & ((a_1'+a_1)+a_2)\cdot((a_2'+a_2)+a_1)
+                            \qquad \hbox{associativity}\\
+        & = & (1+a_2)\cdot(1+a_1)
+                            \qquad \hbox{definition of complement}\\
+        & = & 1\cdot 1
+                            \qquad \hbox{Absorbtion special case}\\
+        & = & 1
+                            \qquad \hbox{Idempotent}
+        \eeqn
+
+        Thus they satisfy the first part of the definition.
+
+        \item Second requirement: $a\cdot a'=0$
+        \beqn
+        (a_1+a_2)\cdot(a_1'\cdot a_2') & = & (a_1\cdot(a_1'\cdot a_2'))+( a_2\cdot(a_1'\cdot a_2'))
+                            \qquad \hbox{distributivity}\\
+        & = & (a_1\cdot a_1'\cdot a_2')+( a_2\cdot a_1'\cdot a_2')
+                            \qquad \hbox{associativity}\\
+        & = & (a_1\cdot a_1'\cdot a_2')+( a_2\cdot a_2'\cdot a_1')
+                            \qquad \hbox{commutativity}\\
+        & = & ((a_1\cdot a_1')\cdot a_2')+( (a_2\cdot a_2')\cdot a_1')
+                            \qquad \hbox{associativity}\\
+        & = & (0\cdot a_2')+( 0\cdot a_1')
+                            \qquad \hbox{complement}\\
+        & = & 0+0
+                            \qquad \hbox{Absorbtion special case}\\
+        & = & 0
+                            \qquad \hbox{Absorbtion special case}\\
+        \eeqn
+
+        Thus they satisfy the second part of the definition and are therefore complements of each other.
+    \end{enumerate}
+
+    \item (Inductive Step) Assume it works for $(a_1+a_2+a_3+\ldots+a_{n-1})' = a_1'\cdot a_2'\cdot a_3'\cdot \ldots \cdot a_{n-1}'$ and show it thus works for $(a_1+a_2+a_3+\ldots+a_n)' = a_1'\cdot a_2'\cdot a_3'\cdot \ldots \cdot a_n'$
+
+    \beqn
+    (a_1+a_2+a_3+\ldots+a_{n-1}+a_n)' & = & ((a_1+a_2+a_3+\ldots+a_{n-1})+a_n)'
+                            \qquad \hbox{associativity}\\
+    & = & (a_1+a_2+a_3+\ldots+a_{n-1})'\cdot a_n'
+                            \qquad \hbox{basis}\\
+    & = & a_1'\cdot a_2'\cdot a_3'\cdot \ldots \cdot a_{n-1}'\cdot a_n'
+                            \qquad \hbox{induction hypothesis}\\
+    \eeqn
+\end{enumerate}
+\Pfend
+
+\vspace{6pt}
+\textbf{Example}
+\vspace{6pt}
+
+Verify the following by both algebra and truth tables.
+\beqn
+A+A'\cdot B = B + B'\cdot A
+\eeqn
+
+Sol:
+
+\beqn
+A+A'\cdot B
+& = & A\cdot 1+A'\cdot B \\
+& = & A\cdot(B' + B)+A'\cdot B \\
+& = & A\cdot B' + A\cdot B + A'\cdot B \\
+& = & A\cdot B' + (A + A')\cdot B \\
+& = & A\cdot B' + 1\cdot B \\
+& = & A\cdot B' + B \\
+& = & B + B'\cdot A
+\eeqn
+
+\begin{tabular}{cc}
+\begin{tabular}{c|c||c|c}
+A & B & $A'\cdot B$ & $A+A'\cdot B$ \\
+\hline
+0 & 0 & 0 & 0 \\
+0 & 1 & 1 & 1 \\
+1 & 0 & 0 & 1 \\
+1 & 1 & 0 & 1 \\
+\end{tabular}
+&
+\begin{tabular}{c|c||c|c}
+A & B & $B'\cdot A$ & $B + B'\cdot A$ \\
+\hline
+0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 1 \\
+\end{tabular}
+\end{tabular}
+
+Notice the truth tables are the same for $A+A'\cdot B$ and $B + B'\cdot A$, so they are equal.
+
+
+
+\section{Gates}
+
+\begin{tabular}{llcc}
+  Name & Expression       & Symbol & Truth Table \\
+  Not  & $z=x'$           &
+  {\tt    \setlength{\unitlength}{0.92pt}
+  \begin{picture}(40,20)(0,0)
+  \put(0,0){\Not}
+  \end{picture}}
+         &
+  \begin{tabular}{|l||l|}
+    \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    x & $x'$ \\
+    \hline
+    0 & 1 \\
+    1 & 0 \\
+    \hline
+  \end{tabular}
+  \\ &&&\\
+  And  & $z=x\cdot y$     &
+  {\tt    \setlength{\unitlength}{0.92pt}
+  \begin{picture}(40,20)(0,0)
+  \put(0,0){\AndTwo}
+  \end{picture}}
+  &
+  \begin{tabular}{|l|l||l|}
+    \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    x & y & $x\cdot y$ \\ \hline
+    0 & 0 & 0 \\
+    0 & 1 & 0 \\
+    1 & 0 & 0 \\
+    1 & 1 & 1 \\
+    \hline
+  \end{tabular}
+   \\ &&&\\
+  Or   & $z=x+y$          &
+  {\tt    \setlength{\unitlength}{0.92pt}
+  \begin{picture}(40,20)(0,0)
+  \put(0,0){\OrTwo}
+  \end{picture}}
+  &
+  \begin{tabular}{|l|l||l|}
+    \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    x & y & $x+y$ \\ \hline
+    0 & 0 & 0 \\
+    0 & 1 & 1 \\
+    1 & 0 & 1 \\
+    1 & 1 & 1 \\
+    \hline
+  \end{tabular}
+   \\ &&&\\
+  Nand & $z=(x\cdot y)'$  &
+  {\tt    \setlength{\unitlength}{0.92pt}
+  \begin{picture}(40,20)(0,0)
+  \put(0,0){\NandTwo}
+  \end{picture}}
+  &
+  \begin{tabular}{|l|l||l|}
+    \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    x & y & $(x\cdot y)'$ \\ \hline
+    0 & 0 & 1 \\
+    0 & 1 & 1 \\
+    1 & 0 & 1 \\
+    1 & 1 & 0 \\
+    \hline
+  \end{tabular}
+   \\ &&&\\
+  Nor  & $z=(x+y)'$       &
+  {\tt    \setlength{\unitlength}{0.92pt}
+  \begin{picture}(40,20)(0,0)
+  \put(0,0){\NorTwo}
+  \end{picture}}
+  &
+  \begin{tabular}{|l|l||l|}
+    \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    x & y & $(x+y)'$ \\ \hline
+    0 & 0 & 1 \\
+    0 & 1 & 0 \\
+    1 & 0 & 0 \\
+    1 & 1 & 0 \\
+    \hline
+  \end{tabular}
+   \\ &&&\\
+  Xor  & $z=x \oplus y$   &
+  {\tt    \setlength{\unitlength}{0.92pt}
+  \begin{picture}(40,20)(0,0)
+  \put(0,0){\XorTwo}
+  \end{picture}}
+  &
+  \begin{tabular}{|l|l||l|}
+    \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    x & y & $x \oplus y$ \\ \hline
+    0 & 0 & 0 \\
+    0 & 1 & 1 \\
+    1 & 0 & 1 \\
+    1 & 1 & 0 \\
+    \hline
+  \end{tabular}
+   \\ &&&\\
+  Xnor & $z=x \odot y$    &
+  {\tt    \setlength{\unitlength}{0.92pt}
+  \begin{picture}(40,20)(0,0)
+  \put(0,0){\XnorTwo}
+  \end{picture}}
+  &
+  \begin{tabular}{|l|l||l|}
+    \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    x & y & $x \odot y$ \\ \hline
+    0 & 0 & 1 \\
+    0 & 1 & 0 \\
+    1 & 0 & 0 \\
+    1 & 1 & 1 \\
+    \hline
+  \end{tabular}
+   \\
+\end{tabular}
+
+
+
+\begin{tabular}{c|c||c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c}
+A & B & \begin{sideways}False, Ground\end{sideways}%0000
+& \begin{sideways}$A\cdot B$, And\end{sideways}%0001
+& \begin{sideways}$A\nRightarrow B$, Negated Implication, andn \end{sideways}%0010
+& \begin{sideways}$A$\end{sideways}%0011
+& \begin{sideways}$B\nRightarrow A$, Negated Implication, norn\end{sideways}%0100
+& \begin{sideways}$B$\end{sideways}%0101
+& \begin{sideways}$A\oplus B$, Xor\end{sideways}%0110
+& \begin{sideways}$A+B$, Or\end{sideways}%0111
+& \begin{sideways}$\overline{A+B}$, Nor\end{sideways}%1000
+& \begin{sideways}$A\odot B$, Equiv, Xnor\end{sideways}%1001
+& \begin{sideways}$\overline{B}$, Not\end{sideways}%1010
+& \begin{sideways}$B\implies A$, Implication, orn\end{sideways}%1011
+& \begin{sideways}$\overline{A}$, Not\end{sideways}%1100
+& \begin{sideways}$A\implies B$, Implication, nandn\end{sideways}%1101
+& \begin{sideways}$\overline{A\cdot B}$, Nand\end{sideways}%1110
+& \begin{sideways}True, Power\end{sideways}%1111
+\\\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+0 & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+1 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+1 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
+\end{tabular}

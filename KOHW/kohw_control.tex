@@ -1,0 +1,119 @@
+\chapter{CPU Control}
+\label{c-cpu}
+
+\section{Tiny Accumulator}
+\TinyAcc
+
+%\TinyAccControl
+
+The tiny accumulator has four commands
+
+\begin{tabular}{lll}
+Mach.  & Assem. & \\
+Code   & Lang.  & Description. \\\hline
+  00MN & STC MN & Store Acc to location MN and clear Acc \\
+  01MN & ADD MN & Add Acc and location MN placing result in Acc \\
+  10MN & SUB MN & Sub location MN from Acc, placing result in Acc \\
+  11MN & BRL MN & if Acc is negative, Branch to $nPC+MN\bar N$ \\
+\end{tabular}
+
+\begin{description}
+  \item[STC MN] The store and clear command not only allows storage, but due to the clear, allows a load if it is followed by adding the desired value to load.  The instruction is implemented as follows.  The signal $\bar S/D$ is set to 1, which puts a zero both on the accumulator and the second input of the ALU.  The ALUop is set to add, which thus does ACC plus zero, and so the value of the ACC is placed on the answer line.  Both the ACC and the register file is told to read, which results in the ACC loading zero, and register M loading the value that had been in the ACC.
+  \item[ADD MN] This instruction makes it easy to load the ACC as mentioned in STC MN, as well as providing an arithmetic command.  The instruction is implemented as follows.  The signal $\bar S/D$ is set to 0, which allows the selected register to go to the second input of the ALU and allows the result of the ALU to go to the ACC input.  the ALUop is set to add, and finally the ACC is told to load, so the result becomes stored.
+  \item[SUB MN] This instruction is very similar to ADD.  The instruction is implemented as follows.  The signal $\bar S/D$ is set to 0, which allows the selected register to go to the second input of the ALU and allows the result of the ALU to go to the ACC input.  the ALUop is set to sub, and finally the ACC is told to load, so the result becomes stored.
+  \item[BRL MN] This instruction allows loops and conditional executions to be handled.  The offset is taken to be a three bit, two's compliment number, of which the first two are MN and the last bit is the flip of N.  While this may sound strange it makes the displacements to be
+
+\begin{tabular}{llr}
+MN & $MN\bar N$ & displacement \\
+11 &  110       & -2 \\
+10 &  101       & -3 \\
+01 &  010       & 2 \\
+00 &  001       & 1 \\
+\end{tabular}
+
+The negative numbers allow loops which include one or two instructions besides the branch, and the positive numbers allow for conditional statements of one or two instructions.  Note the negative numbers are larger in magnitude by one to include the branch statement.
+\end{description}
+
+This gives us a full architecture that can be programmed, but is small enough to be built by hand.
+
+
+\section{GST ISA}
+
+Gomez-Schubert-Tafas Instruction Set Architecture.
+
+My thought is to implement 1k-word of memory for each processor, and to do memory mapped IO so we don't need special commands.  The word size is 16 bits and this is the smallest addressable size, again for simplicity.  The ``network'' port should have a buffer of, say, 16 words.  Initially there will not be a cache because since this will be a SOC there is no access time advantage.
+
+The ISA is load-store.  I have broken the 16 bit instruction into 4 nibbles for different purposes as seen below.  I have tried to pair commands by opcode to make for easier control.  I left two unused in case there is anything you want to add.
+
+We only use register, immediate, and indexed addressing, to keep things simple and still provide flexibility.  These three modes allow us to do anything.
+
+I am only considering two's complement numbers, so no unsigned numbers.  While this is a limitation for real computers, I don't think it will matter for this test architecture.
+
+\subsection{R Type Commands}
+
+\noindent
+\begin{tabular}{|c|c|c|c|} \hline
+FEDC   & BA98 & 7654 & 3210 \\ \hline
+Opcode & RD   & RS1  & RS2  \\ \hline
+\end{tabular}
+
+or
+
+\noindent
+\begin{tabular}{|c|c|c|c|} \hline
+FEDC   & BA98 & 7654 & 3210 \\ \hline
+Opcode & RD   & RS1  & Imm1 \\ \hline
+\end{tabular}
+
+\subsection{I Type commands}
+
+\noindent
+\begin{tabular}{|c|c|c|} \hline
+FEDC   & BA98 & 76543210 \\ \hline
+Opcode & RD   & Imm2     \\ \hline
+\end{tabular}
+
+\subsection{B Type commands}
+
+\noindent
+\begin{tabular}{|c|c|} \hline
+FEDC   & BA9876543210 \\ \hline
+Opcode & Imm3     \\ \hline
+\end{tabular}
+
+\subsection{Commands}
+
+\begin{tabular}{lll}
+Opcode & Assembly          & Comments \\ \hline
+0000   & load RD(RS1+RS2)  & $RD\leftarrow M[RS1+RS2]$ \\
+0001   & store RD(RS1+RS2) & $RD\rightarrow M[RS1+RS2]$ \\ \hline
+0010   & ldi RD,Imm2       & $RD[F:8]\leftarrow Imm2$ \\
+0011   &                   &  \\ \hline
+0100   & add RD,RS1,RS2    & $RD\leftarrow RS1+RS2$ \\
+0101   & sub RD,RS1,RS2    & $RD\leftarrow RS1-RS2$ \\ \hline
+0110   &     &  \\
+0111   &     &  \\ \hline
+1000   & sll RD,RS1,Imm1   & $RD\leftarrow RS1<<Imm$ \\
+1001   & sra RD,RS1,Imm1   & $RD\leftarrow RS1>>Imm$ \\ \hline
+1010   & nand RD,RS1,RS2   & $RD\leftarrow (RS1\cdot RS2)'$ \\
+1011   & nor RD,RS1,RS2    & $RD\leftarrow (RS1+RS2)'$ \\ \hline
+1100   & brlt RD,RS1,Imm1  & $(RD<RS1)\Rightarrow(PC\leftarrow nPC+\{Imm1[3:0],\not Imm1[0]\})$ \\
+1101   & brle RD,RS1,Imm1  & $(RD\le RS1)\Rightarrow(PC\leftarrow nPC+\{Imm1[3:0],\not Imm1[0]\})$ \\ \hline
+1110   & br Imm3           & $PC\leftarrow PC+Imm3$ \\
+1111   & j RD              & $PC\leftarrow PC+RD$ \\ \hline
+\end{tabular}
+
+Note: SE is sign extend.
+
+\subsection{Registers}
+
+\begin{tabular}{rrlp{.1in}rrl}
+0 & R0 & Zero                       &&  8 & L0 & Local Register 0 \\
+1 & R1 & General Purpose Register 1 &&  9 & L1 & Local Register 1 \\
+2 & R2 & General Purpose Register 2 && 10 & L2 & Local Register 2 \\
+3 & R3 & General Purpose Register 3 && 11 & L3 & Local Register 3 \\
+4 & R4 & General Purpose Register 4 && 12 & L4 & Local Register 4 \\
+5 & R5 & General Purpose Register 5 && 13 & L5 & Local Register 5 \\
+6 & R6 & General Purpose Register 6 && 14 & SP & Stack Pointer \\
+7 & R7 & General Purpose Register 7 && 15 & RA & Return Address \\
+\end{tabular}

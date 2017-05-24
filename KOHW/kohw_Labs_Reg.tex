@@ -1,0 +1,97 @@
+\chapter{Mini: Register File}
+\label{c-lab-reg}
+
+\section{Register File}
+
+In this lab you will be making the register file (memory) for the Mini. In the preparation you will be designing the register file in Verilog.  First read section 5-5 in the book (pages 190-197).  The registers in the Mini each hold one nibble (half a byte, i.e.: four bits).  The register file is made up of four registers.  We will design our register file in four steps:
+\begin{enumerate}
+\item \textbf{create a D flip-flop}
+
+A D flip-flop must hold 1 bit of data, and it only changes its data when the clock changes.  We want a positive edge triggered flip-flop.  Enter the D flip-flop, "D\_FF" from example 5-2 on page 192 of the book.
+
+\item \textbf{make a four bit register with D flip-flops}
+
+\begin{floatingfigure}{1in}
+\FourBitRegister
+\end{floatingfigure}
+
+  Create a module to hold our four bit register.  Just like the picture.
+
+\begin{verbatim}
+// name: Nibble_Reg
+// desc: four bit register with output enable (low),
+//        made from D flip-flops
+// date:
+// by  :
+module Nibble_Reg(data_out,data_in,load,out_en);
+  input  [3:0] data_in;
+  input        load,out_en;
+  output [3:0] data_out;
+
+  // wires between flip-flops and tri-state gates
+  wire   [3:0] dff_out;
+
+  // instantiate tri-state gates to do output enable
+  bufif0 tri3(data_out[3],dff_out[3],out_en);
+  bufif0 tri2(data_out[2],dff_out[2],out_en);
+  bufif0 tri1(data_out[1],dff_out[1],out_en);
+  bufif0 tri0(data_out[0],dff_out[0],out_en);
+
+
+  //instantiate D flip-flops here
+  D_FF Reg_Bit_3(dff_out[3],data_in[3],load);
+
+     // you finish making instances
+
+endmodule
+
+\end{verbatim}
+
+\item \textbf{create a 2 to 4 line decoder}
+
+We will need two decoders in the final step of our design so we will create them now.  Enter the 2 to 4 line decoder, "decoder\_df" from example 4-3 on page 153 of the book.  To follow standard design practices we will make a few modifications.
+\begin{itemize}
+    \item Put ``D'' first in the port list.  As a general rule, outputs are always first.
+    \item The ports ``A'' and ``B'' are actually the address bits so combine them into one new port ``A'' that has two bits.  Note you will have to change the port list, input line, and the assignments.
+    \item Change the bit ordering of ``D'' from ``[0:3]''(big endian) to ``[3:0]''(little endian) to be consistent with the rest of the design
+\end{itemize}
+
+\item \textbf{build the register file from the registers}
+
+%\begin{floatingfigure}{2in}
+\RegisterFile
+%\end{floatingfigure}
+
+  Create a module to hold our register file.  Just like the picture
+
+\begin{verbatim}
+// name: Register_File
+// desc: 4x4 register file
+// date:
+// by  :
+module Register_File(data_out,data_in,read_add,read_en,write_add,write_en);
+  input  [3:0] data_in;            // data to write
+  input  [2:0] read_add,write_add; // read address and write address
+  input        read_en,write_en;   // read and write enable
+  output [3:0] data_out;           // data to read
+
+  wire   [3:0] read_sel,write_sel;
+
+  //instantiate registers here
+  decoder_df Dec_Read(read_sel,read_en,read_add);
+  decoder_df Dec_Write(write_sel,write_en,write_add);
+
+
+  //instantiate registers here
+  Nibble_Reg Reg_0(data_out,data_in,write_sel[0],read_sel[0]);
+
+     // you finish making instances
+
+endmodule
+
+\end{verbatim}
+
+
+\end{enumerate}
+
+

@@ -1,0 +1,412 @@
+\chapter{Codes}
+\label{c-codes}
+
+Codes are used to represent members of a set by a sequence of symbols.  For our purposes, the sequence of symbols will always be a sequence of $\{ 0,1\}$.  Codes have an encoding for each member to be represented. Codes can be fixed or variable in length. Fixed length codes like ascii have the same number of symbols in every encoding of the code.  Variable length codes use different numbers of symbols to represent the encodings.  For instance if '1' is 'a', '01' is 'b', and '00' is 'c', then the code is variable length.  The major trouble with variable length codes is splitting the message up into the individual encodings.  If the code is prefix (postfix) then the code can be directly read from left to right (right to left).
+
+\section{Standard Codes}
+\subsection{Unsigned}
+\begin{tabular}{rcccccc}
+decimal & Binary & Gray & BCD  & 2421 & Residue(5,3) & Residue(7,2) \\
+0       & 0000   & 0000 & 0000 & 0000 & 000,00       & 000,0        \\
+1       & 0001   & 0001 & 0001 & 0001 & 001,01       & 001,1        \\
+2       & 0010   & 0011 & 0010 & 0010 & 010,10       & 010,0        \\
+3       & 0011   & 0010 & 0011 & 0011 & 011,00       & 011,1        \\
+4       & 0100   & 0110 & 0100 & 0100 & 100,01       & 100,0        \\
+5       & 0101   & 0111 & 0101 & 1011 & 000,10       & 101,1        \\
+6       & 0110   & 0101 & 0110 & 1100 & 001,00       & 110,0        \\
+7       & 0111   & 0100 & 0111 & 1101 & 010,01       & 000,1        \\
+8       & 1000   & 1100 & 1000 & 1110 & 011,10       & 001,0        \\
+9       & 1001   & 1101 & 1001 & 1111 & 100,00       & 010,1        \\
+10      & 1010   & 1111 &      &      & 000,01       & 011,0        \\
+11      & 1011   & 1110 &      &      & 001,10       & 100,1        \\
+12      & 1100   & 1010 &      &      & 010,00       & 101,0        \\
+13      & 1101   & 1011 &      &      & 011,01       & 110,1        \\
+14      & 1110   & 1001 &      &      & 100,10       & -            \\
+15      & 1111   & 1000 &      &      & -            & -            \\
+\end{tabular}
+
+BCD is a decimal code designed to be compatible with standard binary numbers.  It is sometimes called 8421 code due to the weights on the columns.  The 2421 code was designed to be the same as BCD for 0-4 and make the 9's complement, which is important for easy subtraction, of 0-4 (i.e. 9-5 respectively) be easy to take because you can simply flip the bits.
+
+Gray code is an alternate to binary.  It is not a decimal code, and hence does not waste 6 codes for every four bits.  Gray code was designed to have only one bit flip at any given time.  This is helpful in systems which have analog components and need to count.  For instance in an NC drill, we might want to encode the shaft position and hence put gray code bars on the shaft and have an ir sensor read them.  Since only one bit flips between each consecutive number, it is easy to verify if we are reading correctly and thus get a good idea of how fast the shaft is spinning and where the shaft is.  Gray code is also useful to us in Karnaugh maps and code maps because the one bit flipping property lets us find errors of type one easily (Karnaugh maps) and measure Hamming distance easily (code maps).  Notice that the first bit of a gray code is just like binary (all 0's first then 1's), while the rest follow a 0110 pattern on reducing scales.
+
+The easiest way to read grey code is to start from the left and just copy the first bit.  From then on if the next digit to the right is 0 then repeat the last digit you wrote, if it is 1 flip the last digit you wrote.
+
+\begin{example}
+What is the value of $101111_{gray}$?
+
+{\color{ans}
+Starting at the left copy the first bit:
+
+\begin{tabular}{l|cccccc}
+Gray   & 1 & 0 & 1 & 1 & 1 & 1 \\ \hline
+Binary & 1 &   &   &   &   &   \\
+\end{tabular}
+
+The next bit is a 0 so repeat the last bit you wrote (in this case a 1):
+
+\begin{tabular}{l|cccccc}
+Gray   & 1 & 0 & 1 & 1 & 1 & 1 \\ \hline
+Binary & 1 & 1 &   &   &   &   \\
+\end{tabular}
+
+The next bit is a 1 so flip the last bit you wrote (in this case 1 flips to 0):
+
+\begin{tabular}{l|cccccc}
+Gray   & 1 & 0 & 1 & 1 & 1 & 1 \\ \hline
+Binary & 1 & 1 & 0 &   &   &   \\
+\end{tabular}
+
+The next bit is a 1 so flip the last bit you wrote (in this case 0 flips to 1):
+
+\begin{tabular}{l|cccccc}
+Gray   & 1 & 0 & 1 & 1 & 1 & 1 \\ \hline
+Binary & 1 & 1 & 0 & 1 &   &   \\
+\end{tabular}
+
+The next bit is a 1 so flip the last bit you wrote (in this case 1 flips to 0):
+
+\begin{tabular}{l|cccccc}
+Gray   & 1 & 0 & 1 & 1 & 1 & 1 \\ \hline
+Binary & 1 & 1 & 0 & 1 & 0 &   \\
+\end{tabular}
+
+The next bit is a 1 so flip the last bit you wrote (in this case 0 flips to 1):
+
+\begin{tabular}{l|cccccc}
+Gray   & 1 & 0 & 1 & 1 & 1 & 1 \\ \hline
+Binary & 1 & 1 & 0 & 1 & 0 & 1 \\
+\end{tabular}
+
+Binary 110101 is 53, so gray 101111 is 53.
+}
+\end{example}
+
+Residue number systems (residue codes) are fun though rarely used because of the difficulty in converting back from them to binary.  Residue codes are specified by a series of remainders, taken to relatively prime bases (listed parenthesis and separated by commas).  The remainders are in the same order as the specified bases and also separated by commas.  The advantage of this system is you can perform fast addition, multiplication, and subtraction (if the divisor is not zero in any of the residues you can also do division efficiently), extremely fast, as the modulo terms are independently calculated by the modulo of the arithmetic operation being performed.
+
+\begin{example}
+Calculate $7+3$, $3*4$, $14-8$, and $14/7$ in Modulo(5,3).  Note we can do division because $7\mod 5=2>0$ and $7\mod 3 =1>0$.
+
+{\color{ans}
+$7+3 = (010,01) + (011,00) = (010+011 \mod 5,01+00 \mod 3) = (000,01) = 10$
+
+$3*4 = (011,00)*(100,01) = (011*100 \mod 5, 00*01 \mod 3) = (010,00) = 12$
+
+$14-8 = (100,10)-(011,10) = (100-011 \mod 5, 10 -10 \mod 3) = (001,00) = 6$
+
+$14/7 = (100,10)-(010,01) = (100/010 \mod 5, 10/01 \mod 3) = (010,10) = 2$
+}
+\end{example}
+
+\subsection{Signed}
+
+
+\begin{tabular}{rlllll}
+decimal & Signed Binary & 1's Comp  & 2's Comp & Excess-7 & Excess 8 \\
+ 8      & -             & -         & -        & 1111     & -        \\
+ 7      & 0111          & 0111      & 0111     & 1110     & 1111     \\
+ 6      & 0110          & 0110      & 0110     & 1101     & 1110     \\
+ 5      & 0101          & 0101      & 0101     & 1100     & 1101     \\
+ 4      & 0100          & 0100      & 0100     & 1011     & 1100     \\
+ 3      & 0011          & 0011      & 0011     & 1010     & 1011     \\
+ 2      & 0010          & 0010      & 0010     & 1001     & 1010     \\
+ 1      & 0001          & 0001      & 0001     & 1000     & 1001     \\
+ 0      & 0000,1000     & 0000,1111 & 0000     & 0111     & 1000     \\
+-1      & 1001          & 1110      & 1111     & 0110     & 0111     \\
+-2      & 1010          & 1101      & 1110     & 0101     & 0110     \\
+-3      & 1011          & 1100      & 1101     & 0100     & 0101     \\
+-4      & 1100          & 1011      & 1100     & 0011     & 0100     \\
+-5      & 1101          & 1010      & 1011     & 0010     & 0011     \\
+-6      & 1110          & 1001      & 1010     & 0001     & 0010     \\
+-7      & 1111          & 1000      & 1001     & 0000     & 0001     \\
+-8      & -             & -         & 1000     & -        & 0000     \\
+\end{tabular}
+
+Note that both signed binary and 1's compliment have a positive and negative 0.  Signed binary was an early development, but is not that useful because you can't use a standard adder/subtractor.
+
+1's compliment is easy to calculate (flip the bits to convert from positive to negative), and is useful in turning an adder into a subtractor (the number to be subtracted is turned into the 2's complement, by finding the 1's complement, then setting the carry-in bit of the adder to do the $+1$).
+
+2's compliment is the standard form for storing negative numbers in computers because you can easily convert (either by flipping bits and adding 1, or by starting on the right and copying bits up to and including the first 1, then flipping the remaining bits), and standard adder/subtractor circuits can be used.
+
+Excess codes are most commonly used in floating point number exponents, as they preserve the numeric order of greatness (you can use standard compare circuits to check size).  The excess is either half the total numbers ($16/2=8$ for excess 8) or half the total numbers minus 1 ($16/2-1=7$ for excess 7).
+
+\section{Huffman Codes}
+
+Huffman codes are variable length codes that produce optimal expected code lengths.
+\beqn
+    ecl & = & \sum_{l\in C}\left( freq(l)\times length(l) \right)
+\eeqn
+
+\noindent Example:
+
+Consider the string "adabaabcaabacadaccac" that we want to encode.  There are four members of the set (a, b, c, d) which means the members can be represented by a two bit fixed code.  But consider the following encoding (a=1, b=001, c=01, d=000).  The frequencies of the members are (a=10/20=.5, b= 3/20=.15, c=5/20=.25, d =2/20=.1). The ecl of the variable code is
+\beqn
+    ecl & = & .5*1 + .15*3 + .25*2 + .1*2 \\
+        & = & 1.65
+\eeqn
+The expected code length is only 1.65 bits/character.
+
+\subsection{Huffman Algorithm}
+\begin{enumerate}
+  \item Calculate the frequencies of each member
+  \beqn
+    \frac{\# \: occurrences \: of \: member}{Total \: occurrences}
+  \eeqn
+  \item Form decode tree from forest
+    \begin{enumerate}
+        \item make 1 node tree for each member with frequency and
+        member name
+        \item join two trees with the smallest frequency on root node by making them branches of a new root node and giving the new root node the sum of the frequencies of the old root nodes
+        \item put new tree in forest and repeat joining till only
+        one tree remains (the answer)
+    \end{enumerate}
+  \item encode or decode message
+\end{enumerate}
+
+\section{Error Detection and Correction}
+
+Errors can happen in a variety of ways.  Bits can be added, deleted, or flipped.  Errors can happen in fixed or variable codes.  For simplicity we will consider only bit flips in fixed codes.  Note that variable codes can be packed into fixed length blocks for transmission and storage, so this is not as restrictive as it might sound at first.
+
+The Hamming distance ($d_H$) between two codewords is the number of bit flips to turn one codeword into the other codeword.  It can also be thought of as the number of bits that are different between two codewords.  The Hamming distance can be extended to a set, by defining it as the minimum distance between any two codewords in the set.  The Hamming distance is useful in codes because it tells us how many errors can be detected ($E_d$) and how many errors can be corrected ($E_c$) The relations are given by
+\begin{eqnarray*}
+  d_H &\geq& 1+E_d \\
+  d_H &\geq& 1+2\times E_c
+\end{eqnarray*}
+
+
+\vspace{6pt}
+\textbf{Example}
+\vspace{6pt}
+
+Consider the codes $(00001,01100)$.
+    \begin{enumerate}
+        \item What is the Hamming distance?
+
+        {\color{ans}
+        3
+        }
+
+        \item How many errors can be detected?  How many can be corrected?
+
+        {\color{ans}
+        $3\ge 1+d$ thus detect 2
+
+        and
+
+        $3\ge 1+2c$ thus correct 1
+        }
+
+        \item It is desired to add another codeword without reducing the Hamming distance.  What codeword do you suggest?
+
+        {\color{ans}
+        any of the following will work:
+        \begin{itemize}
+            \item $10010$
+            \item $10110$
+            \item $10111$
+            \item $11010$
+            \item $11011$
+            \item $11111$
+        \end{itemize}
+        }
+    \end{enumerate}
+
+
+\subsection{Hamming Code}
+
+To detect and/or correct errors, two pieces of information must be sent, the original data ($D_i$) and check bits ($C_j$). Consider numbering in binary each position in an array of bits to be sent starting at 1, and positioning the check bits at the powers of two.
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 \\
+Address & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 \\
+& 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 \\
+& 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 \\ \hline
+Code& $C_0$ & $C_1$ & $D_1$ & $C_2$ & $D_2$ & $D_3$ & $D_4$ & $C_3$ & $D_5$ & $D_6$ \\ \hline
+\end{tabular}
+
+The check bits are then calculated by taking the exclusive-or (xor) of all the data bits ($D_i$), whose address contains a $1$ in the same place as the check bit.  Thus,
+
+\vspace{.1in}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 \\
+Address & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 \\
+& 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 \\
+& \textcolor{red}{1} & 0 & \textcolor{red}{1} & 0 & \textcolor{red}{1} & 0 & \textcolor{red}{1} & 0 & \textcolor{red}{1} & 0 \\ \hline
+Code& \textcolor{red}{$C_0$} & $C_1$ & \textcolor{red}{$D_1$} & $C_2$ & \textcolor{red}{$D_2$} & $D_3$ & \textcolor{red}{$D_4$} & $C_3$ & \textcolor{red}{$D_5$} & $D_6$ \\ \hline
+\end{tabular}
+\begin{eqnarray*}
+  C_0 &=& D_1 \oplus D_2 \oplus D_4 \oplus D_5
+\end{eqnarray*}
+
+\vspace{.1in}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 \\
+Address & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 \\
+& 0 & \textcolor{red}{1} & \textcolor{red}{1} & 0 & 0 & \textcolor{red}{1} & \textcolor{red}{1} & 0 & 0 & \textcolor{red}{1} \\
+& 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 \\ \hline
+Code& $C_0$ & \textcolor{red}{$C_1$} & \textcolor{red}{$D_1$} & $C_2$ & $D_2$ & \textcolor{red}{$D_3$} & \textcolor{red}{$D_4$} & $C_3$ & $D_5$ & \textcolor{red}{$D_6$} \\ \hline
+\end{tabular}
+\begin{eqnarray*}
+  C_1 &=& D_1 \oplus D_3 \oplus D_4 \oplus D_6
+\end{eqnarray*}
+
+And so on.
+
+The Hamming distance is three, which will be proved in three cases.
+\begin{enumerate}
+    \item If the data portion of two codewords differs by only one bit, then note that the address of each data bit has at least two ones in it.  This means that the data bit that is different will cause at least two check bits to be different, yielding a Hamming distance of three.
+    \item If the data portion of two codewords differs by two bits, then note that no two data bits affect all the same check bits. Thus, there exists at least one check bit that is affected by only one of the two data bits that differs, and will thus be different between the two codewords, yielding a Hamming distance of three.
+    \item If the data portion of two codewords differs by more than two bits the result is trivial.
+\end{enumerate}
+
+\begin{flushright}
+Q.E.D.\end{flushright}
+
+
+  A Hamming distance of three means
+\begin{eqnarray*}
+  3 &\geq& 1+E_d \\
+  2 &\geq& E_d \\
+  3 &\geq& 1+2\times E_c \\
+  2 &\geq& 2\times E_c \\
+  1 &\geq& E_c.
+\end{eqnarray*}
+One error can be corrected or two detected.  To find the error for correction you create its address by taking the exclusive-or of the check bits and the data that created them.  A $1$ will result only if an odd number of errors happened in the subset checked.  The address that results is the address of the error, which is fixed by toggling.
+
+\textbf{Example}
+
+the data "1010" is to be sent by Hamming Code.  Since there are only four bits of data, only three check bits are needed.  The data is put in place.
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+        & 0     & 0     & 0 & 1     & 1 & 1 & 1 \\
+Address & 0     & 1     & 1 & 0     & 0 & 1 & 1 \\
+        & 1     & 0     & 1 & 0     & 1 & 0 & 1 \\ \hline
+Code    & $C_0$ & $C_1$ & 1 & $C_2$ & 0 & 1 & 1 \\ \hline
+\end{tabular}
+
+Next the check bits are calculated and
+\begin{eqnarray*}
+  C_0 &=& D_1 \oplus D_2 \oplus D_4 \\
+      &=& 1 \oplus 0 \oplus 1 \\
+      &=& 0 \\
+  C_1 &=& D_1 \oplus D_3 \oplus D_4 \\
+      &=& 1 \oplus 1 \oplus 1 \\
+      &=& 1 \\
+  C_2 &=& D_2 \oplus D_3 \oplus D_4 \\
+      &=& 0 \oplus 1 \oplus 1 \\
+      &=& 0
+\end{eqnarray*}
+Thus,
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+        & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+Address & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+        & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\ \hline
+Code    & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\ \hline
+\end{tabular}
+
+Now, assume an error happens.  It could be anywhere, but for this example assume that the bit in position 6 is toggled.
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+        & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+Address & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+        & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\ \hline
+Code    & 0 & 1 & 1 & 0 & 0 & 0 & 1 \\ \hline
+\end{tabular}
+
+To find it get the address by
+\begin{eqnarray*}
+  A_0 &=& C_0 \oplus D_1 \oplus D_2 \oplus D_4 \\
+      &=& 0 \oplus 1 \oplus 0 \oplus 1 \\
+      &=& 0, \\
+  A_1 &=& C_1 \oplus D_1 \oplus D_3 \oplus D_4 \\
+      &=& 1 \oplus 1 \oplus 0 \oplus 1 \\
+      &=& 1, \\
+  A_2 &=& C_2 \oplus D_2 \oplus D_3 \oplus D_4 \\
+      &=& 0 \oplus 0 \oplus 0 \oplus 1 \\
+      &=& 1.
+\end{eqnarray*}
+Yielding the address, $A_2A_1A_0=110=6$, which is the error.
+
+\vspace{.1in}\noindent
+\Example{Hello There}
+
+Compress "hello there" using a Huffman code designed off it.  Then use a Hamming code on 11 bit blocks of the compressed message.  How does the overall message size compare to the original?
+    {\color{ans}
+    I will just list the code, the tree is obvious from it.  Note that other trees are possible.
+
+    \vspace{.1in}
+    \begin{tabular}{|c|c|c|} \hline
+      letter & frequency      & code \\ \hline
+      h      & $\frac{2}{11}$ & 100 \\
+      e      & $\frac{3}{11}$ & 11 \\
+      l      & $\frac{2}{11}$ & 101 \\
+      o      & $\frac{1}{11}$ & 011 \\
+      sp     & $\frac{1}{11}$ & 010 \\
+      t      & $\frac{1}{11}$ & 001 \\
+      r      & $\frac{1}{11}$ & 000 \\ \hline
+    \end{tabular}
+    \vspace{.1in}
+
+    Huffman code: 10011101101 01101000110 01100011
+
+    \vspace{.2in}
+
+    Hamming Code
+
+    Since I don't have enough bits to do 3 groups of 11, I could pad with 0's or 1's or I could make the last packet shorter.  Alternately I could have made an EOF code in my Huffman code.  In this case I will just skip them so you see how that works.  You should mention the problem and what you will do along with the solution.
+
+    \vspace{.1in}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+      \hline
+      Data Section & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\ \hline
+      First  & $c_0$ & $c_1$ & 1 & $c_2$ & 0 & 0 & 1 & $c_3$ & 1 & 1 & 0 & 1 & 1 & 0 & 1 \\ \hline
+      Second & $c_0$ & $c_1$ & 0 & $c_2$ & 1 & 1 & 0 & $c_3$ & 1 & 0 & 0 & 0 & 1 & 1 & 0 \\ \hline
+      Third  & $c_0$ & $c_1$ & 0 & $c_2$ & 1 & 1 & 0 & $c_3$ & 0 & 0 & 1 & 1 &  &  &  \\ \hline
+    \end{tabular}
+    \vspace{.1in}
+
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+      \hline
+      Data Section & 1 & 2 & \textbf{3} & 4 & \textbf{5} & 6 & \textbf{7} & 8 & \textbf{9} & 10 & \textbf{11} & 12 & \textbf{13} & 14 & \textbf{15} \\ \hline
+      First  & 1 & $c_1$ & 1 & $c_2$ & 0 & 0 & 1 & $c_3$ & 1 & 1 & 0 & 1 & 1 & 0 & 1 \\ \hline
+      Second & 1 & $c_1$ & 0 & $c_2$ & 1 & 1 & 0 & $c_3$ & 1 & 0 & 0 & 0 & 1 & 1 & 0 \\ \hline
+      Third  & 0 & $c_1$ & 0 & $c_2$ & 1 & 1 & 0 & $c_3$ & 0 & 0 & 1 & 1 &  &  &  \\ \hline
+    \end{tabular}
+    \vspace{.1in}
+
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+      \hline
+      Data Section & 1 & 2 & \textbf{3} & 4 & 5 & \textbf{6} & \textbf{7} & 8 & 9 & \textbf{10} & \textbf{11} & 12 & 13 & \textbf{14} & \textbf{15} \\ \hline
+      First  & 1 & 0 & 1 & $c_2$ & 0 & 0 & 1 & $c_3$ & 1 & 1 & 0 & 1 & 1 & 0 & 1 \\ \hline
+      Second & 1 & 0 & 0 & $c_2$ & 1 & 1 & 0 & $c_3$ & 1 & 0 & 0 & 0 & 1 & 1 & 0 \\ \hline
+      Third  & 0 & 0 & 0 & $c_2$ & 1 & 1 & 0 & $c_3$ & 0 & 0 & 1 & 1 &  &  &  \\ \hline
+    \end{tabular}
+    \vspace{.1in}
+
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+      \hline
+      Data Section & 1 & 2 & 3 & 4 & \textbf{5} & \textbf{6} & \textbf{7} & 8 & 9 & 10 & 11 & \textbf{12} & \textbf{13} & \textbf{14} & \textbf{15} \\ \hline
+      First  & 1 & 0 & 1 & 0 & 0 & 0 & 1 & $c_3$ & 1 & 1 & 0 & 1 & 1 & 0 & 1 \\ \hline
+      Second & 1 & 0 & 0 & 0 & 1 & 1 & 0 & $c_3$ & 1 & 0 & 0 & 0 & 1 & 1 & 0 \\ \hline
+      Third  & 0 & 0 & 0 & 1 & 1 & 1 & 0 & $c_3$ & 0 & 0 & 1 & 1 &  &  &  \\ \hline
+    \end{tabular}
+    \vspace{.1in}
+
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+      \hline
+      Data Section & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & \textbf{9} & \textbf{10} & \textbf{11} & \textbf{12} & \textbf{13} & \textbf{14} & \textbf{15} \\ \hline
+      First  & 1 & 0 & 1 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 \\ \hline
+      Second & 1 & 0 & 0 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 0 & 0 & 1 & 1 & 0 \\ \hline
+      Third  & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 1 &  &  &  \\ \hline
+    \end{tabular}
+    \vspace{.1in}
+
+    The length is thus 42 bits for the compressed code with error correction.  The original message was $11\, \textrm{chars}\times 7\, \textrm{bits/char} = 77\, \textrm{bits}$.  The new message is much smaller (less than 4/7).
+
+    } 

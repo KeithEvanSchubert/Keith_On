@@ -1,0 +1,317 @@
+\chapter{Stack Machines}
+\label{c-stack}
+
+
+Stack machines are also known as 0-address machines, because no address must be specified for arithmetic operations.  The most common example of a stack machine is an HP calculator.  The application "Toy Stack" is an executable for Windows XP, which is available at the website.  It has 64 bytes of memory split into 32 for instructions and 32 for data.  All variables are 1 byte long and stored in 2's complement or unsigned form.  Instructions are 1 byte long, but can have two commands in it in some cases.  There is no branch delay slot.  The commands are
+
+\textbf{Memory}
+
+\begin{tabular}{|cc|c|c|}
+\hline
+  0 & 0 & P & Addr \\ \hline
+\end{tabular}
+
+where,
+\begin{eqnarray*}
+  P &=& \left\{%
+\begin{array}{ll}
+    0, & \hbox{Push;} \\
+    1, & \hbox{Pop.} \\
+\end{array}%
+\right.     \\
+  Addr &=& \hbox{5-bit address in memory.}
+\end{eqnarray*}
+
+
+\textbf{Branching}
+
+\begin{tabular}{|cc|c|c|}
+\hline
+  0 & 1 & C & Addr \\ \hline
+\end{tabular}
+
+where,
+\begin{eqnarray*}
+  C &=& \left\{%
+\begin{array}{ll}
+    0, & \hbox{Always;} \\
+    1, & \hbox{Less (i.e. the top number on the stack is negative).} \\
+\end{array}%
+\right.     \\
+  Addr &=& \hbox{5-bit address in memory to branch to.}
+\end{eqnarray*}
+Note: branch less is also branch bit set, for the most significant bit on the top of the stack.
+
+
+\textbf{Arithmetic}
+
+\begin{tabular}{|cc|c|c|}
+\hline
+  1 & 0 & $Op_1$ & $Op_2$ \\ \hline
+\end{tabular}
+
+where,
+\begin{eqnarray*}
+  Op_i &=& \left\{%
+\begin{array}{ll}
+    000, & \hbox{halt ($Op_1$) or nop ($Op_2$);} \\
+    001, & \hbox{addition;} \\
+    010, & \hbox{subtraction;} \\
+    011, & \hbox{negation;} \\
+    100, & \hbox{unsigned multiplication;} \\
+    101, & \hbox{signed multiplication;} \\
+    110, & \hbox{unsigned division;} \\
+    111, & \hbox{signed division.} \\
+\end{array}%
+\right.
+\end{eqnarray*}
+Note: Nop is no operation, and is used to allow, just one arithmetic command to execute rather than two.  Halt is used to terminate the program run.  If something other than nop is in $Op_2$ after a halt then that command is executed before termination.
+
+
+\textbf{Shifting}
+
+\begin{tabular}{|cc|c|c|c|c|}
+\hline
+  1 & 1 & 0 & L/R & mode & times \\ \hline
+\end{tabular}
+
+where,
+\begin{eqnarray*}
+  L/R &=& \left\{%
+\begin{array}{ll}
+    0, & \hbox{left shift;} \\
+    1, & \hbox{right shift.} \\
+\end{array}%
+\right. \\
+  mode &=& \left\{%
+\begin{array}{ll}
+    00, & \hbox{fill with 0's;} \\
+    01, & \hbox{fill with 1's;} \\
+    10, & \hbox{arithmetic shift;} \\
+    11, & \hbox{circulant shift.} \\
+\end{array}%
+\right. \\
+times &=& \hbox{shift (1+times) bits (times is a two bit number).}
+\end{eqnarray*}
+
+
+\textbf{Push Signed Constant}
+
+\begin{tabular}{|cc|c|c|c|}
+\hline
+  1 & 1 & 1 & 0 & Const \\ \hline
+\end{tabular}
+
+where, Const is a four bit number that is sign extended to eight bits and pushed on the stack.
+
+
+\textbf{Logic}
+
+\begin{tabular}{|cc|c|c|c|c|}
+\hline
+  1 & 1 & 1 & 1 & 0 & Op \\ \hline
+\end{tabular}
+
+where,
+\begin{eqnarray*}
+  Op &=& \left\{%
+\begin{array}{ll}
+    000, & \hbox{or;} \\
+    001, & \hbox{nor;} \\
+    010, & \hbox{orn;} \\
+    011, & \hbox{xor;} \\
+    100, & \hbox{and;} \\
+    101, & \hbox{nand;} \\
+    110, & \hbox{andn;} \\
+    111, & \hbox{equivalence.} \\
+\end{array}%
+\right.
+\end{eqnarray*}
+Note: all logic functions are bitwise.
+
+
+\textbf{Undefined}
+
+\begin{tabular}{|cc|c|c|c|c|}
+\hline
+  1 & 1 & 1 & 1 & 1 & Op \\ \hline
+\end{tabular}
+
+where, Op is a three bit operand.  This operation is left undefined.
+
+At the moment you have to enter your programs and data values manually, sorry I just started writing this.  A load and save feature has been added which saves the memory to a file in encrypted format.  You can only load programs that were encrypted with your exact name (spelling and caps count).  Essentially this removes sharing data files as you need to submit your solutions electronically to me, with the exact spelling of your name (so I can load them).  I will not give credit to you unless the name is yours.
+
+\section{Affine Encryption Program}\label{s-stack-affine}
+
+Affine encryption is one of the simplest methods for doing encryption.  Let $P_i$ be the $i^{th}$ character in the plain text message, and let $C_i$ be the corresponding encoded character.  Let there be $n$ possible characters to encode, then the basic idea is to pick two numbers $(a,b)$ to encode a message such that $\gcd(a,n)=1$ (so $a$ has an inverse).  No requirement on $b$ is needed if your modulus function has been encoded correctly.  The encoded character can then be found by
+\begin{eqnarray*}
+  a\times P_i +b &=& C_i \mod n.
+\end{eqnarray*}
+Note that the "$\mod n$" at the end says the equation holds in $\Zed_n$, the set of integers mod $n$ with appropriately defined arithmetic.
+
+To decrypt the message, the equation
+\begin{eqnarray*}
+  \bar a\times (C_i +d) &=& P_i \mod n
+\end{eqnarray*}
+is used.  The term $\bar a$ is the inverse of $a$ in $\Zed_n$, which is found by solving
+\begin{eqnarray*}
+  a\times\bar a &=& 1 \mod n \\
+   & \textbf{or} & \\
+  a\times\bar a &=& m\times n+1.
+\end{eqnarray*}
+Note that $m$ is any whole number.  The term $d$ is the additive inverse of $b$ in $\Zed_n$, which is found by solving
+\begin{eqnarray*}
+  d=n-(b \mod n).
+\end{eqnarray*}
+
+We can summarize this by saying an affine cipher is an encryption technique that encodes using three integers: $a$, $b$, and $n$.  If $plain$ is the character to be encoded (with `A'=0 and `Z'=25) then $code=(a*plain+b) \mod n$.  Decoding is also done using three integers: $c$, $d$, and $n$.  If $code$ is the character to be encoded (with `A'=0 and `Z'=25) then $plain=(c*(code+d)) \mod n$.  The requirements on $(a,b,c,d,n)$ are:
+\begin{itemize}
+    \item $\gcd(a,n)=1$
+    \item $(ac) \mod n = 1$
+    \item $(b+d) \mod n = 0$
+\end{itemize}
+Below is C code to implement a particular case of affine cyphers.
+\begin{verbatim}
+
+char affine_encode(char plain){
+    // affine codes capital letter in plain using a=5, b=12 thus this is modulo 26
+    int iCode, iPlain, a=3,b=0;
+
+    // convert char to integer and shift so A=0
+    iPlain=int(plain)-65;
+
+    // do the encoding
+    iCode = (a*iPlain+b)%26;
+
+    // return the result as a char
+    return char(iCode+65);
+}
+
+char affine_decode(char code){
+    // affine decodes capital letter in plain using c=21, d=8 thus this is modulo 26
+    int iCode, iPlain, c=9, d=0;
+
+    // convert char to integer and shift so A=0
+    iCode=int(code)-65;
+
+    // do the decoding
+    iPlain = (c*(iCode+d))%26;
+
+    // return the result as a char
+    return char(iPlain+65);
+}
+\end{verbatim}
+
+
+Using this we consider affine encryption for standard ASCII including the control codes.  In this case $n=2^7=128$.  Note that the standard arithmetic on our stack machine is $\Zed_{2^8}$ so we can calculate normally then drop the leading bit to get $\Zed_{2^7}$.  As long as $a$ does not have $2$ as a factor it will meet the requirement $\gcd(a,n)=1$.  Let $a=3$ then $3\times\bar a = m\times n+1$ for some $m\in\{1,2,\ldots\}$.  Start with $m=1$, then $\bar a = 129/3 = 43$.  Since the result is an integer, it is an inverse.  If the result was not an integer, $m$ would be incremented and the process would continue.  Finally, let $b=57$ then $d=128-57=71$.
+
+Let the memory locations of the variables be:
+
+\noindent\begin{tabular}{|c|c|c|}
+  \hline
+  Variable & Address & Value \\ \hline
+  $P$      & 00000 & your choice \\ \hline
+  $C$      & 00001 & per calculation \\ \hline
+  $P$(calc)& 10000 & per calculation \\ \hline
+  $a$      & 11100 & 00000011 \\ \hline
+  $\bar a$ & 11101 & 00101011 \\ \hline
+  $b$      & 11110 & 00111001 \\ \hline
+  $d$      & 11111 & 01000111 \\ \hline
+\end{tabular}
+
+The variable $P$(calc) was added so the decoded plain text would not overwrite the original.  The program to encode is thus:
+
+\begin{tabular}{l|l@{ ;}l}
+  Machine & Assembly & Comment \\
+  \hline
+  00011110 & push $b$ & load data \\
+  00011100 & push $a$ &  \\
+  00000000 & push $P$ &  \\
+           & unsigned multiply & aP+b \\
+  10100001 & add      &  \\
+  11000000 & shl0 1   & drop leading bit \\
+  11010000 & shr0 1   &  \\
+  00100001 & pop $C$  & store \\
+  10000000 & halt     & done \\
+\end{tabular}
+
+The program to decode is thus:
+
+\begin{tabular}{l|l@{ ;}l}
+  Machine & Assembly & Comment \\
+  \hline
+  00011101 & push $\bar a$     & load data \\
+  00011111 & push $d$          &  \\
+  00000001 & push $C$          &  \\
+           & add               & $\bar a(C+d)$ \\
+  10001100 & unsigned multiply &  \\
+  11000000 & shl0 1            & drop leading bit \\
+  11010000 & shr0 1            &  \\
+  00110000 & pop $P$(calc)     & store \\
+  10000000 & halt              & done \\
+\end{tabular}
+
+
+\section{Babylonian Algorithm}
+
+Implement the following Babylonian algorithm to find Pythagorean Triples\footnote{The algorithm actually predates Pythagoras.} on the Toy Stack.
+\begin{itemize}
+    \item Start with 2 (unsigned) integers $p$, $q$ with $p>q$ (assume these are present)
+    \item calculate the three numbers by: $n_1=2pq$, $n_2=p^2-q^2$, $n_3=p^2+q^2$
+\end{itemize}
+To understand how this works note that
+\beqn
+n_1^2
+&=&(2pq)^2 \\
+&=&4p^2q^2
+\eeqn
+and
+\beqn
+n_2^2
+&=&(p^2-q^2)^2 \\
+&=&p^4-2p^2q^2+q^4
+\eeqn
+and
+\beqn
+n_3^2
+&=&(p^2+q^2)^2 \\
+&=&p^4+2p^2q^2+q^4
+\eeqn
+thus
+\beqn
+n_1^2+n_2^2
+&=& (4p^2q^2)+(p^4-2p^2q^2+q^4) \\
+&=& p^4+2p^2q^2+q^4 \\
+&=& n_3^2
+\eeqn
+    {\color{ans}
+    The assembly is
+
+    \begin{verbatim}
+    push 0   ! calculate 2pq
+    push 1
+    push #2
+    umul
+    umul
+    pop 16   ! 2pq stored in 16
+    push 0   ! calculate p^2
+    push 0
+    umul
+    pop 2    ! p^2 stored in 2
+    push 1   ! calculate q^2
+    push 1
+    umul
+    pop 3    ! q^2 stored in 3
+    push 3   ! calculate p^2 - q^2
+    push 2
+    sub
+    pop      ! p^2 - q^2 stored in 17
+    push 3   ! calculate p^2 + q^2
+    push 2
+    add
+    pop      ! p^2 + q^2 stored in 17
+    \end{verbatim}
+
+
+    For the machine code see the website.
+    } 

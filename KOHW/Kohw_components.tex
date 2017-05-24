@@ -1,0 +1,219 @@
+\chapter{Data Transfer}
+\label{c-comps}
+
+
+\section{I/O}
+
+Transmission of data from one device to another is the essence of
+I/O.  Usually, I/O is accomplished by defining registers to hold
+the information necessary to transmit the data.  The registers
+that handle the transmission are called the I/O port. At least
+three registers are used, one for the data, one for the control,
+and one for the Status.
+\begin{description}
+  \item[Data] the codes to be transmitted.  These can be
+  traditional codes, such as ASCII, or even an address of data
+  being requested.
+  \item[Control] the commands specifying what is to be done.
+  \item[Status] a series of bits specifying what is going on with
+  the bus and the current transaction.
+\end{description}
+Accessing the registers (reading from or writing to) can be
+accomplished in two ways.
+\begin{description}
+  \item[Memory Mapped] the registers of the I/O port, have
+  addresses in regular memory, and thus can be treated as a
+  regular memory location for access purposes.
+  \item[Isolated] the registers are in a separate (isolated)
+  memory address scheme, and thus the memory must be access
+  through special commands.
+\end{description}
+
+
+\section{Busses} \label{s-busses}
+
+Internal vs. External (relative to cpu)
+
+Master/Slave (initiator/target)
+
+\begin{description}
+  \item[(Transaction) Master] the initiator of a transaction.
+  \item[(Transaction) Slave] the target of a transaction.
+  \item[Bus Master] any device that can be a (transaction) master.
+  \item[Burst Mode Transaction] transaction which transmits several
+  values.
+  \item[Bus Transaction] data transfer on an external bus.
+\end{description}
+Synchronous Bus Lines
+
+\begin{tabular}{lcl}
+  Line/Signal        & Num & Owner        \\ \hline
+  Clock              & 1   & Bus          \\
+  Start              & 1   & Master       \\
+  Address            & k   & Master       \\
+  $R$/$\overline{W}$ & 1   & Master       \\
+  Data               & n   & Master/Slave \\
+  Done               & 1   & Slave        \\
+\end{tabular}
+
+Arbitration is usually overlapped
+
+\subsection{Synchronous/Asynchronous Transfer}
+
+Busses have to have a way to specify when to transfer and if data
+has been received.  The two basic schemes for transfer is
+synchronous and asynchronous.
+
+Synchronous transfers uses a clock signal to coordinate
+communication, and is thus very fast.  For a data request, we only
+need to spend one bus cycle to sent the request, the access time to
+find the data, and one bus cycle to send the answer.  The time to
+transmit the data is thus
+\beqn
+T_{transmit}=\frac{2}{f_{bus}}+T_a,
+\eeqn
+were $T_a$ is the time to access the data, and $f_{bus}$ is the bus clock rate\footnote{A one way transmission must finish in this time.}.  The faster the clock the less time to transmit the data.  The bandwidth of the bus in terms of transactions is
+\beqn
+BW_{transaction}=\frac{W_{bus}}{T_{transmit}},
+\eeqn
+where $W_{bus}$ is the width of the bus\footnote{How much data can be sent simultaneously, i.e. the number of wires measured in bits or bytes.  A bus that has 32 data wires is 32 bits wide or 4 bytes wide.}.  Frequently however, buses are measured not by an actual transaction but by what a one way message would be
+\beqn
+BW &=& \frac{W_{bus}}{T_{bus}}\\
+   &=& W_{bus}f_{bus}.
+\eeqn
+Let's consider a few examples.  Note that we will be reporting bandwidth in megabytes per second (MB/s).  A byte is 8 bits, and a megabyte is $2^{20}$ bytes.  Bus frequencies (sometimes called speeds) are reported in megaHertz (MHz), but here mega is in base 10 not base 2, so it is $10^6$ Hertz.  Recall a Hertz is a reciprocal second.  Sometimes this distinction is ignored to simplify calculations.
+
+\begin{example}[PCI]
+A basic PCI bus is 32 bits wide (4 bytes) and runs at 33.3 MHz.  Thus the bandwidth is
+\begin{eqnarray}
+BW 
+&=& W_{bus}f_{bus} \\
+&=& \left(4 [B]\frac{1 [MB]}{2^{20} [B]}\right)\left(33.3 [MHz]\frac{10^6 [Hz]}{1 [MHz]}\right) \\
+&=& \left(\frac{1}{2^{18} [MB]}\right)\left(3.33\times 10^7 [Hz]\right) \\
+&=& \left(\frac{1}{2^{18} [MB]}\right)\left(3.33\times 10^7 [Hz]\right) \\
+&\approx & 127 [MB/s]
+\end{eqnarray}
+\end{example}
+
+
+
+Clock signals take time to transfer down the wire and thus is subject to clock skew.  To understand clock skew, consider a simple example of two clocks 3 kilometers apart.  The clocks are synchronized by a beam of light, which travels at $3\times 10^5$ km/s, and thus it takes 10$\mu$s for the synchronization pulse to arrive from the master clock.  If the clocks were only synchronized once per second the fraction of the synchronization time used to transmit the pulse would be $\frac{10\mu s}{1s}=.001\%$, which is basically insignificant. What if we wanted to synchronize the clocks every tenth of a milisecond (.1ms)? The fraction of time to transfer now is $\frac{10\mu s}{.1ms}=10\%$, which is very significant.  When the clock pulse arrives it is off by 10\%!  That is called clock skew, when the transmission time of the clock pulse takes a significant portion of the clock frequency.  Clock skew is effected by the distance ($d$) and the clock rate ($f$).  If the clock skew is some fraction ($s$) and we assume that the clock signal is carried at the speed of light ($c$) then the relation between the variables is
+\beqn
+\frac{d}{c} = \frac{s}{f}
+\eeqn
+Assuming we want the skew to be less than a third ($s=.33\ldots$), the distance is measured in meters and the bus clock will be measured in megahertz, then
+\beqn
+df=100.
+\eeqn
+In other words a 100MHz bus (f=100) can only be 1 meter long (d=1) to keep clock skew under 33.3\%!  Given that bus speeds of 400MHz are very reasonable, this would limit bus length to about 9in.  Thus we see that clock skew limits bus length, and thus synchronous buses are fast but short.
+
+Asynchronous transfers get around the problem of clock skew by doing a procedure called handshaking.  Basically two units that want to talk send messages back and forth letting each other know what is going on.  A basic handshaking protocol between a sender (S) and a receiver (R) to request data from R is
+\begin{enumerate}
+  \item S to R: Here is the address of the data I want.
+  \item R to S: I got your request and will look it up.
+  \item S: Drop request when recieve
+  \item R: looking up data.
+  \item R to S: Here is your data.
+  \item S to R: I got it.
+  \item S: Wait till see data signal drop then drop acknowledgement.
+\end{enumerate}
+Call the time for the signal to travel from sender to receiver or vice versa $T_h$ (for handshake time), and the time to get the data as $T_a$(for access time).  If we are clever we can overlap items 2,3 with item 4, so that we will only take the longer of $2T_h$ or $T_a$ rather than $2T_h+T_a$.  The total time for one transfer is thus
+\beqn
+T_{transfer}=4T_h+\max(2T_h,T_a).
+\eeqn
+The bandwidth of the bus is the rate at which data can be sent, and
+thus
+\beqn
+BW &=& \frac{W_{bus}}{T_{transfer}},
+\eeqn
+where $W_{bus}$ is the width of the bus.
+
+\subsection{Polling and Interrupts}
+
+There are two basic ways to handle bus communication with the CPU:
+polling, interrupts.  Direct Memory Access (DMA) is a special case
+of interrupts.
+
+\subsubsection{Polling - CPU Controlled Data Transfer}
+
+\beqn
+\hbox{Fraction of CPU Time}
+&=& \frac{\hbox{Cycles Per Second used on Polls}}{\hbox{Clock Frequency}} \\
+&=& \frac{\frac{\hbox{Polls}}{\hbox{Sec}}\frac{\hbox{Cycles}}{\hbox{Poll}}}{\hbox{Clock Frequency}} \\
+&=& \frac{\frac{\hbox{Data Rate}}{\hbox{Poll Size}}\frac{\hbox{Cycles}}{\hbox{Poll}}}{\hbox{Clock Frequency}}
+\eeqn
+
+
+\subsubsection{Interrupt Driven - CPU Controlled Data Transfer}
+
+\beqn
+\hbox{Fraction of CPU Time}
+&=& \frac{\hbox{Cycles Per Second used on Interrupts}}{\hbox{Clock Frequency}} \\
+&=& \frac{\frac{\hbox{Interrupts}}{\hbox{Sec}}\frac{\hbox{Cycles}}{\hbox{Interrupts}}}{\hbox{Clock Frequency}} \\
+&=& \frac{\frac{\hbox{Data Rate}}{\hbox{Packet Size}}\frac{\hbox{Cycles}}{\hbox{Interrupt}}}{\hbox{Clock Frequency}}
+\eeqn
+
+
+\subsubsection{Interrupt Driven - Direct Memory Access (DMA)}
+
+\beqn
+T_{\hbox{Transfer}}
+&=&\frac{\hbox{Size Transfer}}{\hbox{Speed Transfer}} \\
+&=&\frac{\hbox{Data Size}}{\hbox{Data Rate}} \\
+\hbox{Cycles to Handle}
+&=& C_h \\
+&=&\frac{\hbox{Cycles to Start}+\hbox{Cycles to Complete}+f_e\times\hbox{Cycles to handle errors}}{1-f_e} \\
+\hbox{Fraction of CPU Time}
+&=& \frac{\hbox{Cycles Per Second used to handle DMA}}{\hbox{Clock Frequency}} \\
+&=& \frac{\frac{C_h}{T_{\hbox{Transfer}}}}{\hbox{Clock Frequency}} \\
+&=& \frac{C_h}{T_{\hbox{Transfer}}\hbox{Clock Frequency}}
+\eeqn
+
+
+
+
+\vspace{.1in}\noindent
+\textbf{Example}
+
+
+You are given a 32-bit \textbf{asynchronous} bus with a handshaking time of 15 ns.  Your computer has the following equipment attached:
+
+    \begin{tabular}{|l|l|} \hline
+    Hard Drive                 & RAM                 \\ \hline
+    Total Latency: 7.2 ms      & Access Time: 40ns   \\ \hline
+    Disk Transfer Rate: 10MB/s & No Burst Mode       \\ \hline
+    Number of Disks: 4         &                     \\ \hline
+    \end{tabular}
+
+    Showing all work calculate the following:
+    \begin{enumerate}
+    \item the band width of the bus,
+    \item the percent of the bus utilized by continuous paging of a virtual memory system with 32KB pages,
+    \item the number of cache to RAM transfers that can occur if: The bus is continuously paging and 10\% of the bandwidth must be left for other transactions (Hint: calculate the available bandwidth for the RAM transactions and use the size of the transactions).
+    \end{enumerate}
+
+{\color{ans}
+
+The bandwidth of the bus is:
+\beqn
+\hbox{BW}
+ &=& \frac{\hbox{Data Transfered}}{\hbox{Time to Transfer}} \\
+ &=& \frac{\hbox{Bus Width}}{4T_{Hand}+\max{2T_{Hand},T_{RAM}}} \\
+ &=& \frac{4 B}{4(15 ns)+\max{2(15 ns),40 ns}} \\
+ &=& \frac{4 B}{100 ns} \\
+ &=& 40 MB/s
+ \hbox{}
+\eeqn
+
+The effective transfer rate of the pages from the disks is:
+\beqn
+\hbox{Rate}_{\hbox{Disk}}
+ &=& \frac{\hbox{Data Transfered}}{\hbox{Time to Transfer}} \\
+ &=& \frac{\hbox{Data Transfered}}{\hbox{Total Latency}+\frac{\hbox{Data Transfered}}{\hbox{Combined Disk Transfer Rate}}} \\
+ &=& \frac{32 KB}{7.2 ms+\frac{32 KB}{4\times 10 MB/s}} \\
+ &=& \frac{32 KB}{7.2 ms+.8 ms} \\
+ &=& 4 MB/s
+\eeqn
+
+Thus the bandwidth available to RAM is $40-4-4=32$ MB/s.  Since each transfer is 4 B, the transfers per second is $8\times 10^6$ transfers/sec or 1 cache miss every 125 ns.
+}

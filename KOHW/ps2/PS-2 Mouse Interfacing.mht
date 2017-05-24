@@ -1,0 +1,861 @@
+From: "Saved by Windows Internet Explorer 8"
+Subject: PS/2 Mouse Interfacing
+Date: Tue, 20 Apr 2010 09:22:23 -0700
+MIME-Version: 1.0
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.computer-engineering.org/ps2mouse/
+X-MimeOLE: Produced By Microsoft MimeOLE V6.0.6002.18005
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>PS/2 Mouse Interfacing</TITLE>
+<META content=3D"text/html; charset=3Diso-8859-1" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.6001.18904">
+<META name=3DAuthor content=3D"Adam Chapweske"></HEAD>
+<BODY aLink=3D#3333ff link=3D#3333ff bgColor=3D#ffffff =
+vLink=3D#3333ff><SMALL><B><FONT=20
+face=3DArial,Helvetica><FONT size=3D+3><SMALL>The PS/2 Mouse=20
+Interface</SMALL></FONT></FONT></B></SMALL><BR>
+<CENTER></CENTER>
+<CENTER>
+<HR align=3Dleft SIZE=3D1 width=3D400 noShade>
+</CENTER><BR><FONT face=3DArial,Helvetica>Source: <A=20
+href=3D"http://www.computer-engineering.org/">http://www.computer-enginee=
+ring.org/</A></FONT><BR><FONT=20
+face=3DArial,Helvetica>Author: Adam Chapweske<BR>Last Updated:=20
+04/01/03<BR><BR><BR><A name=3DLegal_Information></A>
+<H2>Legal Information </H2>
+<P>All information within this article is provided "as is" and without =
+any=20
+express or implied warranties, including, without limitation, the =
+implied=20
+warranties of merchantibility and fitness for a particular purpose. </P>
+<P>This article is protected under copyright law. This document may be =
+copied=20
+only if the source, author, date, and legal information is included. =
+</P><A=20
+name=3DAbstract></A>
+<H2>Abstract </H2>
+<P>This article attempts to explain every aspect of the PS/2 mouse =
+interface=20
+including the physical and electrical interface, low-level protocol, =
+modes of=20
+operation, commands, and extensions. </P><A =
+name=3DGeneral_Description></A>
+<H2>General Description </H2>
+<P>There are many types of pointing devices available for the modern PC=20
+including mice, trackballs, touchpads, electronic whiteboards, etc. =
+Virtually=20
+all of these devices communicate on one of two interfaces: Universal =
+Serial Bus=20
+(USB) or the PS/2 mouse interface. Older pointing device interfaces =
+include the=20
+Apple Desktop Bus (ADB), RS-232 serial port, and the bus mouse =
+interface. These=20
+are obsolete and are not covered in this article. </P>
+<P>The PS/2 mouse interface originally appeared in IBM's "Personal =
+System/2"=20
+computers in the late 80's and it remains a widely-supported interface. =
+However,=20
+USB has quickly caught on these last few years and will eventually =
+replace the=20
+PS/2 interface entirely. </P>
+<P>The PS/2 mouse interface utilizes a bidirectional serial protocol to =
+transmit=20
+movement and button-state data to the computer's auxiliary device =
+controller=20
+(part of the keyboard controller). The controller, in turn, may send a =
+number of=20
+commands to the mouse to set the report rate, resolution, reset the =
+mouse,=20
+disable the mouse, etc. The host provides the mouse with a 5V ~100 mA =
+power=20
+supply. </P><A name=3DElectrical_Interface_.2F_Protocol></A>
+<H2>Electrical Interface / Protocol </H2>
+<P>The PS/2 mouse uses the same protocol as the PS/2 keyboard (a.k.a. AT =
+
+keyboard). Click <A title=3D"PS/2 Mouse/Keyboard Protocol"=20
+href=3D"http://www.computer-engineering.org/index.php?title=3DPS/2_Mouse/=
+Keyboard_Protocol">here</A>=20
+for detailed information on this protocol. </P><A=20
+name=3DInputs.2C_Resolution.2C_and_Scaling></A>
+<H2>Inputs, Resolution, and Scaling </H2>
+<P>The standard PS/2 mouse interface supports the following inputs: X=20
+(right/left) movement, Y (up/down) movement, left button, middle button, =
+and=20
+right button. The mouse periodically reads these inputs and updates =
+various=20
+counters and flags to reflect movement and button states. There are many =
+PS/2=20
+pointing devices that have additional inputs and may report data =
+differently=20
+than described in this document. One popular extension covered later in =
+this=20
+document is the Microsoft Intellimouse, which includes support for the =
+standard=20
+inputs as well as a scrolling wheel and two additional buttons. </P>
+<P>The standard mouse has two counters that keep track of movement: the =
+X=20
+movement counter and the Y movement counter. These are 9-bit 2's =
+complement=20
+values and each has an associated overflow flag. Their contents, along =
+with the=20
+state of the three mouse buttons, are sent to the host in the form of a =
+3-byte=20
+movement data packet. The movement counters represent the mouse's offset =
+
+relative to its position when the previous movement data packet was =
+issued, or=20
+when the last non-"Resend" (0xFE) command was successfully sent to the =
+host.=20
+</P>
+<P>When the mouse reads its inputs it records the current state of its =
+buttons=20
+and increments/decrements the movement counters according to the amount =
+of=20
+movement that has occurred since the last input sample. If either of the =
+
+counters has overflowed, the appropriate overflow flag is set. Futher=20
+modification of the counter is disabled until it the counters are reset =
+(due to=20
+a packet being sent). </P>
+<P>The parameter that determines the amount by which the movement =
+counters are=20
+incremented/decremented is the <I>resolution</I>. The default resolution =
+is 4=20
+counts/mm and the host may change that value using the "Set Resolution" =
+(0xE8)=20
+command. </P>
+<P>There is a parameter that does not affect the movement counters, but =
+does=20
+affect the reported value of these counters. This parameter is =
+<I>scaling</I>.=20
+By default, the mouse uses 1:1 scaling, which has no effect on the =
+reported=20
+mouse movement. However, the host may select 2:1 scaling by issuing the =
+"Set=20
+Scaling 2:1" (0xE7) command. If 2:1 scaling is enabled, the mouse will =
+apply the=20
+following algorithm to the movement counters before sending their =
+contents to=20
+the host: </P>
+<TABLE border=3D1 cellPadding=3D4>
+  <TBODY>
+  <TR>
+    <TH>Movement Counter </TH>
+    <TH>Reported Movement </TH></TR>
+  <TR>
+    <TD>0 </TD>
+    <TD>0 </TD></TR>
+  <TR>
+    <TD>1 </TD>
+    <TD>1 </TD></TR>
+  <TR>
+    <TD>2 </TD>
+    <TD>1 </TD></TR>
+  <TR>
+    <TD>3 </TD>
+    <TD>3 </TD></TR>
+  <TR>
+    <TD>4 </TD>
+    <TD>6 </TD></TR>
+  <TR>
+    <TD>5 </TD>
+    <TD>9 </TD></TR>
+  <TR>
+    <TD>N &gt; 5 </TD>
+    <TD>2 * N </TD></TR></TBODY></TABLE>
+<P>2:1 scaling only applies to the automatic data reporting in stream =
+mode. It=20
+does not affect the reported data sent in response to the "Read Data" =
+(0xEB)=20
+command. </P><A name=3DMovement_Data_Packet></A>
+<H2>Movement Data Packet </H2>
+<P>The standard PS/2 mouse sends movement/button information to the host =
+using=20
+the following 3-byte packet: </P>
+<TABLE border=3D1 cellPadding=3D4>
+  <TBODY>
+  <TR>
+    <TH></TH>
+    <TH>Bit 7 </TH>
+    <TH>Bit 6 </TH>
+    <TH>Bit 5 </TH>
+    <TH>Bit 4 </TH>
+    <TH>Bit 3 </TH>
+    <TH>Bit 2 </TH>
+    <TH>Bit 1 </TH>
+    <TH>Bit 0 </TH></TR>
+  <TR>
+    <TH>Byte 1 </TH>
+    <TD>Y overflow </TD>
+    <TD>X overflow </TD>
+    <TD>Y sign bit </TD>
+    <TD>X sign bit </TD>
+    <TD>Always 1 </TD>
+    <TD>Middle Btn </TD>
+    <TD>Right Btn </TD>
+    <TD>Left Btn </TD></TR>
+  <TR>
+    <TH>Byte 2 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>X movement </TD></TR>
+  <TR>
+    <TH>Byte 3 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>Y movement </TD></TR></TBODY></TABLE>
+<P>The movement values are 9-bit 2's complement integers, where the most =
+
+significant bit appears as a "sign" bit in byte 1 of the movement data =
+packet.=20
+Their value represents the mouse's offset relative to its position when =
+the=20
+previous packet was sent, in units determined by the current resolution. =
+The=20
+range of values that can be expressed is -255 to +255. If this range is=20
+exceeded, the appropriate overflow bit is set. </P><A=20
+name=3DModes_of_Operation></A>
+<H2>Modes of Operation </H2>
+<P>Data reporting is handled according to the mode in which the mouse is =
+
+operating. There are four modes of operation: </P>
+<UL>
+  <LI>Reset - The initial mode, in which the mouse performs =
+initialization and=20
+  self-diagnostics.=20
+  <LI>Stream - The default operating mode, in which the mouse issues =
+movement=20
+  data packets when movement occurs or button state changes.=20
+  <LI>Remote - The host must poll for movement data packets.=20
+  <LI>Wrap - A purely diagnostic mode where the mouse echoes every =
+received=20
+  packet back to the host. </LI></UL><A name=3DReset_Mode></A>
+<H3>Reset Mode </H3>
+<P>The mouse enters reset mode at power-on or in response to the "Reset" =
+(0xFF)=20
+command. Upon entering this mode, the mouse performs a diagnostic =
+self-test=20
+called <I>BAT</I> (Basic Assurance Test) and sets the following default =
+values:=20
+</P>
+<UL>
+  <LI>Sample Rate =3D 100 samples/sec=20
+  <LI>Resolution =3D 4 counts/mm=20
+  <LI>Scaling =3D 1:1=20
+  <LI>Data Reporting =3D disabled </LI></UL>
+<P>The mouse then sends a BAT completion code of either 0xAA (BAT =
+successful) or=20
+0xFC (Error). The host's response to a completion code other than 0xAA =
+is=20
+undefined. </P>
+<P>Following the BAT completion code (0xAA or 0xFC), the mouse sends its =
+device=20
+ID of 0x00. This distinguishes it from a keyboard or nonstandard mouse. =
+I have=20
+read documents indicating the host should not transmit any data until it =
+
+receives a device ID. However I've found some BIOS's will send the =
+"Reset"=20
+(0xFF) command immediately following the 0xAA received after a power-on =
+reset.=20
+</P>
+<P>Once the mouse has sent its device ID to the host, it enters stream =
+mode.=20
+</P><A name=3DStream_Mode></A>
+<H3>Stream Mode </H3>
+<P>In stream mode the mouse sends movement data when it detects movement =
+or a=20
+change in state of one or more mouse buttons. The maximum rate at which =
+this=20
+data may be reported is known as the <I>sample rate</I>. This parameter =
+ranges=20
+from 10-200 samples/sec, with a default value of 100 samples/sec. The =
+host may=20
+set this value using the "Set Sample Rate" (0xF3) command. </P>
+<P>Note that reporting is <B>disabled</B> by default. The mouse will not =
+
+actually issue any movement data packets until it receives the "Enable =
+Data=20
+Reporting" (0xF4) command. </P>
+<P>Stream mode is the default operating mode, and is otherwise set using =
+the=20
+"Set Stream Mode" (0xEA) command. </P><A name=3DRemote_Mode></A>
+<H3>Remote Mode </H3>
+<P>In remote mode the mouse reads its inputs and updates its =
+counters/flags at=20
+the current sample rate, but it does not automatically issue data =
+packets when=20
+movement has occured. Instead, the host polls the mouse using the "Read =
+Data"=20
+(0xEB) command. Upon receiving this command the mouse will issue a =
+single=20
+movement data packet and reset its movement counters. </P>
+<P>The mouse enters remote mode upon receiving the "Set Remote Mode" =
+(0xF0)=20
+command. </P>
+<P>Remote mode is rarely used. </P><A name=3DWrap_Mode></A>
+<H3>Wrap Mode </H3>
+<P>This is an "echoing" mode in which every byte received by the mouse =
+is sent=20
+back to the host. Even if the byte represents a valid command, the mouse =
+will=20
+not respond to that command--it will only echo that byte back to the =
+host. There=20
+are two exceptions to this: the "Reset" (0xFF) and "Reset Wrap Mode" =
+(0xEC)=20
+commands. The mouse treats these as valid commands and does not echo =
+them back=20
+to the host. </P>
+<P>Wrap mode is rarely used. </P><A name=3DIntellimouse_Extensions></A>
+<H2>Intellimouse Extensions </H2>
+<P>A popular extension to the standard PS/2 mouse is the Microsoft =
+Intellimouse.=20
+This includes support for a total of five mouse buttons and three axes =
+of=20
+movement (right-left, up-down, and a scrolling wheel). These additional =
+features=20
+require the use of a 4-byte movement data packet rather than the =
+standard 3-byte=20
+packet. Since standard PS/2 mouse drivers cannot recognize this packet =
+format,=20
+the Intellimouse is required to operate exactly like a standard PS/2 =
+mouse=20
+unless it knows the drivers support the extended packet format. This =
+way, if an=20
+Intellimouse is used on a computer which only supports the standard PS/2 =
+mouse,=20
+it will still function except its scrolling wheel and 4th and 5th =
+buttons will=20
+be disabled. </P>
+<P>After power-on or reset the Microsoft Intellimouse operates just like =
+a=20
+standard PS/2 mouse (ie, it uses a 3-byte movement data packet, responds =
+to all=20
+commands in the same way as a standard PS/2 mouse, and reports a device =
+ID of=20
+0x00.) To enable the scrolling wheel, the host sends the following =
+command=20
+sequence: </P>
+<OL>
+  <LI>Set sample rate 200=20
+  <LI>Set sample rate 100=20
+  <LI>Set sample rate 80 </LI></OL>
+<P>The host then issues the "Get device ID" (0xF2) command and waits for =
+a=20
+response. If a standard PS/2 mouse (i.e., non-Intellimouse) is attached, =
+it will=20
+respond with a device ID of 0x00. In this case, the host will recognize =
+the fact=20
+that the mouse does have a scrolling wheel and will continue to treat it =
+as a=20
+standard PS/2 mouse. However, if a Microsoft Intellimouse is attached, =
+it will=20
+respond with an ID of 0x03. This tells the host that the attached =
+pointing=20
+device has a scrolling wheel, and the host will then expect the mouse to =
+use the=20
+following 4-byte movement data packet: </P>
+<TABLE border=3D1 cellPadding=3D4>
+  <TBODY>
+  <TR>
+    <TH></TH>
+    <TH>Bit 7 </TH>
+    <TH>Bit 6 </TH>
+    <TH>Bit 5 </TH>
+    <TH>Bit 4 </TH>
+    <TH>Bit 3 </TH>
+    <TH>Bit 2 </TH>
+    <TH>Bit 1 </TH>
+    <TH>Bit 0 </TH></TR>
+  <TR>
+    <TH>Byte 1 </TH>
+    <TD>Y overflow </TD>
+    <TD>X overflow </TD>
+    <TD>Y sign bit </TD>
+    <TD>X sign bit </TD>
+    <TD>Always 1 </TD>
+    <TD>Middle Btn </TD>
+    <TD>Right Btn </TD>
+    <TD>Left Btn </TD></TR>
+  <TR>
+    <TH>Byte 2 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>X movement </TD></TR>
+  <TR>
+    <TH>Byte 3 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>Y movement </TD></TR>
+  <TR>
+    <TH>Byte 4 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>Z movement </TD></TR></TBODY></TABLE>
+<P>"Z movement" is a 2's complement value that represents the scrolling =
+wheel's=20
+movement since the last data report. Valid values are in the range of -8 =
+to +7.=20
+This means the number is actually represented only by the least =
+significant four=20
+bits; the upper four bits act only as sign extension. </P>
+<P>To enable the scrolling wheel AND the 4th and 5th buttons, the host =
+sends the=20
+following command sequence: </P>
+<UL>
+  <LI>Set sample rate 200=20
+  <LI>Set sample rate 200=20
+  <LI>Set sample rate 80 </LI></UL>
+<P>The host then issues the "Get device ID" (0xF2) command and waits for =
+a=20
+response. A Microsoft Intellimouse will respond with a device ID of =
+0x04, then=20
+uses the following 4-byte movement data packet: </P>
+<TABLE border=3D1 cellPadding=3D4>
+  <TBODY>
+  <TR>
+    <TH></TH>
+    <TH>Bit 7 </TH>
+    <TH>Bit 6 </TH>
+    <TH>Bit 5 </TH>
+    <TH>Bit 4 </TH>
+    <TH>Bit 3 </TH>
+    <TH>Bit 2 </TH>
+    <TH>Bit 1 </TH>
+    <TH>Bit 0 </TH></TR>
+  <TR>
+    <TH>Byte 1 </TH>
+    <TD>Y overflow </TD>
+    <TD>X overflow </TD>
+    <TD>Y sign bit </TD>
+    <TD>X sign bit </TD>
+    <TD>Always 1 </TD>
+    <TD>Middle Btn </TD>
+    <TD>Right Btn </TD>
+    <TD>Left Btn </TD></TR>
+  <TR>
+    <TH>Byte 2 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>X movement </TD></TR>
+  <TR>
+    <TH>Byte 3 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>Y movement </TD></TR>
+  <TR>
+    <TH>Byte 4 </TH>
+    <TD>Always 0 </TD>
+    <TD>Always 0 </TD>
+    <TD>5th Btn </TD>
+    <TD>4th Btn </TD>
+    <TD colSpan=3D4 align=3Dmiddle>Z movement </TD></TR></TBODY></TABLE>
+<P>"4th Btn" =3D 1 iff the 4th mouse button is pressed, and "5th Btn" =
+=3D 1 iff the=20
+5th mouse button is pressed. "Z movement" is a 2's complement value =
+which=20
+represents the amount of movement that has occurred since the last data =
+report.=20
+Valid values range from -8 to +7. </P>
+<P>There are mice with two scrolling wheels, one vertical and the other=20
+horizontal. These mice use the Microsoft Intellimouse data packet format =
+as=20
+described above. If the vertical wheel is scrolled upward, the Z-counter =
+is=20
+incremented by one and if that wheel is scrolled down, the Z-counter is=20
+decremented by one. This is normal operation for a scrolling wheel. =
+However, if=20
+the horizontal wheel is scrolled right, the Z-counter is incremented by =
+two and=20
+if it is scrolled left, the Z-counter is decremented by two. This seems =
+like an=20
+odd way to implement the second scrolling wheel, but it works since the=20
+placement of the two wheels make it virtually impossible to use both of =
+them at=20
+the same time (and if you try to trick the software and use both at the =
+same=20
+time, it will ignore the horizontal wheel). </P><A =
+name=3DCommand_Set></A>
+<H2>Command Set </H2>
+<P>Following is the set of commands accepted by the standard PS/2 mouse. =
+If the=20
+mouse is in stream mode, the host should disable data reporting (command =
+0xF5)=20
+before sending any other commands. </P>
+<UL>
+  <LI>0xFF (Reset) - The mouse responds to this command with =
+"acknowledge"=20
+  (0xFA) then enters reset mode.=20
+  <LI>0xFE (Resend) - The host sends this command whenever it receives =
+invalid=20
+  data from the mouse. The mouse responds by resending the last packet =
+it sent=20
+  to the host. If the mouse responds to the "Resend" command with =
+another=20
+  invalid packet, the host may either issue another "Resend" command, =
+issue an=20
+  "Error" (0xFC) command, cycle the mouse's power supply to reset the =
+mouse, or=20
+  it may inhibit communication (by bringing the clock line low). This =
+command is=20
+  not buffered, which means "Resend" will never be sent in response to =
+the=20
+  "Resend" command.=20
+  <LI>0xF6 (Set Defaults) - The mouse responds with "acknowledge" (0xFA) =
+then=20
+  loads the following values: Sampling rate =3D 100, resolution =3D 4 =
+counts/mm,=20
+  Scaling =3D 1:1, data reporting =3D disabled. The mouse then resets =
+its movement=20
+  counters and enters stream mode.=20
+  <LI>0xF5 (Disable Data Reporting) - The mouse responds with =
+"acknowledge"=20
+  (0xFA) then disables data reporting and resets its movement counters. =
+This=20
+  only affects data reporting in stream mode and does not disable =
+sampling.=20
+  Disabled stream mode functions the same as remote mode.=20
+  <LI>0xF4 (Enable Data Reporting) - The mouse responds with =
+"acknowledge"=20
+  (0xFA) then enables data reporting and resets its movement counters. =
+This=20
+  command may be issued while the mouse is in remote mode, but it will =
+only=20
+  affect data reporting in stream mode.=20
+  <LI>0xF3 (Set Sample Rate) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  reads one more byte from the host. The mouse saves this byte as the =
+new sample=20
+  rate. After receiving the sample rate, the mouse again responds with=20
+  "acknowledge" (0xFA) and resets its movement counters. Valid sample =
+rates are=20
+  10, 20, 40, 60, 80, 100, and 200 samples/sec.=20
+  <LI>0xF2 (Get Device ID) - The mouse responds with "acknowledge" =
+(0xFA)=20
+  followed by its device ID (0x00 for the standard PS/2 mouse). The =
+mouse should=20
+  also reset its movement counters.=20
+  <LI>0xF0 (Set Remote Mode) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  resets its movement counters and enters remote mode.=20
+  <LI>0xEE (Set Wrap Mode) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  resets its movement counters and enters wrap mode.=20
+  <LI>0xEC (Reset Wrap Mode) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  resets its movement counters and enters the mode it was in prior to =
+wrap mode=20
+  (stream mode or remote mode).=20
+  <LI>0xEB (Read Data) - The mouse responds with "acknowledge" (0xFA) =
+then sends=20
+  a movement data packet. This is the only way to read data in remote =
+mode.=20
+  After the data packet has successfully been sent, the mouse resets its =
+
+  movement counters.=20
+  <LI>0xEA (Set Stream Mode) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  resets its movement counters and enters stream mode.=20
+  <LI>0xE9 (Status Request) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  sends the following 3-byte status packet (then resets its movement =
+counters):=20
+  </LI></UL>
+<TABLE border=3D1 cellPadding=3D4>
+  <TBODY>
+  <TR>
+    <TH></TH>
+    <TH>Bit 7 </TH>
+    <TH>Bit 6 </TH>
+    <TH>Bit 5 </TH>
+    <TH>Bit 4 </TH>
+    <TH>Bit 3 </TH>
+    <TH>Bit 2 </TH>
+    <TH>Bit 1 </TH>
+    <TH>Bit 0 </TH></TR>
+  <TR>
+    <TH>Byte 1 </TH>
+    <TD>Always 0 </TD>
+    <TD>Mode </TD>
+    <TD>Enable </TD>
+    <TD>Scaling </TD>
+    <TD>Always 0 </TD>
+    <TD>Left Btn </TD>
+    <TD>Middle Btn </TD>
+    <TD>Right Btn </TD></TR>
+  <TR>
+    <TH>Byte 2 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>Resolution </TD></TR>
+  <TR>
+    <TH>Byte 3 </TH>
+    <TD colSpan=3D8 align=3Dmiddle>Sample Rate =
+</TD></TR></TBODY></TABLE>
+<P>Right, Middle, Left Btn =3D 1 if button pressed; 0 if button is not =
+pressed.=20
+<BR>Scaling =3D 1 if scaling is 2:1; 0 if scaling is 1:1 (see commands =
+0xE7 and=20
+0xE6). <BR>Enable =3D 1 if data reporting is enabled; 0 if data =
+reporting is=20
+disabled (see commands 0xF5 and 0xF4). <BR>Mode =3D 1 if remote mode is =
+enabled; 0=20
+if stream mode is enabled (see commands 0xF0 and 0xEA). <BR></P>
+<UL>
+  <LI>0xE8 (Set Resolution) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  reads one byte from the host and again responds with "acknowledge" =
+(0xFA) then=20
+  resets its movement counters. The byte read from the host determines =
+the=20
+  resolution as follows: </LI></UL>
+<TABLE border=3D1 cellPadding=3D4>
+  <TBODY>
+  <TR>
+    <TH>Byte Read from Host </TH>
+    <TH>Resolution </TH></TR>
+  <TR>
+    <TD>00 </TD>
+    <TD>1 count/mm </TD></TR>
+  <TR>
+    <TD>01 </TD>
+    <TD>2 count/mm </TD></TR>
+  <TR>
+    <TD>02 </TD>
+    <TD>4 count/mm </TD></TR>
+  <TR>
+    <TD>03 </TD>
+    <TD>8 count/mm </TD></TR></TBODY></TABLE>
+<UL>
+  <LI>0xE7 (Set Scaling 2:1) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  enables 2:1 scaling.=20
+  <LI>0xE6 (Set Scaling 1:1) - The mouse responds with "acknowledge" =
+(0xFA) then=20
+  enables 1:1 scaling. </LI></UL>
+<P>The only commands the standard PS/2 mouse will send to the host are =
+"Resend"=20
+(FEh) and "Error" (FCh). </P><A name=3DInitialization></A>
+<H2>Initialization </H2>
+<P>The PS/2 mouse is normally detected/initialized only when the =
+computer is=20
+booting up. That is, the mouse is not hot-pluggable and you must restart =
+your=20
+computer whenever you add/remove a PS/2 mouse. Adding/removing the PS/2 =
+mouse=20
+while the computer is running may physically damage some motherboards. =
+</P>
+<P>The initial detection of the PS/2 mouse occurrs during POST. If a =
+mouse is=20
+detected, the BIOS will allow the operating system to configure/enable =
+the=20
+mouse. Otherwise, it will inhibit communication on the mouse's bus. If =
+you boot=20
+the computer with a mouse attached, then detach/reattach the mouse while =
+in=20
+Windows, the OS may be able to detect the mouse was reattached. Testing =
+this on=20
+Win98 SE, it seems to work about 50% of the time. </P>
+<P>The following is the communication between my computer (running Win98 =
+SE) and=20
+a standard PS/2 mouse during the boot process. It is fairly typical of =
+how a=20
+PS/2 mouse is initialized and if you want to emulate a PS/2 mouse it =
+must (at=20
+minimum) be able to support the following sequence of commands... </P>
+<UL><TT>Power-on Reset:</TT><BR><TT>Mouse: AA&nbsp; Self-test=20
+  passed</TT><BR><TT>Mouse: 00&nbsp; Mouse ID</TT><BR><TT>Host:&nbsp; =
+FF&nbsp;=20
+  Reset command</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge</TT><BR><TT>Mouse:=20
+  AA&nbsp; Self-test passed</TT><BR><TT>Mouse: 00&nbsp; Mouse=20
+  ID</TT><BR><TT>Host:&nbsp; FF&nbsp; Reset command</TT><BR><TT>Mouse: =
+FA&nbsp;=20
+  Acknowledge</TT><BR><TT>Mouse: AA&nbsp; Self-test =
+passed</TT><BR><TT>Mouse:=20
+  00&nbsp; Mouse ID</TT><BR><TT>Host:&nbsp; FF&nbsp; Reset=20
+  command</TT><BR><TT>Mouse: FA&nbsp; Acknowledge</TT><BR><TT>Mouse: =
+AA&nbsp;=20
+  Self-test passed</TT><BR><TT>Mouse: 00&nbsp; Mouse =
+ID</TT><BR><TT>Host:&nbsp;=20
+  F3&nbsp; Set Sample Rate&nbsp;&nbsp; : Attempt to Enter=20
+  Microsoft</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Scrolling Mouse=20
+  mode</TT><BR><TT>Host:&nbsp; C8&nbsp; decimal=20
+  200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Host:&nbsp;=20
+  F3&nbsp; Set Sample Rate&nbsp;&nbsp; :</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Host:&nbsp;=20
+  64&nbsp; decimal 100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
+  :</TT><BR><TT>Host:&nbsp; F3&nbsp; Set Sample Rate&nbsp;&nbsp;=20
+  :</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
+  :</TT><BR><TT>Host:&nbsp; 50&nbsp; decimal=20
+  80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT><BR><TT>Mouse: =
+FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Host:&nbsp;=20
+  F2&nbsp; Read Device Type&nbsp; :</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT><BR><TT>Mouse: =
+00&nbsp;=20
+  Mouse ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : =
+Response 03=20
+  if microsoft scrolling mouse</TT><BR><TT>Host:&nbsp; F3&nbsp; Set =
+Sample=20
+  Rate&nbsp;</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge</TT><BR><TT>Host:&nbsp;=20
+  0A&nbsp; decimal 10</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge</TT><BR><TT>Host:&nbsp; F2&nbsp; Read Device=20
+  Type</TT><BR><TT>Mouse: FA&nbsp; Acknowledge</TT><BR><TT>Mouse: =
+00&nbsp; Mouse=20
+  ID</TT><BR><TT>Host:&nbsp; E8&nbsp; Set resolution</TT><BR><TT>Mouse: =
+FA&nbsp;=20
+  Acknowledge</TT><BR><TT>Host:&nbsp; 03&nbsp; 8 =
+Counts/mm</TT><BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge</TT><BR><TT>Host:&nbsp; E6&nbsp; Set Scaling=20
+  1:1</TT><BR><TT>Mouse: FA&nbsp; Acknowledge</TT><BR><TT>Host:&nbsp; =
+F3&nbsp;=20
+  Set Sample Rate</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge</TT><BR><TT>Host:&nbsp; 28&nbsp; decimal =
+40</TT><BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge</TT><BR><TT>Host:&nbsp; F4&nbsp;=20
+  Enable</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge</TT><BR><TT>Initialization=20
+  complete...</TT>=20
+  <P><TT>If I then press the Left Button...</TT> <BR><TT>Mouse: 09 1 1 =
+00001001;=20
+  bit0 =3D Left button state; bit3 =3D always 1</TT> <BR><TT>Mouse: 00 1 =
+1 No=20
+  X-movement</TT> <BR><TT>Mouse: 00 1 1 No Y-movement</TT> <BR><TT>... =
+and=20
+  release the Left Button:</TT> <BR><TT>Mouse: 08 0 1 00001000 bit0 =3D =
+Left=20
+  button state; bit3 =3D always 1</TT> <BR><TT>Mouse: 00 1 1 No =
+X-movement</TT>=20
+  <BR><TT>Mouse: 00 1 1 No Y-movement</TT></P></UL>The following is the=20
+communication between my computer (running Win98SE) and mouse when it =
+boots up=20
+with an (emulated) Intellimouse...&nbsp;=20
+<UL><TT>Power-on Reset:</TT> <BR><TT>Mouse: AA&nbsp; Self-test=20
+  passed</TT><BR><TT>Mouse: 00&nbsp; Mouse ID</TT><BR><TT>Host:&nbsp; =
+FF&nbsp;=20
+  Reset command</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge</TT><BR><TT>Mouse:=20
+  AA&nbsp; Self-test passed</TT><BR><TT>Mouse: 00&nbsp; Mouse=20
+  ID</TT><BR><TT>Host:&nbsp; FF&nbsp; Reset command</TT><BR><TT>Mouse: =
+FA&nbsp;=20
+  Acknowledge</TT><BR><TT>Mouse: AA&nbsp; Self-test =
+passed</TT><BR><TT>Mouse:=20
+  00&nbsp; Mouse ID</TT><BR><TT>Host:&nbsp; FF&nbsp; Reset=20
+  command</TT><BR><TT>Mouse: FA&nbsp; Acknowledge</TT><BR><TT>Mouse: =
+AA&nbsp;=20
+  Self-test passed</TT><BR><TT>Mouse: 00&nbsp; Mouse =
+ID</TT><BR><TT>Host:&nbsp;=20
+  F3&nbsp; Set Sample Rate&nbsp;&nbsp; : Attempt to Enter=20
+  Microsoft&nbsp;</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Scrolling Mouse=20
+  mode</TT><BR><TT>Host:&nbsp; C8&nbsp; decimal=20
+  200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Host:&nbsp;=20
+  F3&nbsp; Set Sample Rate&nbsp;&nbsp; :</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Host:&nbsp;=20
+  64&nbsp; decimal 100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
+  :</TT><BR><TT>Host:&nbsp; F3&nbsp; Set Sample Rate&nbsp;&nbsp;=20
+  :</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
+  :</TT><BR><TT>Host:&nbsp; 50&nbsp; decimal=20
+  80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT><BR><TT>Mouse: =
+FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+:</TT><BR><TT>Host:&nbsp;=20
+  F2&nbsp; Read Device Type&nbsp; :</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT><BR><TT>Mouse: =
+03&nbsp;=20
+  Mouse ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : =
+Response 03=20
+  if microsoft scrolling mouse</TT><BR><TT>Host:&nbsp; E8&nbsp; Set=20
+  Resolution&nbsp;</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;</TT><BR><TT>Host:&nbsp; 03&nbsp; 8=20
+  counts/mm</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge</TT><BR><TT>Host:&nbsp;=20
+  E6&nbsp; Set scaling 1:1</TT><BR><TT>Dev:&nbsp;&nbsp; FA&nbsp;=20
+  Acknowledge</TT><BR><TT>Host:&nbsp; F3&nbsp; Set Sample=20
+  Rate&nbsp;</TT><BR><TT>Mouse: FA&nbsp; =
+Acknowledge</TT><BR><TT>Host:&nbsp;=20
+  28&nbsp; decimal 40</TT><BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge</TT><BR><TT>Host:&nbsp; F4&nbsp; Enable=20
+  device&nbsp;</TT><BR><TT>Mouse: FA&nbsp; Acknowledge</TT>=20
+  <P><TT>If I then press the left mouse button:</TT> <BR><TT>Mouse: =
+09&nbsp;=20
+  00001001 bit0 =3D Left button state; bit3 =3D always 1</TT> =
+<BR><TT>Mouse:=20
+  00&nbsp; No X-movement</TT> <BR><TT>Mouse: 00&nbsp; No Y-movement</TT> =
+
+  <BR><TT>Mouse: 00&nbsp; No Z-movement</TT> </P>
+  <P><TT>...and then release the left mouse button button:</TT> =
+<BR><TT>Mouse:=20
+  08&nbsp; 00001000 bit0 =3D Left button state; bit3 =3D always 1</TT>=20
+  <BR><TT>Mouse: 00&nbsp; No X-movement</TT> <BR><TT>Mouse: 00&nbsp; No=20
+  Y-movement</TT> <BR><TT>Mouse: 00&nbsp; No =
+Z-movement</TT></P></UL><TT>After I=20
+downloaded/installed the Microsoft's Intellimouse drivers with support =
+for the=20
+4th and 5th buttons, the following sequence was found:</TT>=20
+<BLOCKQUOTE><TT>... (starts same as before) ...</TT> <BR><TT>Host:&nbsp; =
+
+  F3&nbsp; Set Sample Rate&nbsp;&nbsp; : Attempt to Enter =
+Microsoft&nbsp;</TT>=20
+  <BR><TT>Mouse: FA&nbsp; =
+Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :=20
+  Scrolling Mouse mode.</TT> <BR><TT>Host:&nbsp; C8&nbsp; decimal=20
+  200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> <BR><TT>Mouse: FA&nbsp; =
+
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Host:&nbsp;=20
+  F3&nbsp; Set Sample Rate&nbsp;&nbsp; :</TT> <BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Host:&nbsp;=20
+  64&nbsp; decimal 100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT>=20
+  <BR><TT>Host:&nbsp; F3&nbsp; Set Sample Rate&nbsp;&nbsp; :</TT> =
+<BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT>=20
+  <BR><TT>Host:&nbsp; 50&nbsp; decimal=20
+  80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> <BR><TT>Mouse: =
+FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Host:&nbsp;=20
+  F2&nbsp; Read Device Type&nbsp; :</TT> <BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> <BR><TT>Mouse: =
+03&nbsp;=20
+  Mouse ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : =
+Response 03=20
+  if microsoft scrolling mouse.</TT> <BR><TT>Host:&nbsp; F3&nbsp; Set =
+Sample=20
+  Rate&nbsp;&nbsp; : Attempt to Enter Microsoft 5-button&nbsp;</TT>=20
+  <BR><TT>Mouse: FA&nbsp; =
+Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :=20
+  Scrolling Mouse mode.</TT> <BR><TT>Host:&nbsp; C8&nbsp; decimal=20
+  200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> <BR><TT>Mouse: FA&nbsp; =
+
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Host:&nbsp;=20
+  F3&nbsp; Set Sample Rate&nbsp;&nbsp; :</TT> <BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Host:&nbsp;=20
+  C8&nbsp; decimal 200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT>=20
+  <BR><TT>Host:&nbsp; F3&nbsp; Set Sample Rate&nbsp;&nbsp; :</TT> =
+<BR><TT>Mouse:=20
+  FA&nbsp; Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT>=20
+  <BR><TT>Host:&nbsp; 50&nbsp; decimal=20
+  80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> <BR><TT>Mouse: =
+FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> =
+<BR><TT>Host:&nbsp;=20
+  F2&nbsp; Read Device Type&nbsp; :</TT> <BR><TT>Mouse: FA&nbsp;=20
+  Acknowledge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</TT> <BR><TT>Mouse: =
+04&nbsp;=20
+  Mouse ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Response 04 =
+if=20
+  5-button scrolling mouse.</TT> <BR><TT>... rest of initialization same =
+as=20
+  before ...</TT></BLOCKQUOTE></FONT></BODY></HTML>

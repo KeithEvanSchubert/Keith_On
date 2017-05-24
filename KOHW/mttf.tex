@@ -1,0 +1,19 @@
+\documentclass{article}
+
+\begin{document}
+
+\begin{description}
+  \item[MTTF] mean time to fail
+  \item[MTTR] mean time to repair (detect + fix)
+  \item[MTBF] mean time between failures
+\end{description}
+ 
+ 
+ 
+
+MTBF=MTTF+MTTR
+
+\begin{eqnarray}
+MTTF(A or B)&=& \frac{1}{\frac{1}{MTTF(A)} + \frac{1}{MTTF(B)}}
+\end{eqnarray}
+\end{document}

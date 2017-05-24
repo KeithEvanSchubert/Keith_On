@@ -1,0 +1,465 @@
+\chapter{Logic Conventions}
+
+In a standard digital logic course, a usual starting point is to associate a high voltage, say 5v or 3.3v, with true (1), and a low voltage, usually ground, with false (0).  The purpose of this chapter is to blow that assumption out of the water.  We really have two completely different things we need to associate some way.  One is a system of logic, composed of truth (1), falsehood (0)\footnote{These associations of true with 1 and false with 0 are conventions also, and we could play with them also, but we will leave that off to a discussion of math for another book.}, and logical gates.  The other system is a physical one of high voltages (Vcc or Vdd), low voltages (ground), and hardware devices that operate off these voltage values.
+
+Ideally we would like a system that allows us to look at the logic without having to think about the hardware, or to look at the hardware without thinking about the logic.  Mixed logic allows us to do this.  To use it we will design the logic as we normally would, without any thought of the hardware that we will use to implement.  When we go to select the devices to implement the logic gates, we will use mixed logic to give us flexibility in the selection of devices, by strategically and consistently changing the logic convention in place at different locations in our design.  As long as we do this we will not change the logic of our design.
+
+I need to take a little pedantic aside, because the term logic convention, which is standardly used to refer to the association of logic values to voltage values has an unintended implication that seems to confuse people. Logic convention causes people to think that the voltages are preserved but the logic is changing, which is no problem for analysis but causes unnecessary confusion in design.  We could have used the term voltage convention to refer to the same think because it is a design oriented term, i.e. it does not suggest you are changing your logic, you are changing your voltage associations, but then people would get confused in design.  Once you become used to a term you are fine, but it is the learning I care about, and it is for this reason I suggest logic-voltage convention (LVC). LVC does not have any connotation toward design or analysis, and thus I hope will cause people to understand it better and use it more.
+
+\section{Logic-Voltage Conventions}
+
+The first LVC is positive logic, which is what most digital logic students think is the only one there is.  Positive logic is also called active-high, which is more in keeping with my pedantic aside from the introduction.  See Table~\ref{tab:positive_logic}.
+
+\begin{table}\begin{center}
+\caption{Positive Logic/Active-High}\label{tab:positive_logic}
+\begin{tabular}{cc}
+Logic & Voltage \\\hline
+F     & L \\
+T     & H \\
+\end{tabular}
+\end{center}\end{table}
+
+The second LVC is negative logic, which becomes important in developing the other two canonical forms in Section~\ref{s-canonical}.  Negative logic is also called active-low, which is more in keeping with my pedantic aside from the introduction.  See Table~\ref{tab:negative_logic}.
+
+\begin{table}\begin{center}
+\caption{Negative Logic/Active-Low}\label{tab:negative_logic}
+\begin{tabular}{cc}
+Logic & Voltage \\\hline
+F     & H \\
+T     & L \\
+\end{tabular}
+\end{center}\end{table}
+
+The final LVC is mixed logic, which uses either positive or negative logic rules on a wire by wire basis.  The key to using this is to have a system of marking the wires and the signal names so you can tell which convention is in place.
+\begin{itemize}
+\item The traditional way to mark wires for positive logic (active-high) was to do nothing, i.e. just draw the wire.  The new (from 1984) IEEE standard has us put a flag on  top of the wire at each end that points in the direction of flow (into the device for inputs, out of the device for outputs), and is associated with the term active-high.  The flags look like a small right triangle with the base formed by the wire and the hypotenuse pointing in the direction of the flow.
+\item Positive logic wire/signal names have a `.H' or `.h' appended to it.  Some people append either a `$+$' or a `$\uparrow$' but I find this more tedious.  A final convention puts a lower case p in front.  In other cases nothing is added to the name for these, and the absence lets you know the convention, though this is error prone as you can't tell if the signal was just missed in the naming.  I suggest you use the `.h' to be clear.
+\item Wires that use the negative logic convention have an open circle on all ends with the classic logic shapes.  Active-low flags (open arrow, only on the lower part, pointing in the direction of signal travel) are used interchangeably with negative logic bubbles, though you should pick a convention and stick with it.  The flags look like a small right triangle with the base formed by the wire and the hypotenuse pointing in the direction of the flow.
+\item Negative logic (active-low) name/signal has a `.L' appended.  Some people also append: a `$-$', a `$\downarrow$', a `\#'.  Other notations put leading symbols of a `n' or a slash, `/', which is designed to look like an bar over the signal, which is the final way.  I don't like the overbar or slash as it is easily confused with not, though it is the most common\footnote{It is an inconsistent use of the bubbles and slashes that causes so much confusion in digital logic students, so I will avoid them.  Hopefully when you feel comfortable with the conventions you will then have no problem reading the highly overloaded syntax that is commonly used.}.  The `\verb1_B1' notation is confusing as it could mean byte in other contexts.
+\end{itemize}
+In general the bubbles go with the classic logic shapes, and the arrows go with the new IEEE 91-1984 standard, which calls for boxes with symbols.  Mixed logic is much more flexible in the ability to use other hardware devices to implement gates.  One way of thinking of this is that we can implement a logic function with a variety of hardware devices, or put the other way one hardware device can implement a variety of logic gates.  This is easiest to explain by an example.
+
+\begin{example}
+Say we need a `not' gate. With either positive or negative logic we have only one choice, but consider mixed logic.  We could have the input as either positive or negative and a similar but independent choice for the output.  This means we have four possible mixed conventions.  But how many devices? Is this only an illusion of choice?
+\begin{enumerate}
+\item Positive logic to positive logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & L          & H           & T         \\
+T        & H          & L           & F         \\
+\end{tabular}
+
+This requires a voltage inverter, which is what most people think a `not' gate is.
+
+\item Negative logic to negative logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & H          & L           & T         \\
+T        & L          & H           & F         \\
+\end{tabular}
+
+This also requires a voltage inverter, so no new requirement is added.
+
+\item Positive logic to negative logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & L          & L           & T         \\
+T        & H          & H           & F         \\
+\end{tabular}
+
+The voltage is already correct so only a wire is needed to connect them.  We now have something new, a `bare wire not'.  Think about this for a second, we have a wire that can do logical negation.  That is pretty cool.
+
+\item Negative logic to positive logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & H          & H           & T         \\
+T        & L          & L           & F         \\
+\end{tabular}
+
+Again the voltages are correct so only a wire is needed.
+\end{enumerate}
+Our four logic combinations gave us two different devices (inverter or bare wire) that could fulfil our needs, depending on the convention picked.   That is one more than with either straight positive logic or straight negative logic, which yielded the same one possibility (inverter) as each other.  The increased design flexibility is important in a real design situation.
+\end{example}
+
+Now lets try from a different perspective.  The last example started with a requirement on the logic and found what devices could work, now let's start with the device and find out what it can do for our logic.
+
+\begin{example}
+The voltage characteristics of an inverter is
+
+\begin{tabular}{cc}
+Voltage In & Voltage Out \\\hline
+L          & H           \\
+H          & L           \\
+\end{tabular}
+
+Now we just have to add the interpretation, i.e. the logic convention.  We have four possibilities for a single input, single output.
+\begin{enumerate}
+\item Positive logic to positive logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & L          & H           & T         \\
+T        & H          & L           & F         \\
+\end{tabular}
+
+This is `not', and as we noted in the last example this is why most people think an inverter is `not'.
+
+\item Negative logic to negative logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & H          & L           & T         \\
+T        & L          & H           & F         \\
+\end{tabular}
+
+This also is `not'.
+
+\item Positive logic to negative logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & L          & H           & F         \\
+T        & H          & L           & T         \\
+\end{tabular}
+
+This is a logic convention changer.  It preserves the interpretation (logic value) but switches conventions.
+
+\item Negative logic to positive logic
+
+\begin{tabular}{cc||cc}
+Logic In & Voltage In & Voltage Out & Logic Out \\\hline
+F        & H          & H           & T         \\
+T        & L          & L           & F         \\
+\end{tabular}
+
+Again the we see the inverter also `inverts' the convention.
+\end{enumerate}
+We thus have that an inverter can serve one of two purposes: logic value inversion (not) or logic convention inversion (converter).
+\end{example}
+
+The options are even larger with two input gates.
+
+\begin{example}
+Consider an `\textbf{andn}' gate in positive logic.  What could we use to make it with standard TTL Gates (\textbf{nand}, \textbf{nor}, \textbf{and}, \textbf{or}, \textbf{not}, \textbf{xor}, \textbf{xnor})?
+
+Answer:
+
+Let's start by looking at the logic table of an \textbf{andn} gate.
+
+\begin{tabular}{c|c||c}
+A & B & A andn B \\\hline
+0 & 0 & 0 \\
+0 & 1 & 0 \\
+1 & 0 & 1 \\
+1 & 1 & 0 \\
+\end{tabular}
+
+Since this is positive logic, we have to find a device or devices that give us the voltage pattern below.
+
+\begin{tabular}{c|c||c}
+In 1 & In 2 & Out \\\hline
+L    & L    & L \\
+L    & H    & L \\
+H    & L    & H \\
+H    & H    & L \\
+\end{tabular}
+
+\begin{enumerate}
+\item If we used positive logic everywhere, we would have an \textbf{andn} gate, which we have no implementation for directly, so we could use an \textbf{not} on in2(B) and then \textbf{and} the result with in1(A).
+
+\begin{tabular}{c|c||c}
+A & $\bar{B}$ & A and $\bar{B}$ \\\hline
+0 & 1 & 0 \\
+0 & 0 & 0 \\
+1 & 1 & 1 \\
+1 & 0 & 0 \\
+\end{tabular}
+
+\item If we used negative logic on in2, we would have an \textbf{and} gate, and we could use an inverter (\textbf{not}) to take the initial positive logic system on in2 to make it negative logic without negating the input.
+
+\begin{tabular}{c|c||c}
+A & B.L & A and B.L \\\hline
+0 & 1 & 0 \\
+0 & 0 & 0 \\
+1 & 1 & 1 \\
+1 & 0 & 0 \\
+\end{tabular}
+\item If we used negative logic on in1, we would have a \textbf{nor} gate, and we could use an inverter (\textbf{not}) to take the initial positive logic system on in1 to make it negative logic without negating the input.
+
+\begin{tabular}{c|c||c}
+A.L & B & A.L nor B \\\hline
+1 & 0 & 0 \\
+1 & 1 & 0 \\
+0 & 0 & 1 \\
+0 & 1 & 0 \\
+\end{tabular}
+
+\item If we used negative logic on both inputs, we would have a norn gate, which is not implemented.  The negation of B.L can be handled by a bare wire not, which will also work to go from B.h to$\not$B.L.  Going from A.h to A.L can be handled by an inverter (\textbf{not}).  The rest can be handled by a \textbf{nor} gate, so that this is the same as the last case.
+
+\begin{tabular}{c|c||c}
+A.L & B.L & A.L norn B.L \\\hline
+1 & 1 & 0 \\
+1 & 0 & 0 \\
+0 & 1 & 1 \\
+0 & 0 & 0 \\
+\end{tabular}
+
+\item If we used negative logic only on the output we would have nandn, which is not implemented.  We need a \textbf{not} on in2, and a bare wire not on the output handling the logic level and not of the output, leaving the main gate as an \textbf{and}.
+
+\begin{tabular}{c|c||c}
+A & B & (A nandn B).L \\\hline
+0 & 0 & 1 \\
+0 & 1 & 1 \\
+1 & 0 & 0 \\
+1 & 1 & 1 \\
+\end{tabular}
+
+\item If we used negative logic on in2 and the output, we would have an \textbf{nand} gate, and we could use an inverter (\textbf{not}) to take the initial positive logic system on in2 to make it negative logic without negating the input and similarly an inverter (\textbf{not}) could be used to take the initial negative logic output and convert to positive logic.
+
+\begin{tabular}{c|c||c}
+A & B.L & (A nand B.L).L \\\hline
+0 & 1 & 1 \\
+0 & 0 & 1 \\
+1 & 1 & 0 \\
+1 & 0 & 1 \\
+\end{tabular}
+\item If we used negative logic on in1 and the output, we would have a \textbf{or} gate, and we could use an inverter (\textbf{not}) to take the initial positive logic system on in1 to make it negative logic without negating the input and similarly an inverter (\textbf{not}) could be used to take the initial negative logic output and convert to positive logic.
+
+\begin{tabular}{c|c||c}
+A.L & B & (A.L or B).L \\\hline
+1 & 0 & 1 \\
+1 & 1 & 1 \\
+0 & 0 & 0 \\
+0 & 1 & 1 \\
+\end{tabular}
+\item If we used negative logic on both inputs and the output, we would have \textbf{orn}, which does not exist.  We could make it by using a bare wire not on in2 and inverters (\textbf{not}) on in1 and the output.  The main gate is now an \textbf(or).
+
+\begin{tabular}{c|c||c}
+A.L & B.L & (A.L or B.L).L \\\hline
+1 & 1 & 1 \\
+1 & 0 & 1 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{tabular}
+\end{enumerate}
+
+The above cases reduce to four possibilities:
+\begin{enumerate}
+\item an \textbf{and} with a \textbf{not} on in2,
+\item an \textbf{nor} with a \textbf{not} on in1,
+\item an \textbf{nand} with a \textbf{not} on in2 and output,
+\item an \textbf{or} with a \textbf{not} on in1 and output.
+\end{enumerate}
+It is straightforward to show they are equivalent, the nice thing is that mixed logic can generate them all.
+\end{example}
+
+It is this flexibility is one great reason that mixed logic so popular.
+
+
+\section{Canonical Forms}\label{s-canonical}
+
+Only in rare cases are problems easy enough to reduce to a single gate we can recognize.  In most cases we need to design more complicated circuits to achieve the desired result.  An important result in boolean logic is that every possible output pattern can be realized from input signals in two levels of logic if each gate can have as many inputs as you need.  The practical use of this is that we can create canonical forms.  Two main canonical forms are used, Sum-of-Products (SOP) and Product-of-Sums (POS).  Each canonical is made up of terms, and each term corresponds to one row of a truth table.  Since each term corresponds to a row in the truth table the terms can be referenced by the row number or the actual equation for the term (I will show how to get the equations below)  The names were designed to be descriptive, as follows.
+
+\subsection{Sum of Products}
+
+A sum is a series of terms connected by ``+'', which is \textbf{or} in our case.  A product is a series of terms connected by ``$\cdot$'', which is \textbf{and} in our case, thus SOP is bunch of terms that only use \textbf{and} in them that are connected together by \textbf{or}.  We call each term in a SOP a Miniterm because it is only true for one combination of inputs (since \textbf{and} is only true for one combination of inputs this follows directly).  In essence each Miniterm places one true (1) value in the output, and thus can be thought of as tracking the 1's.  Each Miniterm's equation is written such that it will be true for that row only of the truth table.  Consider the following.
+
+\vspace{.1in}
+\begin{tabular}{c|c|c|cl}
+x & y & z & Row & Miniterm   \\ \hline
+0 & 0 & 0 & 0   & $x'\cdot y'\cdot z'$ \\
+0 & 0 & 1 & 1   & $x'\cdot y'\cdot z$  \\
+0 & 1 & 0 & 2   & $x'\cdot y\cdot z'$  \\
+0 & 1 & 1 & 3   & $x'\cdot y\cdot z$   \\
+1 & 0 & 0 & 4   & $x\cdot y'\cdot z'$  \\
+1 & 0 & 1 & 5   & $x\cdot y'\cdot z$   \\
+1 & 1 & 0 & 6   & $x\cdot y\cdot z'$   \\
+1 & 1 & 1 & 7   & $x\cdot y\cdot z$    \\
+\end{tabular}
+\vspace{.1in}
+
+Notice that the row number is just the decimal value of binary number (xyz).  Also note that the Miniterm is formed by placing complements where the corresponding variable is zero, this forces all the variables (or complements) to be true for the equation on that row.  To get a better appreciation of what it means for a Miniterm to be adding or tracking the 1's consider a series of truth tables.
+
+\vspace{.1in}
+\noindent
+\begin{tabular}{p{1.1in}p{1.5in}p{1.6in}p{1.4in}}
+$a_1=x\cdot y\cdot z$ & $a_2=x\cdot y\cdot z+x\cdot y'\cdot z$ &
+$a_3=x\cdot y\cdot z+x\cdot y'\cdot z+x\cdot y'\cdot z'$ &
+$a_4=x\cdot y\cdot z+x\cdot y'\cdot z+x\cdot y'\cdot z'+x'\cdot y\cdot z'$ \\
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 0 & 0 \\
+1 & 0 & 1 & 0 \\
+1 & 1 & 0 & 0 \\
+1 & 1 & 1 & 1 \\
+\end{tabular}
+&
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 0 & 0 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 0 \\
+1 & 1 & 1 & 1 \\
+\end{tabular}
+&
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 0 \\
+1 & 1 & 1 & 1 \\
+\end{tabular}
+&
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 1 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 0 \\
+1 & 1 & 1 & 1 \\
+\end{tabular} \\
+\end{tabular}
+\vspace{.1in}
+
+Each time a term is added the truth table shows the output in the corresponding row to the new term becomes 1.  It is thus evident that we can go the reverse direction.  We always want a shorter way to write things, so since Miniterm implies small we can also represent the term by a small "m" followed by the row number, so $m_5=x\cdot y'\cdot z$.  Using this notation the designs above are $a_1=\{m_7\}$, $a_2=\{m_5,\,m_7\}$, $a_3=\{m_4,\,m_5,\,m_7\}$, and $a_4=\{m_2,\,m_4,\,m_5,\,m_7\}$.
+
+This is nice and short but we want even shorter so we abbreviate the list of Miniterms by $\sum$ followed by a list of the numbers of the terms (you might recall that $\sum$ means a series of '$+$' in math).  While it is not a general rule, I list the inputs as subscripts of $\sum$, it makes it easier to tell the sequence and what signals (wires) to connect.  Thus our summation notation for the designs would be, $a_1=\sum_{x,y,z}(7)$, $a_2=\sum_{x,y,z}(5,7)$, $a_3=\sum_{x,y,z}(4,5,7)$, and $a_4=\sum_{x,y,z}(2,4,5,7)$.  Note the listing of inputs as subscripts can be done with the listing of Miniterms, $a_1=\{m_7\}_{x,y,z}$, $a_2=\{m_5,\,m_7\}_{x,y,z}$, $a_3=\{m_4,\,m_5,\,m_7\}_{x,y,z}$, and $a_4=\{m_2,\,m_4,\,m_5,\,m_7\}_{x,y,z}$.
+
+
+\subsection{Product of Sums}
+By the colloquial descriptions above for sum and product, POS is a bunch of terms that only use \textbf{or} gates internally and are connect by \textbf{and} gates.  We call each term in a POS a Maxiterm because it is true for every input combination but one (since it is made of \textbf{or} gates).  A Maxiterm is thus false for only one combination of the inputs.  In essence each Maxiterm places one false (0) value in the output, so it can be thought of as tracking the 0's.  Each Maxiterm's equation is written such that it will be true for that row only of the truth table.  Consider the following.
+
+\vspace{.1in}
+\begin{tabular}{c|c|c|cl}
+x & y & z & Row & Maxiterm   \\ \hline
+0 & 0 & 0 & 0   & $x+y+z$    \\
+0 & 0 & 1 & 1   & $x+y+z'$   \\
+0 & 1 & 0 & 2   & $x+y'+z$   \\
+0 & 1 & 1 & 3   & $x+y'+z'$  \\
+1 & 0 & 0 & 4   & $x'+y+z$   \\
+1 & 0 & 1 & 5   & $x'+y+z'$  \\
+1 & 1 & 0 & 6   & $x'+y'+z$  \\
+1 & 1 & 1 & 7   & $x'+y'+z'$ \\
+\end{tabular}
+\vspace{.1in}
+
+Notice that the row number is just the decimal value of binary number (xyz).  Also note that the Maxiterm is formed by placing complements where the corresponding variable is one, this forces all the variables (or complements) to be false for the equation on that row.    To get a better appreciation of what it means for a Maxiterm to be adding or tracking the 0's consider a series of truth tables.
+
+\vspace{.1in}
+\noindent
+\begin{tabular}{p{1.1in}p{1.5in}p{1.6in}p{1.4in}}
+$\bar a_1=(x+y+z)$ & $\bar a_2=(x+y+z)\cdot(x+y+z')$ &
+$\bar a_3=(x+y+z)\cdot(x+y+z')\cdot(x+y'+z')$ &
+$a_4=(x+y+z)\cdot(x+y+z')\cdot(x+y'+z')\cdot(x'+y'+z)$ \\
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 1 \\
+0 & 1 & 0 & 1 \\
+0 & 1 & 1 & 1 \\
+1 & 0 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 1 \\
+1 & 1 & 1 & 1 \\
+\end{tabular}
+&
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 1 \\
+0 & 1 & 1 & 1 \\
+1 & 0 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 1 \\
+1 & 1 & 1 & 1 \\
+\end{tabular}
+&
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 1 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 1 \\
+1 & 1 & 1 & 1 \\
+\end{tabular}
+&
+\begin{tabular}{c|c|c|c}
+x & y & z & a \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 1 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 0 \\
+1 & 1 & 1 & 1 \\
+\end{tabular} \\
+\end{tabular}
+\vspace{.1in}
+
+Notice that each time a term is added the truth table shows the output in the corresponding row to the new term becomes 0.  It is thus evident that we can go the reverse direction.  We always want a shorter way to write things, so since Maxiterm implies large we can also represent the term by a capital "M" followed by the row number, so $M_5=x'+y+z'$.  Using this notation the designs above are $\bar a_1=\{M_0\}$, $\bar a_2=\{M_0,\,M_1\}$, $\bar a_3=\{M_0,\,M_1,\,M_3\}$, and $a_4=\{M_0,\,M_1,\,M_3,\,M_6\}$.
+
+This is nice and short but we want even shorter so we abbreviate the list of Maxiterms by $\prod$ followed by a list of the numbers of the terms (you might recall that $\prod$ means product in math).  While it is not a general rule, I list the inputs as subscripts of $\prod$, it makes it easier to tell the sequence and what signals (wires) to connect.  Thus our product notation for the designs would be, $\bar a_1=\prod_{x,y,z}(0)$, $\bar a_2=\prod_{x,y,z}(0,1)$, $\bar a_3=\prod_{x,y,z}(0,1,3)$, and $a_4=\prod_{x,y,z}(0,1,3,6)$.  Note the listing of inputs as subscripts can be done with the listing of Maxiterms, $\bar a_1=\{M_0\}_{x,y,z}$, $\bar a_2=\{M_0,\,M_1\}_{x,y,z}$, $\bar a_3=\{M_0,\,M_1,\,M_3\}_{x,y,z}$, and $a_4=\{M_0,\,M_1,\,M_3,\,M_6\}_{x,y,z}$.
+
+As a final note, the last problem in this section is the same as the last one in the SOP section and so the designs must be equivalent.  We thus have $a_4=\prod_{x,y,z}(0,1,3,6)=\sum_{x,y,z}(2,4,5,7)$, from which we can note that the if we take all the numbers from the truth table and remove the ones from the $\prod$ list, we have the $\sum$ list and vice versa.  This gives us a nice way to switch between the two forms provided we know how many rows are in the table, which you can know from counting the number of inputs in our subscript (another good reason for listing them).
+
+
+
+\vspace{6pt}
+\textbf{Example}
+\vspace{6pt}
+
+Obtain the sum of products form by algebra and the product of
+sums form by truth table for $A+B\cdot (C + A)\cdot(B'+ A'\cdot B)$.
+
+\beqn
+A+B\cdot (C + A)\cdot(B'+ A'\cdot B)
+& = & A+B\cdot(B'+ A'\cdot B)\cdot (C + A) \\
+& = & A+(B\cdot B'+ B\cdot A'\cdot B)\cdot (C + A) \\
+& = & A + A'\cdot B \cdot (C + A) \\
+& = & A + A'\cdot B \cdot C + A'\cdot B \cdot A \\
+& = & A + A'\cdot B \cdot C \\
+& = & A\cdot(B+B')\cdot(C+C') + A'\cdot B \cdot C \\
+& = & A\cdot B' \cdot C' + A\cdot B' \cdot C + A\cdot B \cdot C' + A\cdot B \cdot C + A'\cdot B \cdot C \\
+& = & m_4 + m_5 + m_6 + m_7 + m_3 \\
+& = & \Sigma(3,4,5,6,7)_{A,B,C}
+\eeqn
+
+\begin{tabular}{c|c|c||c}
+A & B & C & $A+B\cdot (C + A)\cdot(B'+ A'\cdot B)$ \\
+\hline
+0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 1 & 1 & 1 \\
+1 & 0 & 0 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 1 \\
+1 & 1 & 1 & 1 \\
+\end{tabular}
+
+The three terms with 0's are thus $M_0$, $M_1$, and $M_2$, yielding $\Pi(0,1,2)_{A,B,C}$.
+

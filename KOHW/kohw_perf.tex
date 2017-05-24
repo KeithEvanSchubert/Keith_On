@@ -1,0 +1,382 @@
+\chapter{Performance}
+\label{c-perf}
+
+\section{Cost}
+
+\beqn
+\hbox{Cost of IC}
+&=& \frac{\hbox{Cost of die}+\hbox{Cost of Testing}+\hbox{Cost of Packaging}}{\hbox{Final Yield}}
+\eeqn
+
+\beqn
+\hbox{Cost of Die}
+&=& \frac{\hbox{Cost of Wafer}}{\hbox{Dies per Wafer}\times\hbox{Die Yield}}
+\eeqn
+
+\beqn
+\hbox{Die Yield}
+&=& \frac{Wafer Yield}{\left(1+\frac{\hbox{Defects per Area}\times\hbox{Die Area}}{\alpha}\right)^{\alpha}}
+\eeqn
+
+\beqn
+\hbox{List Price}
+&=& \frac{4}{3}\hbox{Average Selling Price} \\
+&=& \frac{4}{3}\frac{4}{3}\hbox{Production Cost} \\
+&=& \frac{4}{3}\frac{4}{3}\frac{6}{5}\hbox{Component Cost} \\
+&=& \frac{32}{15}\hbox{Component Cost} \\
+&\approx & 2\hbox{Component Cost}
+\eeqn
+
+\section{Power, Energy, and Heat}
+
+These are probably the most misused terms in computers (and many other fields as well).  They are not synonyms and should not be used as such.
+\begin{description}
+  \item[Work] Electrical work is electrical force applied on a charge over a distance.  Usually Electrical force is calculated by the the charge times the electrical field.  For computers a computation involves moving charges from one place to another by applying a voltage, i.e.: electrical work.  The work done does not change with the time it takes to do the computation.  Think of it as this is what you want to do.
+  \item[Energy] The ability to do work.  You can also consider this the cost of doing work.  In a computer Energy use is primarily due to dynamic operations (switching transistors), so $$E_{d}=\frac{1}{2}C V^2$$, where $E_d$ is the dynamic energy, $C$ is the capacitive load of the computer (consider it constant for a computer design), and $V$ is the voltage of the computer.  Energy for laptops are stored in batteries, and since this is a fixed source energy is a major issue to laptops (i.e. we care about the work done which is proportional to the computations we do).
+  \item[Power] The rate at which energy is used (and thus work done).  Total power is the sum of dynamic power and static power.  We are primarily concerned with dynamic power (again from switching transistors), so assuming the capacitance does not change,
+      \begin{eqnarray}
+      P_d&=&\frac{d}{dt}E_d\\
+      &=&CV(t)\frac{dV(t)}{dt},
+      \end{eqnarray}
+      where $P_d$ is dynamic power, $C$ is capacitive load, and $V$ is voltage.  A standard assumption is that the voltage is an ideal square wave with a duty cycle of $\frac{1}{2}$ with a switching frequency of $f_s$, which is proportional to the clock frequency of the processor, thus
+      \begin{eqnarray}
+      P_d&=&\frac{1}{2}CV^2f_s.
+      \end{eqnarray}
+      Static power loss is caused primarily from leakage current in the transistors and thus is constant even for inactive circuits (the computer must be on of course though).  Static power, $P_s$ is given by $P_s=i_c\cdot V$, where $i_c$ is the static current (leakage current in one transistor time the number of transistors), and $V$ is still voltage.  Static power accounts for more than $25\%$ in current computers.  Computers that have a continuous power source are more concerned with power, as power also tells us the rate of heat production.  We are at the limits of air cooling, so this is a major issue.
+\end{description}
+
+\section{Dependability}
+
+\begin{description}
+  \item[MTTF] mean time to fail
+  \item[MTTR] mean time to repair (detect + fix)
+  \item[MTBF] mean time between failures
+\end{description}
+
+$MTBF=MTTF+MTTR$
+
+\begin{eqnarray}
+MTTF(A or B)&=& \frac{1}{\frac{1}{MTTF(A)} + \frac{1}{MTTF(B)}}\\
+&=&\frac{MTTF(A)MTTF(B)}{MTTF(A)+MTTF(B)}
+\end{eqnarray}
+For an identical device this becomes:
+\begin{eqnarray}
+MTTF(2) &=& \frac{MTTF}{2}
+\end{eqnarray}
+
+\section{Performance}
+
+\begin{description}
+    \item[Response Time] (aka execution time) the time between the start and completion of a task.
+    \item[Throughput] The number of task completed in a period of time.
+\end{description}
+
+There are four tasks (a, b, c, and d) which are composed of four subparts (1, 2, 3, 4 for each of a, b, c, and d) that are independent (i.e. you can do a1 and a2 simultaneously).  You are to run them on a four processor machine.  Ignoring memory and overhead, we can schedule the processes as:
+
+\begin{tabular}{cc}
+ & Time \\
+ \shortstack{P\\r\\o\\c\\e\\s\\s\\o\\r} &
+\begin{tabular}{c|cccc}
+    & 1 & 2 & 3 & 4 \\
+  \hline
+  1 & a1 & a2 & a3 & a4 \\
+  2 & b1 & b2 & b3 & b4 \\
+  3 & c1 & c2 & c3 & c4 \\
+  4 & d1 & d2 & d3 & d4 \\
+\end{tabular}
+\\
+\end{tabular}
+
+or
+
+\begin{tabular}{cc}
+ & Time \\
+ \shortstack{P\\r\\o\\c\\e\\s\\s\\o\\r} &
+\begin{tabular}{c|cccc}
+    & 1 & 2 & 3 & 4 \\
+  \hline
+  1 & a1 & b1 & c1 & d1 \\
+  2 & a2 & b2 & c2 & d2 \\
+  3 & a3 & b3 & c3 & d3 \\
+  4 & a4 & b4 & c4 & d4 \\
+\end{tabular}
+\\
+\end{tabular}
+
+\section{Time}
+
+Time can be different things.  There is time that we exist in, sometimes called ``wall time" due to measurements by wall clocks.  There is the CPU time of the program, but even here do we mean the total time from start to finish, or just the time spent on the program without counting system functions or other programs (execution time).  We will in general speak of only the execution time or CPU Time (CPUT, $T_{CPU}$) of the program, for simplicity.
+
+The longer a process takes to run the worse the performance, this should be obvious as who wants a slower machine.  We could also say, the less time a process takes the better the performance.  Execution time and performance are thus inversely related:
+\beqn
+\hbox{Perf}=\frac{1}{\hbox{Execution Time}}
+\eeqn
+If the performance of system A is n times better than system B then
+\beqn
+\hbox{Perf}_A & = & n\hbox{Perf}_B \\
+\frac{\hbox{Perf}_A}{\hbox{Perf}_B}  & = & n.
+\eeqn
+Alternately we note
+\beqn
+\hbox{Perf}_A & = & n\hbox{Perf}_B \\
+\frac{1}{\hbox{Execution Time}_A}  & = & n\frac{1}{\hbox{Execution Time}_B} \\
+\frac{\hbox{Execution Time}_B}{\hbox{Execution Time}_A}  & = & n.
+\eeqn
+Putting all this together we obtain:
+\beqn
+\frac{\hbox{Perf}_A}{\hbox{Perf}_B} & = & \frac{\hbox{Execution Time}_B}{\hbox{Execution Time}_A}.
+\eeqn
+
+\section{Measuring CPU Time}
+
+\beqn
+CPUT & = & \hbox{\# cycles} \times \hbox{cycle time} \\
+     & = & \hbox{\# cycles} \times \frac{1}{\hbox{cycle rate}}
+\eeqn
+
+Cycle rate is easily known for a machine so only the \# cycles is needed.
+
+\subsection{First Approximation}
+
+\beqn
+\hbox{\# cycles} & = & \hbox{\# instruct} \times \frac{\hbox{\# cycles}}{\hbox{\# instruct}} \\
+ &=& IC\times \hbox{CPI}
+\eeqn
+
+CPI is the cycles per instruction, and IC is the instruction count.  It can be measured on average for a running program, and theoretical predictions of it can be made fairly easily.
+
+\subsection{Second Approximation}
+
+CPI for different types of instructions are different.  For instance, arithmetic instructions like addition are usually much faster than memory access instructions.
+
+\beqn
+\hbox{\# cycles}
+& = & IC_{total}CPI_{avg} \\
+& = & IC_{total}\sum_{i=1}^{n}f_i \times \hbox{CPI}_i \\
+& = & IC_{total}\sum_{i=1}^{n}\frac{IC_i}{IC_{total}} \times \hbox{CPI}_i \\
+& = & \sum_{i=1}^{n}IC_i \times \hbox{CPI}_i
+\eeqn
+where $f_i$ is the frequency of instruction type i.  These frequencies can be measured for a large number of software packages to give typical results.
+
+
+Consider, for example, a program that executes 50,000 instructions running on a machine that is typified by
+
+\begin{tabular}{c|ccc}
+      & ALU & Branch & Memory \\
+  \hline
+  CPI & 1   & 3      & 4      \\
+  freq& 0.5 & 0.2    & 0.3    \\
+\end{tabular}
+
+In this case the average CPI of the machine would be given by
+
+\beqn
+CPI_{avg}
+&=& \sum_{i=1}^{n}f_i \times \hbox{CPI}_i \\
+&=& .5\times 1 + .2\times 3 + .3\times 4 \\
+&=& .5 +.6 +1.2 \\
+&=& 2.3
+\eeqn
+
+It is interesting to note that memory accounts for more of the CPI than the other two combined, and branching accounts for more than ALU operations even though there are over twice as many ALU operations.
+
+\section{Amdahl's Law}
+
+The performance difference between two machines, or two configurations of the same machine for that matter, can be compared by setting them as a ratio as we have seen.  Let's refer to the performance difference of the two machines as the speedup ($S$).  From what we have seen we can write for two machines $a$ and $b$ that
+
+\beqn
+S
+&=& \frac{P_a}{P_b} \\
+&=& \frac{T_b}{T_a} \\
+&=& \frac{IC_{b}CPI_{b}\frac{1}{\hbox{cycle rate}_b}}{IC_{a}CPI_{a}\frac{1}{\hbox{cycle rate}_a}} \\
+&=& \frac{IC_{b}CPI_{b}\hbox{cycle rate}_a}{IC_{a}CPI_{a}\hbox{cycle rate}_b}
+\eeqn
+
+Now, let's assume that we are dealing with two versions of the same machine, one enhanced and one not enhanced.  If the time of the original code was $T_{original}$, and the instructions that would be speed up by the enhancement took up a fraction, $f$ of the original time and resulted in that portion be completed in $\frac{1}{S_{enhanced}}$ the time, then
+\beqn
+T_{enhanced}=T_{original}\left( (1-f)+f\frac{1}{S_{enhanced}} \right).
+\eeqn
+The speedup, per the second form above is
+\beqn
+S_{overall}
+&=& \frac{T_{original}}{T_{enhanced}} \\
+&=& \frac{T_{original}}{T_{original}\left( (1-f)+f\frac{1}{S_{enhanced}} \right)} \\
+&=& \frac{1}{(1-f)+\frac{f}{S_{enhanced}}}
+\eeqn
+This result can be extended to cover many enhancements, say $n$ of them.
+\beqn
+S&=&\frac{1}{(1-\sum_{i=1}^nf_i)+\sum_{i=1}^n\frac{f_i}{S_i}}
+\eeqn
+
+\subsection{Alternate Approach}
+We could have assumed that the enhanced time took $T_{enhanced}$, and that the instructions using the enhanced mode took up a fraction $g$ of the enhanced time.  If the speedup of the enhanced mode was still $S_{enhanced}$ then
+\beqn
+T_{original}=T_{enhanced}\left((1-g)+gS_{enhanced}\right)
+\eeqn
+We can relate $f$ and $g$ by noting that
+\beqn
+T_{enhanced}gS_{enhanced}&=&T_{original}f \\
+gS_{enhanced}&=&f S_{overall}
+\eeqn
+
+By observing that $S_{overall}\leq S_{enhanced}$, with strict inequality if $S_{enhanced}>1$, we find that $g\leq f$, with strict inequality for the same condition. Alternately, we could note that
+\beqn
+T_{enhanced}(1-g)&=&T_{original}(1-f) \\
+1-g&=&(1-f)S_{overall} \\
+1-g &=& S_{overall}-gS_{enhanced} \\
+S_{overall}&=&(1-g)+gS_{enhanced}
+\eeqn
+An alternate way of finding the overall speedup is by using the formula for speedup directly.
+\beqn
+S_{overall}
+&=& \frac{T_{original}}{T_{enhanced}} \\
+&=& \frac{T_{enhanced}\left((1-g)+gS_{enhanced}\right)}{T_{enhanced}} \\
+&=& (1-g)+gS_{enhanced}
+\eeqn
+Since the speedup must be the same, we can also find a formula to calculate the speedup for the enhanced portion in terms of just $f$ and $g$.
+\beqn
+(1-g)+gS_{enhanced}&=&\frac{1}{(1-f)+\frac{f}{S_{enhanced}}} \\
+((1-g)+gS_{enhanced})\left((1-f)+\frac{f}{S_{enhanced}}\right) &=& 1 \\
+1-g-f+fg +(1-g)\frac{f}{S_{enhanced}}+(1-f)gS_{enhanced}+fg &=&1 \\
+g(S_{enhanced}-1)+f\left(\frac{1}{S_{enhanced}}-1\right)
+&=&fg\left(S_{enhanced}-1+\frac{1}{S_{enhanced}}-1\right) \\
+&=&fg(S_{enhanced}-1)+fg\left(\frac{1}{S_{enhanced}}-1\right) \\
+g(1-f)(S_{enhanced}-1) &=& f(1-g)\left(1-\frac{1}{S_{enhanced}}\right) \\
+g(1-f)(S_{enhanced}-1) &=& f(1-g)\frac{S_{enhanced}-1}{S_{enhanced}} \\
+g(1-f)S_{enhanced} &=& f(1-g) \\
+S_{enhanced} &=& \frac{f}{1-f}\frac{1-g}{g} \\
+S_{enhanced} &=& \frac{f}{g}S_{overall}
+\eeqn
+
+We can thus calculate the overall speedup a number of ways
+\beqn
+S_{overall}
+&=&S_{enhanced}\frac{g}{f} \\
+&=&\frac{1-g}{1-f} \\
+&=& (1-g)+gS_{enhanced} \\
+&=& \frac{1}{(1-f)+\frac{f}{S_{enhanced}}}
+\eeqn
+
+
+Consider, for example, that on an unenhanced machine a piece of code runs in 10 seconds, and the instructions that could have used the enhanced mode (were it available) took up 6 seconds of that time.  On an enhanced machine the same code uses the enhanced mode for a total of 1 second of the time.  What is $f$ and $g$?  What is the speedup of the enhancement and the overall system?
+
+We can find $f$ directly.
+\beqn
+f&=&\frac{6 sec}{10 sec} \\
+&=& 0.6
+\eeqn
+We can find $g$ by noting that the original code has 4 seconds that are not speed up, so the total time after must be 5 seconds.
+\beqn
+g&=&\frac{1 sec}{5 sec} \\
+&=& 0.2
+\eeqn
+If you did not make this observation you could have first found the speedup of the enhanced mode and used it to find $g$.  The speedup of the enhancement is simple, given this information.
+\beqn
+S_{enhanced}&=&\frac{6 sec}{1 sec} \\
+&=& 6
+\eeqn
+Using this, we could have found
+\beqn
+S_{enhanced} &=& \frac{f}{1-f}\frac{1-g}{g} \\
+6 &=& \frac{0.6}{0.4}\frac{1-g}{g} \\
+4 &=& \frac{1-g}{g} \\
+5g&=&1 \\
+g&=&0.2
+\eeqn
+The same we found before.  The overall speedup is equally easy to get, by a bunch of ways.
+\beqn
+S_{overall}
+&=&\frac{T_{original}}{T_{enhanced}} \\
+&=&\frac{10 sec}{5 sec} \\
+&=&2
+\eeqn
+Or
+\beqn
+S_{overall}
+&=&S_{enhanced}\frac{g}{f} \\
+&=&6\frac{.2}{.6} \\
+&=&2
+\eeqn
+Or
+\beqn
+S_{overall}
+&=&\frac{1-g}{1-f} \\
+&=&\frac{1-.2}{1-.6} \\
+&=&\frac{.8}{.4} \\
+&=&2
+\eeqn
+Or
+\beqn
+S_{overall}
+&=& (1-g)+gS_{enhanced} \\
+&=& (1-0.2)+0.2\times 6 \\
+&=& 0.8+1.2 \\
+&=&2
+\eeqn
+Or
+\beqn
+S_{overall}
+&=& \frac{1}{(1-f)+\frac{f}{S_{enhanced}}} \\
+&=& \frac{1}{(1-0.6)+\frac{0.6}{6}} \\
+&=& \frac{1}{0.4+0.1} \\
+&=& \frac{1}{0.5} \\
+&=&2
+\eeqn
+As you can see, it doesn't matter which formula you use, they all give the same answer.  You should also notice that if you improve the enhanced mode more, you will gain almost nothing in the overall speedup.  For example consider allowing $S_{enhanced}=\infty$, then
+\beqn
+S_{overall}
+&=& \frac{1}{(1-f)+\frac{f}{S_{enhanced}}} \\
+&=& \lim_{x\rightarrow\infty}\frac{1}{(1-0.6)+\frac{0.6}{x}} \\
+&=& \frac{1}{0.4} \\
+&=&2.5
+\eeqn
+In this case $g=0$ so some of the equations have the indeterminate form $0\times\infty$, which we avoid by using a form that does not have this problem.  The really big thing to see though is that even a huge increase in the speedup of the enhanced mode made little difference, because the non-enhanced portions are dominating.  This brings up one of the most basic interpretations of Amdahl's Law, always improve the most common case.
+
+
+\subsection{Relating the CPIs}
+Assuming we are dealing with enhancements to a machine, it is thus reasonable that the code length would not change, so $IC_a=IC_b$.  Additionally we will assume it is not a trivial improvement of increasing the clock speed, so $\hbox{cycle rate}_a=\hbox{cycle rate}_b$.  Thus
+\beqn
+S &=& \frac{CPI_{original}}{CPI_{enhanced}} \\
+CPI_{enhanced}&=& CPI_{original}\left( (1-\sum_{i=1}^nf_i)+\sum_{i=1}^n\frac{f_i}{S_i}\right) \\
+\eeqn
+Without changing the clock or reducing instructions, we can then find that the maximum speedup possible for a single issue system is $CPI_{original}$, since the ideal CPI for a single issue system is 1.
+
+
+
+
+
+
+\section{Putting It All Together}
+
+\noindent
+\textbf{Example}
+
+You are to select a compiler to develop applications for a company with two types of computers.  The company wants the best average performance with both machines.  Assume all the machines are 1GHz machines.
+
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+    Type       & CPI 1 & CPI 2 & Compiler 1 & Compiler 2 \\ \hline
+    Arithmetic & 1     & 1     & 35\%       & 30\%       \\ \hline
+    Branch     & 6     & 3     & 25\%       & 20\%       \\ \hline
+    Memory     & 3     & 5     & 40\%       & 50\%       \\ \hline
+\end{tabular}
+
+If the code is 10000 lines (for either compiler) when assembled how long does it take to run on each machine?
+
+    {\color{ans}
+
+    \begin{tabular}{|c|c|c|}
+      \hline
+                & Compiler 1 & Compiler 2 \\ \hline
+      Machine 1 & $1\times .35+6\times .25+ 3\times .4=3.05$ & $1\times .3+6\times .2+ 3\times .5=3$ \\ \hline
+      Machine 2 & $1\times .35+3\times .25+ 5\times .4=3.1$  & $1\times .3+3\times .2+ 5\times .5=3.4$ \\ \hline
+      Average   & $3.075$  & $3.2$ \\ \hline
+    \end{tabular}
+
+    Since time is the inverse of performance, we want the lowest average and ergo pick compiler 1.  If each command runs only once (a bad assumption in reality but we will use it for now), the code will run in:
+
+    machine 1: $\frac{10000\times 3.05}{10^9}= 3.05\times 10^{-4}$ seconds.
+
+    machine 2: $\frac{10000\times 3.1}{10^9}= 3.1\times 10^{-4}$ seconds.
+
+    }

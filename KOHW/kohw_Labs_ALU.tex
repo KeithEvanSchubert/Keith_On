@@ -1,0 +1,182 @@
+\chapter{Mini: ALU}
+\label{c-lab-alu}
+
+\section{Half Adder}
+
+Let's begin this section by considering a simple problem of how to design an adder for two bits.  Call the bits ``a" and ``b".  The sum will take two bits to hold, ``carry" (c) and ``sum" (s).
+
+\vspace{.1in}
+\begin{tabular}{rcrcrcrcr}
+ a & &  0 & &  0 & &  1 & &  1 \\
++b & & +0 & & +1 & & +0 & & +1 \\ \cline{1-1} \cline{3-3} \cline{5-5} \cline{7-7} \cline{9-9}
+cs & & 00 & & 01 & & 01 & & 10 \\
+\end{tabular}
+
+\vspace{.1in}
+\noindent
+We can express this as a table.
+
+\vspace{.1in}
+\begin{tabular}{c|c||c|c}
+a & b & c & s \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 1 \\
+1 & 0 & 0 & 1 \\
+1 & 1 & 1 & 0 \\
+\end{tabular}
+
+\vspace{.1in}
+\noindent
+From the table we can recognize that $c=a\cdot b$ and $s=a\oplus b$.
+
+\begin{verbatim}
+// name: half_adder
+// desc: adds two single bits and outputs the the two bit answer [C,S]
+// date:
+// by  :
+module half_adder(C,S,a,b); // you list all inputs and outputs, by convention outputs go first
+  input  a, b;              // this tells the compiler which lines are inputs, outputs, and inouts
+  output C, S;
+
+  parameter delay=1;        // this creates a parameter that can be changed when it is
+                            // instantiated, default value is 1
+
+  and #delay carry(C,a,b);  // this instantiates a gate, sets its parameter to delay (time delay)
+  xor #delay sum(S,a,b);    //  and passes the wires a,b as inputs to the gate and gets the
+                            //  gate driven wires C or S as outputs
+endmodule
+\end{verbatim}
+
+\section{Full Adders}
+
+We really want to have a way to add three bits, the two bits of the current digit and one bit carried from the previous sum.
+
+\begin{tabular}{r}
+ $c_{prev}$ \\
+ a \\
++b \\ \hline
+cs \\
+\end{tabular}
+
+As before we could make a table, but it is not necessary we can just add in pairs:
+
+\begin{tabular}{rcr}
+half-adder 1 & & half-adder 2 \\
+ a           & & $c_{prev}$ \\
++b           & & +$s_i$     \\ \cline{1-1} \cline{3-3}
+$c_is_i$     & & $c_js$     \\
+\end{tabular}
+
+and we \textbf{or} (as in the gate) the two intermediate carries together ($c=c_i+c_j$).  Thus we can implement it as two half adders.  Create a module ``full\_adder" and instantiate two half adders per the table to generate the sum and the intermediate carries, then combine the carries with an or gate to generate the carry out.  Make sure you also include the parameter delay, or the next level up will not be able to change the levels below it.
+
+\section{Adder-Subtractor}
+
+In the previous section you made a module of a full adder.  In this preparation you will make a four bit adder subtractor using your full adder module.  We will add a feature called carry enable, which when set (equal 1) causes the adder-subtractor to act normally, but when unset (equal 0) stops the carry from being passed, and thus turn the adder-subtractor into an \textbf{xor} gate (from the half-adder).
+
+\begin{enumerate}
+\item Create a new module with two four bit inputs for the numbers and a four bit output for the result.  Your module should also have a carry in and a carry out line.
+
+\begin{verbatim}
+// name: four_bit_adder
+// desc: four bit ripple carry adder with carry enable,
+//         if C_en then [C_out,Z] = x+y+C_in
+//                 else Zi = Xi xor Yi
+// date:
+// by  :
+module four_bit_adder(Z,C_out,x,y,C_in,c_en);
+  input  C_in, c_en;
+  input  [3:0] x,y;
+  output C_out;
+  output [3:0] Z;
+
+  parameter delay=1;        // this creates a parameter that can be changed when it is
+                            // instantiated, default value is 1
+
+endmodule
+\end{verbatim}
+
+
+\item Now create 7 wires to hold the intermediate carries between the full adders and the and gates that will connect them.
+
+\item Make four instances of your full adder, being sure to pass it the delay parameter.
+
+\item Create four \textbf{and} gates to do the carry enable logic.  Be sure to give them the parameter ``delay" so we can do timing later.  The outputs of each And gate should be connected to the carry in of one of the full adders.  One of the inputs of each and gate should be connected to C\_en.
+
+\item Finally, connect the carry outs of the first three adders to the \textbf{and} gate of the next bit.  The first \textbf{and} gate gets C\_in.
+
+\end{enumerate}
+
+Test your full adder with the following module:
+
+\begin{verbatim}
+// name: test1
+// desc: tests four bit ripple carry adder
+// date:
+// by  :
+module test1();
+  reg [3:0] a, b;
+  reg c0, cen;
+  wire [3:0] s;
+  wire c4;
+
+  // create instance of adder
+  four_bit_adder #1 adder(c,c4,a,b,c0,cen);
+
+  // set up the monitoring
+  initial
+  begin
+    $display("A    B    C0   C4 S     Time");
+    $monitor("%b   %b   %b   %b %b    %d", a,b,c0,c4,s,$time);
+  end
+
+  // run through a series of numbers
+  initial
+  begin
+        a=4'b0000; b=4'b0000; c0=1'b0; cen=1'b1;
+    #10 a=4'b0100; b=4'b0000; c0=1'b0; cen=1'b1;
+    #10 a=4'b0100; b=4'b0011; c0=1'b0; cen=1'b1;
+    #10 a=4'b0100; b=4'b0011; c0=1'b1; cen=1'b1;
+    #10 a=4'b1100; b=4'b0011; c0=1'b1; cen=1'b1;
+    #10 a=4'b1100; b=4'b0011; c0=1'b0; cen=1'b1;
+    #10 a=4'b0100; b=4'b0000; c0=1'b0; cen=1'b0;
+    #10 a=4'b0100; b=4'b0011; c0=1'b0; cen=1'b0;
+    #10 a=4'b0100; b=4'b0011; c0=1'b1; cen=1'b0;
+    #10 a=4'b1100; b=4'b0011; c0=1'b1; cen=1'b0;
+    #10 a=4'b1100; b=4'b0011; c0=1'b0; cen=1'b0;
+    #10 $finish;
+  end
+
+endmodule
+\end{verbatim}
+
+Once your four bit adder is working, you need to make a four bit adder subtractor from it.  See Figure 4-13 in Morris Mano, Digital Design, page 127 for a diagram of a ripple carry adder-subtractor.  For simplicity we will not calculate overflow (V).   Follow these steps:
+
+\begin{enumerate}
+\item Create a new module.
+
+\begin{verbatim}
+// name: four_bit_adder_subtractor
+// desc: four bit ripple carry adder, [C_out,Z] = x+(-)y+C_in
+// date:
+// by  :
+module four_bit_adder_subtractor(Z,C_out,x,y,sub,mode_arith);
+  input  sub, mode_arith;
+  input  [3:0] x,y;
+  output C_out;
+  output [3:0] Z;
+
+  parameter delay=1;        // this creates a parameter that can be changed when it is
+                            // instantiated, default value is 1
+
+endmodule
+\end{verbatim}
+
+\item Add a four bit wire called ``w", which will hold the output of the four \textbf{xor} gates in Figure 4-13.  Don't forget the delay parameter.
+
+\item Create four \textbf{xor} gates whose inputs are the bits of ``y" with "sub" outputs are the bits of ``w".  Don't forget the delay parameter.
+
+\item Make an instance of your adder subtractor and pass it ``x", ``w", ``sub", and ``mode\_arith".  Don't forget the delay parameter.
+
+\item Modify test1 to verify the design.
+\end{enumerate}
+

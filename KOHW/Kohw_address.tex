@@ -1,0 +1,184 @@
+\chapter{Addressing}
+\label{c-address}
+
+
+\begin{itemize}
+  \item .bss
+  \item .data
+  \item .text
+\end{itemize}
+
+\begin{description}
+  \item[.bss]  (block started by symbol) memory, reserved only
+  \item[.data] memory, predefined values
+  \item[.text] instructions
+  \item[.reserve val] (alternately ".skip val") sets aside val bytes of memory
+  \item[.equate name, val] (alternately ".set name, val") makes name a constant with value val
+  \item[.byte val] (alternately .b, ub, sb) specifies the operation to be on a byte
+  \item[.half val] (alternately .h, uh, sh) specifies the operation to be on a half word (2 bytes)
+  \item[.word val] (alternately .w) specifies the operation to be on a word (4 bytes)
+  \item[.align val] aligns the memory location counter
+\end{description}
+
+Note that val may be a constant expression for readability.
+
+\noindent
+\begin{tabular}{llll}
+Name & Generic & Sparc & Uses \\ \hline
+memory direct & mX & [\%r0+X] & \\
+register direct & rX & \%rX & \\
+immediate & \#X & X & \\
+memory indirect & @mX & - & pointers \\
+register indirect & @rX & [\%rX] & pointers \\
+memory indexed & label[mX] & - & arrays \\
+register indexed & label[rX] & [\%rY + \%rX] & arrays \\
+ & & & (note \%rY is loaded with label) \\
+pre-increment & +[rX] & - & increments by size (stride) each time \\
+post-increment & [rX]+ & - & increments by size (stride) each time \\
+pre-decrement & -[rX] & - & decrements by size (stride) each time \\
+post-decrement & [rX]- & - & decrements by size (stride) each time \\
+memory displaced & mX $\rightarrow$ label & - & struct \\
+register displaced & rX $\rightarrow$ label & [\%rX + label] & struct \\
+\end{tabular}
+
+
+\begin{tabular}{cc}
+\begin{tabular}{r|l|l|l|l|} \cline{2-5}
+  m0  & 0x00 & 0x00 & 0x00 & 0x12 \\ \cline{2-5}
+  m4  & 0x00 & 0x00 & 0x00 & 0x08 \\ \cline{2-5}
+  m8  & 0x01 & 0x23 & 0x45 & 0x67 \\ \cline{2-5}
+  m12 & 0x89 & 0xAB & 0xCD & 0xEF \\ \cline{2-5}
+  m16 & 0x12 & 0x34 & 0x56 & 0x78 \\ \cline{2-5}
+  m20 & 0x9A & 0xBC & 0xDE & 0xF0 \\ \cline{2-5}
+  m24 & 0x11 & 0x11 & 0x11 & 0x11 \\ \cline{2-5}
+\end{tabular}
+
+&
+
+\begin{tabular}{r|l|l|l|l|} \cline{2-5}
+  r0  & 0x00 & 0x00 & 0x00 & 0x00 \\ \cline{2-5}
+  r1  & 0x00 & 0x00 & 0x00 & 0x08 \\ \cline{2-5}
+  r2  & 0x00 & 0x00 & 0x00 & 0x0C \\ \cline{2-5}
+  r3  & 0x00 & 0x00 & 0x00 & 0x04 \\ \cline{2-5}
+  r4  & 0x00 & 0x00 & 0x00 & 0x10 \\ \cline{2-5}
+\end{tabular}
+\end{tabular}
+\vspace{.1in}
+
+Let var1 be a label for the value 8.
+
+\vspace{.1in}
+\begin{tabular}{llll}
+Representation & X=4 & Effective Address & Expression \\ \hline
+mX & m4 & 0x00000004 & 0x00000008 \\
+rX & r4 & - & 0x00000010 \\
+\#X & \#4 & - & 0x00000004 \\
+@mX & @m4 & 0x00000008 & 0x01234567 \\
+@rX & @r4 & 0x00000010 & 0x12345678 \\
+var1[mX] & 8[m4] & 0x00000010 (i.e.: 8+8) & 0x12345678 \\
+var1[rX] & 8[r4] & 0x00000018 (i.e.: 8+16) & 0x11111111 \\
++[rX] & +[r4] & 0x00000014 & 0x9ABCDEF0 \\
+      &       &  & r4 $\leftarrow$ 0x00000014 before \\
+$[$rX]+ & [r4]+ & 0x00000010 & 0x12345678 \\
+      &       &  & r4 $\leftarrow$ 0x00000014 after \\
+-[rX] & -[r4] & 0x0000000C & 0x89ABCDEF \\
+      &       &  & r4 $\leftarrow$ 0x0000000C before \\
+$[$rX]- & [r4]- & 0x00000010 & 0x12345678 \\
+      &       &  & r4 $\leftarrow$ 0x0000000C after \\
+mX $\rightarrow$ var1 & m4 $\rightarrow$ 8 & 0x00000010 (i.e.: 8+8) & 0x12345678 \\
+rX $\rightarrow$ var1 & r4 $\rightarrow$ 8 & 0x00000018 (i.e.: 8+16) & 0x11111111 \\
+\end{tabular}
+
+
+\subsection{Arrays}
+
+For instance consider an array of 10 integers.
+
+\begin{verbatim}
+   int my_int[10];
+\end{verbatim}
+
+This creates both the array of integers and a pointer to the first element.  The elements are numbered 0 to 9 and are accessed by $my_int[i]$ for $i\in\{0,1,\ldots,9\}$.  They can also be accessed by $*(my_int+i)$.  In assembly we would have:
+
+\begin{verbatim}
+  my_int:  .skip 10*4    ; each int is 4 bytes
+\end{verbatim}
+
+The contents can be accessed by:
+
+\begin{verbatim}
+  set i, %r2
+  ld  [%r2], %r2
+  umul %r2, 4, %r3
+  set my_int, %r4
+
+  ld [%r4 + %r3], %r5
+\end{verbatim}
+
+or if my\_int (the address) fits in a 13 bit signed constant:
+
+\begin{verbatim}
+  set i, %r2
+  ld  [%r2], %r2
+  umul %r2, 4, %r3
+
+  ld [%r3+my_int], %r5
+\end{verbatim}
+
+Essentially the address is my\_int + i*4, but this assumes that start of my array is zero.  How about a language like Pascal or VB which allows other starting values?  Consider defining an array (-m,-m+1,\ldots, -1, 0, 1, \ldots, n).  To use the address my\_int + i*size we have
+
+\begin{verbatim}
+          .skip m*size       ! negatives
+          .skip (n+1)*size   ! zero and positives
+\end{verbatim}
+
+Alternately,
+
+\begin{verbatim}
+         .skip (m+n+1)*size  ! whole thing
+\end{verbatim}
+
+This causes the address to be my\_int + (i+m)*size.  Now you might think this will be longer, but note that it can be rewritten as
+
+\vspace{.1in}
+\begin{tabular}{l}
+    my\_int + (i+m)*size \\
+    my\_int + i*size + m*size \\
+    (my\_int + m*size) + i*size \\
+\end{tabular}
+\vspace{.1in}
+
+That is, rather than constantly biasing the index, it makes more sense to bias the base.  Essentially it makes the second method look like the first, but it works for a positive starting number (by making m a negative).  Since it is more general the later form is what is used in practice.
+
+\subsection{String Storage}
+
+\begin{description}
+  \item[string256] (aka length plus value) length of string in first byte, string following
+  \item[NULL terminated] string followed by 0
+\end{description}
+
+
+\subsection{Structs}
+
+\begin{verbatim}
+struct book{
+  int pages;
+  float price;
+  char title[20];
+}library[100];
+\end{verbatim}
+
+Would be implemented:
+
+\begin{verbatim}
+         .set pages, 0
+         .set price, 4
+         .set title, 8
+         .set book_size, 28
+
+.bss
+
+library: .skip 100*book_size
+\end{verbatim}
+
+.bss is done in .data on some assemblers or machines 

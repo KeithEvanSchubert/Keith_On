@@ -1,0 +1,38 @@
+\chapter{Four Fundamental Spaces}
+
+\section{Definition}
+\subsection{Domain}
+\subsection{Range}
+\subsection{Right Nullspace}
+\subsection{Left Nullspace}
+\subsection{Putting Them Together}
+
+\section{SVD - Singular Value Decomposition}
+
+
+\section{Inverse}
+
+\subsection{Pseudo Inverse}
+left inverse
+
+right inverse
+
+Moore-Penrose conditions
+
+\subsection{Inverse}
+A true inverse only exists when the matrix is square and full rank, in which case the matrix is said to be invertible.
+
+\section{Projections}
+\subsection{Properties}
+Let $P_a$ be a projection onto the range of $a$.  If this is the case then projecting $a$ onto itself should not change anything.  Thus if I take any vector and project it onto the range of $a$ then project it onto the range of $a$ again, it should be the same as projecting onto the range of $a$ once.  Putting this formally,
+\begin{eqnarray}
+P_a(P_a x) & = & P_a x, \qquad\forall x\\
+P_a^2 x & = & P_a x, \qquad\forall x\\
+P_a^2 & = & P_a
+\end{eqnarray}
+When $P^2=P$, we say the matrix $P$ is idempotent, thus all projectors are idempotent.
+
+If a projector is to be orthogonal it also has to be symmetric, since orthogonal projectors should provide an orthogonal basis for the space they project onto.
+
+\subsection{Using SVD}
+Now that we feel comfortable with the SVD, let's use it to solve a practical problem.

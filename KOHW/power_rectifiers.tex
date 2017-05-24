@@ -1,0 +1,17 @@
+filter capacitor for power in:
+
+Basic Rule:
+C = 0.7(I)/?E(f)
+Where I = load current, ?E = acceptable ripple voltage, and f = pulses per second from the rectifier.
+For full wave rectified 60Hz, this works out to:
+C = 0.00583 * I / ?E
+
+
+
+
+
+
+In an unregulated power supply there are no voltage regulators and only one output filter capacitor. Basically the wire from the wall goes straight to the transformer, the rectifier turns it into an ugly DC(ish) signal, and the filter cap cleans it up a little.
+A linear power supply looks exactly the same as an unregulated power supply, except it has a pair of capacitors on the output side with a voltage regulator in between them. They basically put the voltage regulator you would need to build to use an unregulated power supply inside the supply itself, turning it into a regulated power supply. It’s still pretty simple.
+Switched-mode power supplies are a whole other story. They have multiple rectifiers (at least one before the transformer and one after), filter caps before and after the transformer, usually a much smaller transformer, and a voltage regulator in a feedback loop to the transformer. They almost always have heat-sinks as well.
+Break open an old PC power supply to see what a SMP looks like.

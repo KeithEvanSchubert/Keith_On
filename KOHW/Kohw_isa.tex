@@ -1,0 +1,59 @@
+\chapter{Instruction Set Architecture}
+\label{c-isa}
+
+\section{RISC vs. CISC}
+
+\ben
+\item[RISC] reduced instruction set computer- For high level language programmers (reduces time for each instruction)
+\item[CISC] complex instruction set computer- For assembly programmers (reduces instructions for same program)
+\een
+
+\vspace{.2in}
+\noindent
+\begin{tabular}{lp{2in}p{2in}}
+                               & RISC  & CISC  \\
+Number of addressing modes     & few   & many  \\
+Access to main memory          & Only in loads and stores (hence load-store architecture) 
+                                       & One or more operands in most instructions can access \\
+Size of instruction set        & small & large \\
+Complexity of each instruction & small & large \\
+\end{tabular}
+\vspace{.2in}
+
+RISC is currently and has been more efficient.
+
+
+\section{Memory Access}
+
+Most machines are byte addressable (i.e. each byte in memory has an address).  Memory access typically come in three sizes and are often distinguished by the operand suffix .b (byte), .h (halfword), .w (word).  
+
+\section{Branching}
+
+Conditional branching
+
+Three ways: compare two, compare to zero, condition registers
+
+cmp
+
+Branch delay and pipelining
+
+short circuit (positional) put in sum of expressions form and then
+do a series of conditional branches
+
+Bitwise (and,or,xor,andn,orn)
+
+bb (bitbranch reg,bit,targ)
+
+bset
+
+bclr
+
+shift L/R
+
+zero fill
+
+one fill
+
+rotate
+
+usually to carry

@@ -1,0 +1,46 @@
+Setup and Hold time illustration - Full cycle transfer
+
+For setup checks in single cycle paths, the clock edges that are relevant is shown in the Figure above. The data required time for the capture flop B to meet setup is
+
+Data Required time = (Clock Period + Clock Insertion Delay + Clock Skew - Setup time of the flop) = 8 + 2 + 0.25 -0.1 = 10.15 ns
+
+The data arrival time from the launch flop is
+
+Data Arrival time = (Clock Insertion Delay + CK->Q Delay of the launch flop + Combinational logic Delay) = 2 + 0.1 + 5 = 7.1 ns.
+
+Setup slack is
+
+Setup Margin = Data Required Time - Data Arrival Time = 10.15 - 7.10 = 3.05 ns
+
+
+
+Similarly for hold checks assuming the hold time requirement of the flop B is 100 ps, the data expected time is
+
+Data expected time = (Clock Insertion Delay + Clock skew + Hold time requirement of flop) = 2 + 0.25 +0.1 = 2.35 ns.
+
+So the hold time slack is
+
+Hold Margin = Data Arrival time - Data expected time = 7.10 - 2.35 = 4.85 ns
+
+Consider the case where the clock to flop B is inverted (or that the flop is negative edge trigerred). In this particular case, the relevant edges for setup/hold are as shown in the figure below.
+
+
+
+Setup and Hold time illustration - Half cycle transfer
+
+
+
+In this scenario, the setup margin considering all the other parameters to be the same is
+
+Data Required time = (half_clock_period + clock insertion delay + Ck->Q delay of flop A - Setup time required for flop B) = 4 + 2 + 0.25 -0.1 = 6.15 ns
+
+Since the Data Arrival time remains the same, there is a setup violation of
+
+Setup violation = 6.15 ns - 7.10 ns = -1.05 ns
+
+There is no hold violation since the data arrival time remains the time but the data expected time is any time after (Clock skew + Hold time requirement of flop B)
+
+Data expected time = 0.25 + 0.1 = 0.35 ns
+
+Hold Margin = 7.10 - 0.35 = 6.75 ns
+

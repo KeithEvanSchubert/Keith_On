@@ -1,0 +1,226 @@
+\chapter{Encryption}
+\label{c-encryption}
+
+\section{Modular Arithmetic}
+
+\subsection{Congruence}
+
+We say $a$ is congruent to $b$ modulus $n$ when $a-b$ is divisible by $n$.  In mathematical notation, we write $a \equiv b \qquad(\mod n)\quad\Leftrightarrow\quad a-b= kn$ for some integer $k$.  Several important properties of congruence are
+\begin{enumerate}
+\item $a \equiv a \qquad(\mod n)$
+\item $a \equiv b \qquad(\mod n)\qquad\Rightarrow\qquad b \equiv a \qquad(\mod n)$
+\item $\{\{a \equiv b \qquad(\mod n)\}\,\cdot\,\{b \equiv c \qquad(\mod n)\}\}
+       \qquad\Rightarrow\qquad a \equiv c \qquad(\mod n)$
+\end{enumerate}
+
+\begin{example}
+\beqn
+8&\equiv&29\qquad(\mod 7) \\
+8-29 &=& -21 \\
+&=& (-3)7
+\eeqn
+
+
+\beqn
+9&\equiv&-15\qquad(\mod 6) \\
+9-(-15) &=& 24 \\
+&=& (4)6
+\eeqn
+\end{example}
+
+\subsection{Modulus}
+
+Invariably confusion happens with integer division, modulus, and remainder involving negative numbers.  The problem arises in the basic definition.  For a dividend, $a\in\mathbb{Z}$ and a divisor, $b\in\mathbb{Z}$, the quotient, $q$ and remainder $r$ must satisfy
+\begin{enumerate}
+\item $\{r,q\}\in\mathbb{Z}$,
+\item $a=b*q+r$,
+\item $|r|<|d|$.
+\end{enumerate}
+The problem comes with the last requirement, because many choices can be made.  The three most justifiable definitions are below\footnote{other definitions exist such as ceiling division and rounding division, but they do not correspond to the what most people think of division for positive numbers.  Note, from the requirements nothing says $5/2=3r-1$ but this is hardly what most people would think of, and thus would probably not be programmed very well.}
+\begin{enumerate}
+\item Truncate division preserves the magnitudes of the quotient and remainder, independent of the signs of the dividend and divisor.  This forces the remainder to have the same sign as the dividend.
+\item Floor division forces the remainder to have the same sign as the divisor.
+\item Euclidean division defines $r\geq 0$ and thus ensures $b\times q\leq a$.
+\end{enumerate}
+Each is defensible.
+
+
+\subsubsection{Truncate}
+Remainder's definition is based off the definition of integer division.  Integer division, $a/b$, is defined for positive $a$ and $b$ to be the number $q$ such that
+\begin{enumerate}
+\item $b\times q\leq a$,
+\item $b\times (q+1)\geq a$.
+\end{enumerate}
+When negative numbers are allowed the following requirement is added
+\begin{enumerate}
+\item[3] $(-a)/b = a/(-b) = -(a/b)$,
+\end{enumerate}
+still for $a$ and $b$ positive.  One could summarize this as:
+\beqn
+c/d &=& \sign(c)\sign(d)(|c|/|d|)
+\eeqn
+Given we now have quotient or integer division defined we can then define remainder such that
+\beqn
+a &=& a/b + a rem b \\
+a rem b &=& a-a/b.
+\eeqn
+Note that the sign of the remainder is the same as the 
+
+\begin{example}
+Consider the following:
+
+\begin{tabular}{cc}
+\begin{minipage}{2in}
+\beqn
+5/2 &=& 2 \\
+(-5)/2 &=& -2 \\
+5/(-2) &=& -2 \\
+(-5)/(-2) &=& 2
+\eeqn
+\end{minipage}
+&
+\begin{minipage}{2in}
+\beqn
+5 rem 2 &=& 1 \\
+(-5) rem 2 &=& -1 \\
+5 rem (-2) &=& 1 \\
+(-5) rem (-2) &=& -1
+\eeqn
+\end{minipage} \\
+\end{tabular}
+\end{example}
+
+
+
+\subsection{Addition}
+
+$\{\{a \equiv b \qquad(\mod n)\}\,\cdot\,\{c \equiv d \qquad(\mod n)\}\} \qquad\Rightarrow\qquad a+c \equiv b+d \qquad(\mod n)$
+
+\subsection{Additive Inverse}
+
+\beqn
+a + \bar a &\equiv& 0 \quad(\mod n) \\
+a + \bar a &=& k n, \qquad k\in\mathbb{Z} \\
+\bar a &=& k n-a, \qquad k\in\mathbb{Z}
+\eeqn
+
+\begin{example}
+Find the additive inverse(s) of 3 mod 7.
+
+\beqn
+\bar a &=& k n-a, \qquad k\in\mathbb{Z} \\
+&=& 7k -3, \qquad k\in\mathbb{Z}
+\eeqn
+
+\begin{tabular}{lll}
+k & $\bar a$ & $(3+\bar a)\mod 7$ \\ \hline
+1 & 4        & $(3+4)\mod 7=0$ \\
+2 & 11       & $(3+11)\mod 7=0$ \\
+3 & 18       & $(3+18)\mod 7=0$ \\
+4 & 25       & $(3+25)\mod 7=0$ \\
+\vdots & \vdots \\
+\end{tabular}
+\end{example}
+
+\subsection{Multiplication}
+
+$\{\{a \equiv b \qquad(\mod n)\}\,\cdot\,\{c \equiv d \qquad(\mod n)\}\} \qquad\Rightarrow\qquad ac \equiv bd \qquad(\mod n)$
+
+
+
+\subsection{Multiplicative Inverse}
+
+\beqn
+a \bar a &\equiv& 1 \quad(\mod n) \\
+a \bar a &=& 1+k n, \qquad k\in\mathbb{Z} \\
+\bar a &=& \frac{1+k n}{a}, \qquad k\in\mathbb{Z}
+\eeqn
+Let $k_1+a k_2=k$ for $k_1$ and $k_2$ positive integers.
+\beqn
+\bar a &=& \frac{1+k n}{a}, \qquad k\in\mathbb{Z} \\
+ &=& \frac{1+k_1 n+ a k_2 n}{a}, \qquad k_1,k_2\in\mathbb{Z^+} \\
+ &=& \frac{1+k_1 n}{a}+k_2 n, \qquad k_1,k_2\in\mathbb{Z^+}
+\eeqn
+We need $a$ to divide $1+k_1n$, which means it divides with no remainder (aka divides evenly).  Consider what would happen if $gcd(a,n)=a_1>1$, thus $a=a_1a_2$ and $n=a_1n_2$ for $a_1$, $a_2$, and $n_2$ positive integers.  If $a_1$ is a factor of $n$ then it is also a factor of $k_1n$  If $a_1$ is a factor of $k_1n$ then it cannot be a factor of $k_1n+1$ (it evenly divides $k_1n$ and $k_1n+k_1$ but nothing in between).
+
+Now assume $gcd(a,n)=1$.  For $a$ to divide $1+k_1n$ implies $ak_3=1+k_1n$ for some positive integer $k_3$.
+
+\begin{example}
+Find the multiplicative inverse(s) of 3 mod 7.
+
+\beqn
+\bar a &=& \frac{1+k n}{a}, \qquad k\in\mathbb{Z} \\
+&=& \frac{1+7k}{3}, \qquad k\in\mathbb{Z}
+\eeqn
+
+\begin{tabular}{lll}
+k & $\bar a$          & $(3+\bar a)\mod 7$ \\ \hline
+1 & $\frac{8}{3}$ no  &  \\
+2 & $\frac{15}{3}=5$  & $(3\times 5)\mod 7=1$ \\
+3 & $\frac{22}{3}$ no &  \\
+4 & $\frac{29}{3}$ no &  \\
+5 & $\frac{36}{3}=12$ & $(3\times 12)\mod 7=1$ \\
+\vdots & \vdots \\
+\end{tabular}
+\end{example}
+
+\section{Affine Encryption Program}\label{s-affine}
+
+Affine encryption is one of the simplest methods for doing encryption.  Let $P_i$ be the $i^{th}$ character in the plain text message, and let $C_i$ be the corresponding encoded character.  Let there be $n$ possible characters to encode, then the basic idea is to pick two numbers $(a,b)$ to encode a message such that $\gcd(a,n)=1$ (so $a$ has an inverse).  No requirement on $b$ is needed if your modulus function has been encoded correctly.  The encoded character can then be found by
+\begin{eqnarray*}
+  a\times P_i +b &=& C_i \mod n.
+\end{eqnarray*}
+Note that the "$\mod n$" at the end says the equation holds in $\Zed_n$, the set of integers mod $n$ with appropriately defined arithmetic.
+
+To decrypt the message, the equation
+\begin{eqnarray*}
+  \bar a\times (C_i +d) &=& P_i \mod n
+\end{eqnarray*}
+is used.  The term $\bar a$ is the inverse of $a$ in $\Zed_n$, which is found by solving
+\begin{eqnarray*}
+  a\times\bar a &=& 1 \mod n \\
+   & \textbf{or} & \\
+  a\times\bar a &=& m\times n+1.
+\end{eqnarray*}
+Note that $m$ is any whole number.  The term $d$ is the additive inverse of $b$ in $\Zed_n$, which is found by solving
+\begin{eqnarray*}
+  d=n-(b \mod n).
+\end{eqnarray*}
+
+We can summarize this by saying an affine cipher is an encryption technique that encodes using three integers: $a$, $b$, and $n$.  If $plain$ is the character to be encoded (with `A'=0 and `Z'=25) then $code=(a*plain+b) \mod n$.  Decoding is also done using three integers: $c$, $d$, and $n$.  If $code$ is the character to be encoded (with `A'=0 and `Z'=25) then $plain=(c*(code+d)) \mod n$.  The requirements on $(a,b,c,d,n)$ are:
+\begin{itemize}
+    \item $\gcd(a,n)=1$
+    \item $(ac) \mod n = 1$
+    \item $(b+d) \mod n = 0$
+\end{itemize}
+Below is C code to implement a particular case of affine cyphers.
+\begin{verbatim}
+
+char affine_encode(char plain){
+    // affine codes capital letter in plain using a=5, b=12 thus this is modulo 26
+    int iCode, iPlain, a=3,b=0;
+
+    // convert char to integer and shift so A=0
+    iPlain=int(plain)-65;
+
+    // do the encoding
+    iCode = (a*iPlain+b)%26;
+
+    // return the result as a char
+    return char(iCode+65);
+}
+
+char affine_decode(char code){
+    // affine decodes capital letter in plain using c=21, d=8 thus this is modulo 26
+    int iCode, iPlain, c=9, d=0;
+
+    // convert char to integer and shift so A=0
+    iCode=int(code)-65;
+
+    // do the decoding
+    iPlain = (c*(iCode+d))%26;
+
+    // return the result as a char
+    return char(iPlain+65);
+}
+\end{verbatim} 
