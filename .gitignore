@@ -7,6 +7,10 @@
 *.out
 *.toc
 
+## backups
+*.bak
+*.sav
+
 ## Intermediate documents:
 *.dvi
 *-converted-to.*
