@@ -1,4 +1,3 @@
-\twocolumn
 \chapter{Synchronous Circuits}
 \label{c-Sync}
 
@@ -76,7 +75,6 @@ Give the logic diagram using any flip-flops you want and a PAL for the state dia
     {\color{ans}
     Any undesignated states will go to 111/0, which will be our garbage state.  You could also decide to send it to 000/1, but since this state machine looks for words of the pattern ((01*01*0)*(10*10*1)*)*\footnote{{\color{ans} this is a regular expression that is equivalent to the state machine, regular expressions and their relation to FA/FSM is covered in formal languages and automata theory.  This is included for your information and is thus not expected for you to know for the test.}}, having the undesignated states go to 000/1 would violate the pattern.  Additionally I will use D flip-flops.  I am doing this at home, so I don't have the drawing program, so I will leave the equations for the PAL, the connection is straightforward.
 
-\twocolumn
 
     \begin{tabular}{c|c||c|c}
       Present &       & Next  &        \\
@@ -169,7 +167,7 @@ Give the logic diagram using any flip-flops you want and a PAL for the state dia
 
     $Out = S2'\cdot S1'\cdot S0'$
     }
-    \onecolumn
+
 
 \section{State Charts}
 

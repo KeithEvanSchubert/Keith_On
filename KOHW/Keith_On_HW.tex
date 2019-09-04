@@ -11,8 +11,10 @@
 \usepackage{kescust}
 \usepackage{keslogic}
 \usepackage{kescircuits}
+\usepackage{circuitikz}
 \usepackage{multirow}
 \usepackage{rotating}
+\usepackage{suffix}
 \usepackage{wrapfig}
 \usepackage[linesnumbered]{algorithm2e}%other options: ,lined,boxed,commentsnumbered
 
@@ -24,6 +26,13 @@
 
 
 \newcommand{\sign}{\hbox{sgn}}
+
+\ctikzset{bipoles/length=.6cm}
+\newcommand\esymbol[1]{\begin{circuitikz}
+\draw (0,0) to [#1] (1,0); \end{circuitikz}}
+\WithSuffix\newcommand\esymbol*[1]{\begin{circuitikz}
+\draw (1,0) to [#1] (0,0); \end{circuitikz}}
+
 
 \input kvmacros %for karnaugh maps
 
@@ -67,6 +76,8 @@
 \input{Kohw_combinational}
 \input{Kohw_sync}
 \input{Kohw_timing}
+\input{Kohw_async}
+\input{Kohw_sysverilog}
 \part{Data Representation and Manipulation}
 \input{Kohw_codes}
 \input{Kohw_int}

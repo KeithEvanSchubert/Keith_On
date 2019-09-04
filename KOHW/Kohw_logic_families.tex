@@ -4,7 +4,32 @@ There are a great many logic families in use today.  Probably the most famous is
 
 
 \section{Diode Logic}
-Diode Logic (DL) uses diodes and resistors to implement logic gates.  DL is a simple but old technology not used in integrated circuits.  They are helpful to understand, as they are similar in some ways to later families.  DL only has \textbf{and} and \textbf{or} gates.
+Diode Logic (DL) uses diodes and resistors to implement logic gates. DL is a simple but old technology not used in integrated circuits.  They are helpful to understand, as they are similar in some ways to later families.  DL only has \textbf{and} and \textbf{or} gates.  Let's see how they work.
+
+Diodes only conduct in forward bias\footnote{Assuming you haven't reversed biased so much you reached the breakdown voltage, but this isn't acheivable in our circuits so I am ignoring it.}.  Consider the possible voltage combinations:
+
+\vspace{.1in}
+\begin{tabular}{cccl}
+Vin & \esymbol{diode} & Vout & Mode \\\hline
+0 & \esymbol{diode} & 0 & unpowered \\
+0 & \esymbol{diode} & 1 & reverse bias \\
+1 & \esymbol{diode} & 1 & forward bias \\
+\end{tabular}
+\vspace{.1in}
+
+Note the first two are possible, since the voltace of Vout is not driven by the input voltage so the output can be anything\footnote{Depending on other factors such as other parts of the circuit.}.  The only value combination that isn't possible is an input of 1 and output of 0 since forward bias makes this impossible.
+
+Now consider two orientations of the diodes
+
+\vspace{.1in}
+\begin{tabular}{cccp{.5in}ccc}
+Vin & \esymbol{diode} & Vout & & Vin &\esymbol*{diode}& Vout\\\cline{1-3}\cline{5-7}
+0 & \esymbol{diode} & z && 0 &\esymbol*{diode}& 0 \\
+1 & \esymbol{diode} & 1 && 1 &\esymbol*{diode}& z \\
+\end{tabular}
+\vspace{.1in}
+
+When the diode is facing in the usual way we draw and place it, (left lable) zeros have no effect, but ones are preserved on the output, similar to an \textbf{or} gate. Now consider the right table, where the diode is facing the oposite direction to our typical arrangement.  In this case the zeros are preserved on the output, and a one on the input has no effect on the output.  This is what happens in an \textbf{and} gate.  This suggests the circuits of Figure~\ref{f:DL_or}.
 
 \begin{figure}
 \begin{center}
@@ -15,13 +40,14 @@ Diode Logic (DL) uses diodes and resistors to implement logic gates.  DL is a si
 \end{tabular}
 \end{center}
 \end{figure}
-Consider the circuit in Figure~\ref{f:DL_or}.  If either $in_1$ or $in_2$ is high, the corresponding diodes ($D_1$ or $D_2$ respectively) turns on, making the output high.  Since the output will be about 0.6v less than the input you can't put too many of these in series before the logic level drops below useful levels.  If both inputs are off then both diodes don't conduct and the resistor to ground ($R_1$) pulls the output down to a low output (hence the name pull down resistor).  The circuit is thus an \textbf{or} gate.
+
+Now consider the circuit in Figure~\ref{f:DL_or}.  If either $in_1$ or $in_2$ is high, the corresponding diodes ($D_1$ or $D_2$ respectively) turns on, making the output high.  Since the output will be about 0.6v less than the input you can't put too many of these in series before the logic level drops below useful levels.  If both inputs are off then both diodes don't conduct and the resistor to ground ($R_1$) pulls the output down to a low output (hence the name pull down resistor).  The circuit is thus an \textbf{or} gate.
 
 Now consider the circuit in Figure~\ref{f:DL_and}.  If either $in_1$ or $in_2$ is low, the corresponding diodes ($D_1$ or $D_2$ respectively) turns on, making the output low, though it will be about 0.6v higher than the inputs so just like with the \textbf{or} gate, you can't do too many of these in series.  If by inputs are high, then both diodes are off and the output is isolated from the input.  The resistor to $V_{cc}$ pulls the output up (hence the name, pull up resistor).  The gate is thus an \textbf{and} gate.
 
 
 \section{Resistor Transistor Logic}
-Resistor Transistor Logic, (RTL) replaces the diodes of DL with transistors, which allowed for negation.  This is thus the first full logic family.
+Resistor Transistor Logic, (RTL) was the first full logic family, since it had \textbf{not}, \textbf{nor}, and \textbf{nand }gates.  It also had two major variants.  One used resistors to generate the logic function, and the transistors to drive the output.  The resistor logic stages were really more voltage dividers or summer circuit followed by an amplifier.  This was slow and power hungry (thus also high heat), but saved on transistors, which were expensive.  The other variety used one resistor and one transistor per input, which was more expensive, but also more versatile and robust.  This second version what used in the Apollo missions to the moon.  In this second style, \textbf{nor} gates have the inputs in parallel, and \textbf{nand} have inputs in series.
 
 
 \section{Diode Transistor Logic}
@@ -33,6 +59,8 @@ Resistor Transistor Logic, (RTL) replaces the diodes of DL with transistors, whi
 \includegraphics{images/DTLnand.eps}
 \end{center}
 \end{figure}
+
+Diode Transistor Logic (DTL), uses diodes for the logic stage and transistors for the driving stage.  It is thus the parent of transistor transistor logic and provides a bridge from diode logic to later stages.  
 
 \section{Transistor Transistor Logic}
 Transistor transistor logic (TTL) is arguably the most famous logic family.  It has been used for around 40 years, and can still be purchased today.  It is reasonably fast, has good noise rejection, and has good protection from static.  A large number of interfaces are TTL compatible, so even when the components are not used, its design implications are still felt.  The venerable 7400 and 5400 (milspec\footnote{Milspec means it is built to military specification, which would be enough to be noteworthy, but milspec parts are useful in hazardous environments, such as space, marine (water and saline), industrial fabrication environments, extreme temperature ranges, etc.}) series are the most famous TTL components, and they have been used widely in engineering labs since I was in school way back when...  If you want to see what components were in the series, see Appendix~\ref{c:7400}.
@@ -65,6 +93,19 @@ where, $V_{cc}$ is the supply voltage, $V_{OH}$ is the high output voltage of th
 \subsection{Totem Pole Outputs}
 Instead of trying to take advantage of wired logic through a pull-up, we could consider how can we make the outputs switch as fast as possible.  To do this we would need to pull up and down with separate transistors, so that we could quickly drive the output high or low.  This is what totem pole outputs does.  It is called totem pole outputs because the output transistors are on top of each other like a totem pole.
 
+Consider the circuit of Figure~\ref{f:TTL_nand_totem}.  We will break this into four parts:
+\begin{itemize}
+\item Diodes D1 and D2 are the input protection.  They prevent the voltage dropping much below ground.  Should either in1 or in2 go negative, they will forward bias the appropriate diode D1 or D2, which will raise the input to with a fraction of a voltage of ground.  These diodes protect the circuit from negative signals which could damage it.
+\item BJT transistor Q1 with protection resistor R1 make our next section.  R1 just prevents excessive current to Q1, while essentially powering the base of the transistor.  If all the emitters (inputs) are high, then the transistor Q1 is off, and the collector will be a weak high.  If any of the emitters (inputs) are low, then the transistor turns on and the collector is a low.  This stage is essentially an and gate (the logic part).
+\item Transistor Q2 and resistors R2 and R3 make the inverting amplifier (pre-amplification stage).  R2 and R3 serve two purposes.  First, they limit the current to Q2.  Notice the protect the transistor even from base current flow, without having to have a resistor on the base.  The resistor on the base is what slowed down transitions on resistor transistor logic (RTL), and so this setup is fast and protective.  Second, the resistors R2 and R2 act as a pull-up for Q3 and a pull-down for Q4 respectively.  Q2 is hooked as an inverting amplifier, so it takes the weak \textbf{and} output of Q1 and provides a strong \textbf{nand} output with Q2 off corresponding to true, and Q2 on corresponding to false.
+\item R4, Q3, D3 and Q4 are the totem pole output. 
+\begin{description}
+\item[Output High] When Q2 is off, the base of Q3 is pulled high and the base of Q4 is pulled low. Q3 thus provides power to the output and Q4 isolates the output from ground.   R4 is  the current limiting resistor for power on (output high).  
+\item[Output Low] When Q2 is on, the base of Q4 gets high enough to turn Q4 on and supply essentially a ground to the output.  The diode D3 then guarantees the emitter is at about the same voltage level as the base of Q3, since both are connected to ground through one diode and one open transistor (the diode being the base to emitter and Q2 the open transistor for the base of Q3, and the diode D2 and Q4 the open transistor for the the emitter of Q3).  Since the base and emitter of Q3 are essentially the same, Q3 turns off and disconnects power from the output.
+\end{description}
+\end{itemize}
+The net result is a fast switching, protected \textbf{nand} gate, which became the most popular configuration till the lower power FETs took over\footnote{Well, this is not entirely true, a bunch of special optimizations kept coming in: Schottky (S), Low power Schottky (LS), fast (F), etc., but you get the point, this was the foundational model other built on, till CMOS took over.}.
+
 \begin{figure}
 \begin{center}
 \caption{Transistor Transistor Logic \textbf{Nand} Gate with Totem Pole Output.}\label{f:TTL_nand_totem}
@@ -81,7 +122,9 @@ Instead of trying to take advantage of wired logic through a pull-up, we could c
 \end{center}
 \end{figure}
 
+Tristate outputs are different than open collector.  First, we want the output to be driven like totem pole when the system is enabled.  Look at Figure~\ref{f:TTL_nand_tristate}, and for the moment imagine the signal \textbf{en} does not exist, thus remove the third emitter to the leftmost bjt, and the diode (D4) connected to the upper output bjt transistor.  What you are left with is a pretty standard TTL totem pole nand gate.  Now we want this functionality to remain when \textbf{en} is high.  Note when \textbf{en} is high the third emitter and the diode D4 are both reverse biased, and thus effectively isolated from the rest of the circuit, which is what we want.  When \textbf{en} is low, both diodes (D4 and base to emitter on the leftmost bjt) will end up having low voltage on both sides.  If the diode had high voltage before enable dropped, the diode would become forward biased and thus the voltage on the other side of \textbf{en} would drop to say around 0.7v (if it was silicon).  This will turn off Q1 and Q3.  When Q1 is off, Q2 is off, which makes Q4 off.  Thus both Q3 and Q4 are off, and the output is isolated from the rest of the circuit, and thus in the tristate.
 
+A very simple addition to totem pole can thus create a tristate output or allow normal totem pole input, all on the voltage of one signal.  In general if the enable signal is not connected it will become a very weak 1 by leakage, thus be enabled.  It is better to ensure operation however by explicitly setting the enable signal.  Similar setup can be done for other gates.
 
 
 \section{CMOS Families}
@@ -99,7 +142,7 @@ Dynamic CMOS is designed to be small, fast, and low power.  Examples include PE 
 There are a lot of logic families out there so I will only cover the most common ones in this section, the rest can be handled in similar ways, you just need to know the standard considerations of voltages (not just min and max but also the logic levels), current (input and output at high and low levels), impedance (not always needed but can be important on bus lines and such), floating outputs (high, low, or not at all), timing (rise time, fall time, latency, etc.), and data rates (really this is an implication of timing, but it is big enough to be mentioned separately).  It is helpful to know if the circuits you are interfacing are switching ground or power, as you can make a more reliable circuit using this information (i.e. you do the same in your circuit, which will be more compatible and thus also more reliable as it will not run into as many glitches caused by misreading a voltage level.).  The basic requirements to call two chips compatible are:
 
 \begin{tabular}{rcl}
-Driver Output  && Load Input \\
+Driver Output  && Load Input \\\hline
 $V_{OH_{max}}$ & $<$ & $V_{IH_{max}}$\\
 $V_{OH_{min}}$ & $>$ & $V_{IH_{min}}$\\
 $V_{OL_{max}}$ & $<$ & $V_{IL_{max}}$\\

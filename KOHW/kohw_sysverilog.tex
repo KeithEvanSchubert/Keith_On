@@ -1,0 +1,361 @@
+\chapter{System Verilog and Testing}
+\section{Basic Language}
+\subsection{Data Types}
+In Verilog, the two most commonly used data structures are wire and reg.  Wire is a special version of a net, and it requires a continuous driver.  Multiple drivers can be used on wires, for instance, when a bus is being created.  The data type \verb1reg1 was the one that confused people, because it sounds like it should generate memory, but is doesn't.  In reality, \verb1reg1 was for procedural assignments (discrete time signals), and could infer a physical wire or a flip-flop.  In System Verilog the \verb1logic1 data type effectively replaces \verb1reg1 (and most uses of \verb1wire1 too), as it allows continuous or discrete time signals to drive it.  The only thing it can't do is allow multiple drivers, which is good as it will warn you if you make this design mistake.  Essentially if you are building a bus or similar component that needs multiple drivers then use \verb1wire1 (or other net), otherwise us \verb1logic1.
+
+
+
+multiple bits
+
+
+
+input
+
+output
+
+inout
+
+\subsection{assignment}
+blocking
+nonblocking
+statement
+\subsection{Blocks}
+\verb1always1
+\verb1always_comb1
+\verb1always_ff1
+\verb1always1
+\verb1always1
+
+
+parameters
+
+\section{Design Levels}
+\subsection{Structural}
+Specify the actual gates and how they are connected.
+\subsection{Behavioral}
+Specify by an expression how the signals relate (for instance with an assign).
+\subsection{Procedural}
+Specify the combinational logic in an \verb1always_comb1 block.
+\section{Testbenches}
+
+assertions
+
+immediate (assert)
+
+	assert (A>B);
+	
+	if not then generate error.
+
+concurrent (assert property)
+
+
+Similar ideas:
+
+coverage statements (cover property
+
+assume property
+
+
+
+
+\section{Verification}
+
+System Tasks for severity level:
+\begin{description}
+\item[\$fatal] run-time fatal
+\item[\$error] run-time error
+\item[\$warning] run-time warning
+\item[\$info] run-time info
+\end{description}
+
+\$assertoff
+
+\$assertkill
+
+\$asserton
+
+
+immediate assertions:
+
+assert (expression) [pass\_statement;] [else fail\_statement;]
+
+Concurrent assertions
+
+assert property (property\_expression)[pass\_statement;] [else fail\_statement;]
+
+\#\#delay
+
+sequence sequencename;
+boolexp \#\#delay  boolexp;
+endsequence
+
+property propertyname;
+timespec sequencename \#\#delay boolexp
+endproperty
+
+assert property (propertyname);
+
+
+
+implication operator
+|-> overlap (suggested/recommended)
+|=> non-overlap
+
+
+\$onehot()
+
+\$past()
+
+%Testbench Automation and Constraints Tutorial
+%In this tutorial we illustrate how to use classes that represent data objects in a constrained-random testbench..This tutorial illustrates the following key points:
+%Using classes to represent data structures
+%Specifying which data values should be random
+%Specifying constraints
+%Generating directed-random values in a testbench
+%Using coverage to measure and guide verification
+%Directed-Random Verification
+%Traditionally, simulation-based verification has used a directed testing approach. In other words, a testbench implements tests using specific data values.Consider the example of a memory system. It is not possible to test such a system exhaustively – it would be impractical to write every possible data value to every possible address in every possible sequence.
+%In a directed testing approach, you might select some appropriate data values and write them into some selected memory locations and then read them out again. One problem with this approach is that you could miss certain types of system error – for example errors with certain addresses or when using certain data values.
+%Using a random testing approach, you might find more errors, but unless you run the simulations for long periods of time, you still might not detect certain problems.
+%In a directed random test, you control how random the data values are using constraints. For example, you might want to make sure that some memory locations are tested exhaustively, and that “corner cases” (i.e. significant cases such as the minimum and maximum address values) are definitely tested. You might want to write to an ascending or descending sequence of addresses.
+%SystemVerilog supports all three paradigms: directed, random and directed random testing. It does this by providing for random data value generation under the control of constraints.
+%In order to measure how good a test is, SystemVerilog provides constructs for specifying functional coverage models and measuring the coverage during simulation. By analysing the coverage data, tests can be directed to ensure they do indeed test the design adequately.
+%Using classes to represent data structures
+%Most practical verification problems require you to implement some kind of transaction in which a collection of data is transferred into or out of the design under test (DUT). This collection of data may be as simple as the address and data being transferred on a system bus, or something much more elaborate like a complete image represented as video data. In any case, it is appropriate to create an abstract data structure that can be used to represent this information as it moves through the verification system and the DUT.
+%As an example of this kind of data modelling we will consider messages in a CANbus network (CANbus is a networking system used for in-vehicle data buses described in ISO standard 11898).
+%The CANbus message format has two possible versions.  The simpler 2.0A format, which we will use for this example, has the following fields:
+%An 11-bit "identifier" (address)
+%A single-bit field known as "RTR" indicating whether a reply is expected
+%Two "reserved" bits, fixed at zero in the 2.0A format
+%A 4-bit "data length" field, containing a binary value in the range 0 to 8
+%A data payload consisting of 0 to 8 bytes, as indicated by the "data length" field
+%A 15-bit CRC (checksum) field
+%We can easily create a struct to represent this data structure. Each field in the data structure is directly represented by a field in our struct. Those fields can be given bit widths using an appropriate SystemVerilog data type, such as bit or logic. For an eight-bit field, the type byte is used. bit [7:0] could have been used instead – the choice is a matter of style and convenience. (byte is a signed type, but that is not relevant here.)
+%typedef struct {
+%  rand bit [10:0] ID;      // 11-bit identifier
+%  rand bit        RTR;     // reply required?
+%       bit  [1:0] rsvd;    // "reserved for expansion" bits
+%  rand bit  [3:0] DLC;     // 4-bit Data Length Code
+%  rand byte       data[];  // data payload
+%       bit [14:0] CRC;     // 15-bit checksum
+%} message_t;
+%In the case of a system where data is sent serially, a packed struct could be convenient - a packed struct means that the data structure can be packed into a single vector, making it easier to use in a system where information is sent serially. However in this case, we want to randomize both the contents and the length of the payload data, and that is more easily done using an unpacked array - hence we have to use an unpacked struct.
+%
+%Note also the use of typedef - this allows us to create a re-usable name for our struct data type message_t
+%
+%To get the full benefits of the SystemVerilog constrained random generation facilities, it is convenient to use a class. This allows us to associate functions with our data (class methods), and also to benefit from other built-in methods such as pre_randomize() and post_randomize(). So for maximum flexibility, our next step is to create a class:
+%class CAN_Message;
+%  rand message_t message;
+%
+%  // Class methods go here 
+%
+%endclass: CAN_Message
+%Class methods
+%Now we have defined our CAN_message class, we need to add methods to the struct that can modify or inspect it. We would need to add methods to this class for many purposes, including calculating the correct 15-bit CRC. For example, consider this very straightforward method to set or clear the RTR (reply request) bit in a message structure, ensuring that there is no payload data if the RTR bit is set:
+%
+%class CAN_Message;
+%  rand message_t message;
+%
+%  // Class methods go here 
+%  
+%  task set_RTR (bit new_value);
+%    // Set the RTR bit as requested
+%    message.RTR = new_value;
+%    if (message.RTR) begin
+%      // Messages with the RTR bit set should have no data.
+%      message.DLC = 0;
+%      clear_data();  // make the data list empty
+%    end
+%  endtask
+%
+%  task clear_data;
+%    message.data.delete();
+%  endtask
+%  
+%endclass: CAN_Message
+%Note that this method is itself a part of the CAN_message class, so that it can directly access any fields of the struct, using the .member notation.
+%
+%Generation (randomize)
+%The idea of pseudo-random stimulus generation is central to the directed random verification methodology. It's obviously ridiculous to use random numbers for every part of every struct. You need control over the random generation process. SystemVerilog provides this control using constraints.
+%
+%A constraint is a Boolean expression describing some property of a field. Constraints direct the random generator to choose values that satisfy the properties you specify in your constraints. Within the limits of your constraints, the values are still randomly chosen. The process of choosing values that satisfy the constraints is called solving. The verification tool that does this is called the solver; the solver may be embedded in a simulator or be part of a separate testbench generator program.
+%
+%For example, the four-bit DLC field in our CAN_message.message struct can hold values in the range 0 to 15, but the CANbus message specifications require its value to be restricted to a maximum of 8. We can express this constraint as the numerical inequality
+% DLC <= 8
+%or, perhaps more clearly, using SystemVerilog’s range-membership operator inside
+%
+%  DLC inside {[0:8]}
+%These are both Boolean expressions and therefore they can be used in a constraint using the constraint keyword. Constraints are class members, just like fields and methods. They can be written either in the original class, or in derived classes. In this example we are modifying the original class definition. The example also shows how you can control the number of elements in a dynamic array by using the dynamic_array.size()method as part of a constraint.
+%
+%class CAN_Message;
+%  //...
+%  
+%  constraint c1 { message.DLC inside {[0:8]}; }
+%  constraint c2 { message.data.size() == message.DLC; }
+%
+%endclass: CAN_Message
+%The random generator will always attempt to honour your constraints. It is sometimes possible to write conflicting constraints, in which case the generator will fail.
+%
+%Writing the Testbench
+%Now that we've completed this class definition, we need to be able to make use of it in the testbench. As a simple example of this process, suppose we want to build a test that needs ten distinct messages to do its work. We would create an unpacked array of 10 CAN_message objects:
+%
+%CAM_message test_message[10];
+%We could then initialize the messages with random data like this:
+%
+%for (int i = 0; i < 10; i++)
+%  test_message[i].randomize();
+%We could also provide additional constraints using the with construct:
+%
+%test_message[0].randomize() with { message.DCL == 4; };
+%This is the same as writing a constraint in the CAN_message class like this
+%
+%constraint c3 { message.DCL == 4; }
+%Alternatively, we could use the class inheritance mechanism to create a subclass, where the message length is fixed:
+%
+%class CAN_message_4 extends CAN_message;
+%  // ...
+%  constraint c1 { message DCL == 4; }    // Overload c1
+%endclass
+%Suppose that the DUT has a serial input for receiving CAN messages. In order to drive the abstract class data into the DUT, the message struct will need to be serialised. To do this we can write a method in the class.
+%
+%class CAN_Message;
+%  rand message_t message;
+%
+%  // Class methods go here 
+%  // ...
+%  
+%  task getbits(ref bit data_o, input int delay=1);
+%    bit [17:0] header;
+%    bit [14:0] tail;
+%    header = {message.ID,message.RTR,message.rsvd,message.DLC};
+%    tail = message.CRC;
+%    $display("tail=%0b",tail);
+%    //step through message and output each bit (from left to right)
+%    foreach(header[i]) #delay data_o = header[i];
+%    foreach(message.data[i,j]) #delay data_o = message.data[i][j];
+%    foreach(tail[i]) #delay data_o = tail[i];
+%  endtask
+%  
+%  //...
+%  
+%endclass: CAN_Message
+%This getbits task updates the output data_o by using a ref argument. An input delay is specified as a simple model of the bit period. Here is an example of calling this function:
+%
+%module top();
+%  // declaration of CAN_message and message_t omitted...
+%  bit data_o;
+%  const int bit_interval = 1;
+%  CAN_Message test_message[10];
+%  int interval=10;
+%
+%  initial
+%  message_gen: begin
+%    for (int i = 0; i < 10; i++) begin
+%      std::randomize(interval) with {interval>0;interval<6;};//random interval
+%      $display("interval=%0d",interval);
+%      #interval;
+%      $display("time = %0t",$time);
+%      test_message[i] = new;
+%      test_message[i].randomize();
+%      test_message[i].print();
+%      test_message[i].getbits(data_o,bit_interval);
+%      #bit_interval $display("time = %0t",$time);
+%    end
+%    $finish;
+%  end:message_gen  
+%  
+%endmodule : top
+%So far in this tutorial we have looked at how random variables and constraints in classes are used to create tests. SystemVerilog also provides a number of other constructs that are not covered here, including the ability to create random sequences of tokens..
+%
+%Functional Coverage
+%Having seen how to write tests using SystemVerilog, we shall now consider how we can measure their effectiveness. One way to do this is to measure the functional coverage. This is a user-defined metric of how much of the design has been tested. (SystemVerilog also includes the concurrent cover property statement, which is used to count the number of times a particular sequence or property occurs. For further information see the Assertion-Based verification Tutorial.)
+%
+%As an example of functional coverage, consider a variable of a user-defined enumerated type:
+%
+%enum {Red, Green, Blue} Colour;
+%It would be useful to know whether or not the variable Colour has been set to all the possible values at some point during simulation. To do this you would define a covergroup containing a single coverpoint:
+%
+%covergroup cg_Colour @(posedge Clock);
+%  coverpoint Colour;
+%endgroup
+%Next you must create an instance of the covergroup. This is like creating a class object:
+%
+%cg_Colour = new cg_inst;
+%During simulation, the simulator will count the number of times that Colour takes each of the values, Red, Green and Blue. The value of Colour is sampled on every rising edge of Clock. (You don’t have to specify a sampling event; if you don’t then you must sample the values explicitly, using the covergroup’s sample method – cg_inst.sample());
+%
+%Bins
+%In the example we have just used, the simulator will create three bins for the coverpoint - one for each value of the enumerated type. Suppose we are covering a variable of an integer type:
+%
+%bit [15:0] i;
+%covergroup cg_Short @(posedge Clock);
+%  c : coverpoint i;
+%endgroup
+%The simulator could potentially create 2^16 bins for the coverpoint. (In fact, there is a default of a maximum of 64 automatically created bins.) It would probably be more useful to define some bins to hold specific values or ranges of values:
+%
+%covergroup cg_Short @(posedge Clock);
+%  coverpoint i {
+%    bins zero     = { 0 };
+%    bins small    = { [1:100] };
+%    bins hunds[3] = { 200,300,400,500,600,700,800,900 };
+%    bins large    = { [1000:$] };
+%    bins others[] = default;
+%  };
+%endgroup
+%This creates one bin, “zero”, for the value of i being 0; one bin, “small”, for all values of i between 1 and 100, inclusive; three bins, for the eight values listed, with the first holding 200 and 300, the next 400 and 500 and the last 600, 700, 800 and 900; one bin for values 1000 and above, and one bin for every other value.
+%
+%Cross Coverage
+%It is often useful to know how often two (or more) variables have specific pairs (triples etc.) of values. This is achieved using cross coverage:
+%
+%logic [3:0] x, y;
+%
+%covergroup cg_xy @(posedge Clock);
+%  X  : coverpoint x;
+%  Y  : coverpoint y;
+%  XY : cross X, Y;
+%endgroup
+%This will create 16 bins for each of the coverpoints X and Y and 256 bins for XY – one for each possible pair of values. Note that SystemVerilog coverpoints only operate on 2 state values: values x or z are excluded.
+%
+%Covering Transitions
+%Coverage of transitions may also be collected. An example where this may be used is for finite state machines. Consider a state machine with three states, Idle, State1 and State2, where the only legal transitions are those to and from Idle. In addition, the state machine should only remain in the Idle state for a maximum of 4 clocks.
+%
+%enum {Idle, State1, State2} State;
+%
+%covergroup cg_State @(posedge Clock);
+%  states      : coverpoint State;
+%  state_trans : coverpoint State {
+%    bins legal[] = ( Idle => State1, State2 ),
+%                   ( State1, State2 => Idle);
+%    bins idle[] = ( Idle [* 2:4] );
+%    bins illegal = default sequence; 
+%  }
+%endgroup
+%This would create a separate bin for each legal transition – including remaining in Idle – and one bin for all the illegal transitions.
+%
+%SystemVerilog also provides the illegal_bins construct, which causes the simulator to stop with an error if an illegal value or transition occurs:
+%covergroup cg_State @(posedge Clock);
+%  ...
+%    illegal_bins illegal = default sequence;
+%  }
+%endgroup
+%Coverage options
+%Options control the behaviour of covergroups and coverpoints. For example, the coverage results for a particular covergroup or coverpoint may be weighted, or a maximum number of automatically created bins could be specified. Options such as these can be set in the covergroup, or procedurally after the covergroup has been instanced.
+%
+%int i_a, i_b, i_c;
+%
+%covergroup cg @(posedge Clock);
+%  option.auto_bin_max = 10;
+%  a : coverpoint i_a;
+%  b : coverpoint i_b;
+%  c : coverpoint i_c { option.auto_bin_max = 20; }
+%endgroup
+%
+%cg cg_inst = new;
+%cg_inst.a.option.weight = 2;
+%In this example, 10 bins are created for the coverpoints cg_inst.a and cg_inst.b and 20 bins are created for cg_inst.c. cg_inst.a is assigned a weight of 2, whereas the other coverpoints each have a weight of 1 (the default weight).
+%
+%There are many other options – refer to the SystemVerilog LRM for details of these.
+%
+%Other Features of Coverage
+%The other functional coverage features that have not been covered in this tutorial are covergroup arguments; wildcard bins and block execution events. For details of these, please refer to the SystemVerilog LRM .
+
+\section{RTL Design}

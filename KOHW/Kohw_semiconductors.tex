@@ -116,11 +116,10 @@ Silicon           & Si     & 1.12        & $5.23\times 10^{15}$ \\
 
 
 \begin{wrapfigure}{r}{0.4\textwidth}
-%\vspace*{-.45in}
-\begin{center}
+\vspace*{-.4in}
+\centering
 \caption{Silicon crystal structure}
 \includegraphics[width=0.35\textwidth]{semiconductors_pure}\label{f-semiconductor-pure}
-\end{center}
 \end{wrapfigure}
 
 These are (and must be) pure materials, as even a small amount of impurities will cause them not to work.  Most modern semiconductors are extrinsic\footnote{This is due to the excessive cost and difficulty of making a pure or nearly pure material.}, so I will just give a brief overview.  At room temperature, Fermi-Dirac statistics shows the gap between valence and conduction band must be on the order of 1 electron volt or less.  Several materials meet this requirement, such as gallium arsenide (GaAs, 1.42 eV), Silicon (Si, 1.12 eV), and Germanium (Ge, 0.66 eV).  The electrons promoted to the conduction band leave behind holes in the valence band, and current is carried by both the flow of electrons in the conduction band and holes in the valence band.  The flow of the electron-hole pairs (in opposite directions) is the mechanism of current.  Essentially the electron-hole movement is the same for extrinsic semiconductors also, but for extrinsic semiconductors these need not be equal (and are not).
@@ -163,6 +162,14 @@ Extrinsic semiconductors are made by adding an impurity into the crystallin stru
 \begin{eqnarray}
 n_e n_h &=& n_i^2 \label{eq:extrinsiccarrierdensity}
 \end{eqnarray}
+\begin{wrapfigure}{l}{0.4\textwidth}
+\vspace*{-.2in}
+\centering
+\caption{P Type Silicon crystal structure}\label{f-semiconductor-p}
+\includegraphics{semiconductors_p} 
+\vspace*{-.4in}
+\vspace{1pt}
+\end{wrapfigure}
 where $n_e$ is the thermal equilibrium concentration of free electrons, $n_h$ is the thermal equilibrium concentration of holes, and $n_i$ is the intrinsic carrier density.  Provided the concentration of the dopant is greater than the intrinsic carrier density, we can approximate the number of carriers of the type provided by the dopant by the concentration of the dopant.  We will denote the dopant concentration by $N_n$ for n type materials and $N_p$ for p type materials.
 
 %A p-type wafer is usually doped with Boron, although Gallium can also be used (rare). P+ wafers are heavily doped and typically have resistances of <1 Ohm/cm2. P+ wafers are often used for Epi substrates. P- wafers are lightly doped with typical resistances of >1 Ohm/cm2. The most common crystal orientations for P-type wafers are {100} and {111}.
@@ -175,23 +182,17 @@ where $n_e$ is the thermal equilibrium concentration of free electrons, $n_h$ is
 
 
 
-\subsection{P Type Semiconductors}
 
-\begin{figure}
-\begin{center}
-\caption{P Type Silicon crystal structure}\label{f-semiconductor-p}
-\includegraphics{semiconductors_p}
-\end{center}
-\end{figure}
+\subsection{P Type Semiconductors}
 If an element like gallium or boron is doped, which has only 3 electrons in its outer shell of up to 8, into the crystallin structure of say silicon, which has 4 electrons in its outer shell of 8, a gap in the bonding is formed, see Figure~\ref{f-semiconductor-p}.  The outer shell of the gallium and the bonded silicon is just one shy of completing and thus it is already free to conduct a hole by stealing an electron from a neighbor.  In terms of energy bands, the energy of this ``hole'' (usually denoted $E_a$) is very close to (but above) the energy of the valence band.  The Fermi energy is thus close to the valence band, which means there will not be lots of free electrons, so the only free carriers are these holes\footnote{In truth the hole is the spot where the electron is missing (and thus not an actual thing), but since this means that the atom that is missing it is ionized (positive in the case of a lack of an electron), it appears that a positive charge is flowing.  This is governed by statistical mechanics and so it is not possible to track the actual electron.  Like it or not, holes are a reasonable description of how the charge is carried.}.
 
 \subsection{N Type Semiconductors}
-\begin{figure}
-\begin{center}
+\begin{wrapfigure}{r}{0.4\textwidth}
+\vspace*{-.4in}
+\centering
 \caption{N Type Silicon crystal structure}\label{f-semiconductor-n}
 \includegraphics{semiconductors_n}
-\end{center}
-\end{figure}
+\end{wrapfigure}
 
-
+Doping phosphorous, arsenic, or antimony, which have 5 valence electrons.  Four of the valence electrons bond with the surrounding silicon atoms in the matrix, resulting in an extra electron (the fifth) being available for conduction.  See Figure~\ref{f-semiconductor-n}.  This greatly increases the available charge carries.  Phosphorus is often doped with phosphine gas, which is highly dissociative.  Arsenic is one of the alternatives, and since it is less dissociative is used when a more precisely placed doping is required.
 
